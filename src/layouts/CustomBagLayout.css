@@ -1,0 +1,30 @@
+.custom-bag-layout {
+  min-height: 100vh;
+  background: var(--color-bg);
+}
+
+.custom-bag-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background: #fff;
+  box-shadow: var(--elev-sm);
+}
+
+.custom-bag-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+}
+
+.custom-bag-home {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.custom-bag-home:hover {
+  text-decoration: underline;
+}

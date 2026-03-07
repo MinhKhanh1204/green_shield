@@ -1,5 +1,6 @@
 // src/components/Nav.jsx
 import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import LanguageToggle from './LanguageToggle'
 import { useTranslation } from 'react-i18next'
 import useActiveSection from '../hooks/useActiveSection'
@@ -8,6 +9,7 @@ const links = [
   { id: 'home', labelKey: 'nav.home' },
   { id: 'about', labelKey: 'nav.about' },
   { id: 'products', labelKey: 'nav.products' },
+  { id: 'custom', labelKey: 'nav.custom', href: '/custom-bag' },
   { id: 'advantages', labelKey: 'nav.advantages' },
   { id: 'mission', labelKey: 'nav.mission' },
   { id: 'community', labelKey: 'nav.community' },
@@ -54,14 +56,18 @@ export default function Nav() {
           <ul className="nav-drawer__list">
             {links.map(l => (
               <li key={l.id}>
-                <a
-                  href={`#${l.id}`}
-                  className={(observedActiveId || activeId) === l.id ? 'nav-link active' : 'nav-link'}
-                  aria-current={(observedActiveId || activeId) === l.id ? 'page' : undefined}
-                  onClick={(e) => { e.preventDefault(); smoothScrollTo(l.id); setOpen(false) }}
-                >
-                  {t(l.labelKey)}
-                </a>
+                {l.href ? (
+                  <Link to={l.href} className="nav-link" onClick={() => setOpen(false)}>{t(l.labelKey)}</Link>
+                ) : (
+                  <a
+                    href={`#${l.id}`}
+                    className={(observedActiveId || activeId) === l.id ? 'nav-link active' : 'nav-link'}
+                    aria-current={(observedActiveId || activeId) === l.id ? 'page' : undefined}
+                    onClick={(e) => { e.preventDefault(); smoothScrollTo(l.id); setOpen(false) }}
+                  >
+                    {t(l.labelKey)}
+                  </a>
+                )}
               </li>
             ))}
           </ul>
@@ -78,14 +84,18 @@ export default function Nav() {
       <ul style={{ display: 'flex', gap: '1.5rem', listStyle: 'none', margin: 0, padding: 0 }}>
         {links.map(l => (
           <li key={l.id}>
-            <a
-              href={`#${l.id}`}
-              className={(observedActiveId || activeId) === l.id ? 'nav-link active' : 'nav-link'}
-              style={{ textDecoration: 'none', color: 'var(--color-dark)' }}
-              onClick={(e) => { e.preventDefault(); smoothScrollTo(l.id) }}
-            >
-              {t(l.labelKey)}
-            </a>
+            {l.href ? (
+              <Link to={l.href} className="nav-link" style={{ textDecoration: 'none', color: 'var(--color-dark)' }}>{t(l.labelKey)}</Link>
+            ) : (
+              <a
+                href={`#${l.id}`}
+                className={(observedActiveId || activeId) === l.id ? 'nav-link active' : 'nav-link'}
+                style={{ textDecoration: 'none', color: 'var(--color-dark)' }}
+                onClick={(e) => { e.preventDefault(); smoothScrollTo(l.id) }}
+              >
+                {t(l.labelKey)}
+              </a>
+            )}
           </li>
         ))}
       </ul>

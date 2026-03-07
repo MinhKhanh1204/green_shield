@@ -4,7 +4,8 @@
 // - POST   /api/v1/chat/select-topic     -> text (ack string)
 // - POST   /api/v1/chat/message          -> text (AI reply)
 
-const DEFAULT_BASE = 'https://green-shield-mekong.azurewebsites.net';
+// Dev: rỗng = dùng Vite proxy. Prod: set VITE_API_BASE
+const DEFAULT_BASE = import.meta.env.VITE_API_BASE || '';
 const base = (DEFAULT_BASE).replace(/\/$/, '');
 
 async function http(url, options = {}) {

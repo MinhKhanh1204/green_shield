@@ -1,5 +1,6 @@
 import React from 'react'
-  import Nav from './components/Nav'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import Nav from './components/Nav'
 import LanguageToggle from './components/LanguageToggle'
 import HomeSection from './sections/HomeSection'
 import AboutSection from './sections/AboutSection'
@@ -12,9 +13,23 @@ import logo from './assets/logo.png';
 import logolg from './assets/logo-lg.png';
 import BackToTop from './components/BackToTop'
 import ChatWidget from './components/ChatWidget'
+import LoginPage from './pages/LoginPage'
+import AdminLayout from './layouts/AdminLayout'
+import CustomBagLayout from './layouts/CustomBagLayout'
+import BagTemplateSelectPage from './pages/BagTemplateSelectPage'
+import DesignPage from './pages/DesignPage'
+import PreviewPage from './pages/PreviewPage'
+import CheckoutPage from './pages/CheckoutPage'
+import OrderSuccessPage from './pages/OrderSuccessPage'
+import OrderLookupPage from './pages/OrderLookupPage'
+import TextureManagementPage from './pages/TextureManagementPage'
+import BagTemplateManagementPage from './pages/BagTemplateManagementPage'
+import OrderManagementPage from './pages/OrderManagementPage'
+import DashboardOverview from './pages/DashboardOverview'
+import DashboardSettings from './pages/DashboardSettings'
+import ProtectedRoute from './components/ProtectedRoute'
 
-function App() {
-
+function MainSite() {
   return (
     <>
       <header className="header">
@@ -44,6 +59,40 @@ function App() {
       <ChatWidget />
       <BackToTop />
     </>
+  )
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<MainSite />} />
+        <Route path="/custom-bag" element={<CustomBagLayout><BagTemplateSelectPage /></CustomBagLayout>} />
+        <Route path="/custom-bag/:templateId/design" element={<CustomBagLayout><DesignPage /></CustomBagLayout>} />
+        <Route path="/custom-bag/:templateId/preview" element={<CustomBagLayout><PreviewPage /></CustomBagLayout>} />
+        <Route path="/custom-bag/:templateId/checkout" element={<CustomBagLayout><CheckoutPage /></CustomBagLayout>} />
+        <Route path="/order-success" element={<OrderSuccessPage />} />
+        <Route path="/order-lookup" element={<OrderLookupPage />} />
+        <Route path="/admin" element={<LoginPage />} />
+        <Route
+          path="/admin/dashboard"
+          element={
+            <ProtectedRoute>
+              <AdminLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="/admin/dashboard/overview" replace />} />
+          <Route path="overview" element={<DashboardOverview />} />
+          <Route path="bag-templates" element={<BagTemplateManagementPage />} />
+          <Route path="textures" element={<TextureManagementPage />} />
+          <Route path="orders" element={<OrderManagementPage />} />
+          <Route path="settings" element={<DashboardSettings />} />
+        </Route>
+        <Route path="/admin/textures" element={<Navigate to="/admin/dashboard/textures" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 

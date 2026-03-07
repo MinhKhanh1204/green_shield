@@ -1,0 +1,247 @@
+/* ══════════════════════════════════
+   OrderSuccessPage
+   ══════════════════════════════════ */
+
+.osp-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f0fdf4 0%, #eff6ff 60%, #faf5ff 100%);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Topbar */
+.osp-topbar {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.osp-logo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+}
+.osp-logo-text { height: 22px; width: auto; }
+
+.osp-home-link {
+  font-size: 13px;
+  color: #4f46e5;
+  text-decoration: none;
+  font-weight: 500;
+}
+.osp-home-link:hover { text-decoration: underline; }
+
+/* Body */
+.osp-body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+}
+
+.osp-not-found {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  color: #6b7280;
+}
+
+/* Card */
+.osp-card {
+  background: #fff;
+  border-radius: 24px;
+  padding: 44px 40px 36px;
+  max-width: 560px;
+  width: 100%;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Animated checkmark */
+.osp-check-circle {
+  width: 72px;
+  height: 72px;
+  margin-bottom: 22px;
+}
+
+.osp-check-svg {
+  width: 72px;
+  height: 72px;
+}
+
+.osp-check-ring {
+  stroke: #22c55e;
+  stroke-width: 2;
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  animation: osp-ring 0.6s ease forwards;
+}
+
+.osp-check-tick {
+  stroke: #22c55e;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: osp-tick 0.4s 0.5s ease forwards;
+}
+
+@keyframes osp-ring {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes osp-tick {
+  to { stroke-dashoffset: 0; }
+}
+
+.osp-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: #111827;
+  margin: 0 0 10px;
+}
+
+.osp-subtitle {
+  font-size: 14.5px;
+  color: #6b7280;
+  line-height: 1.6;
+  margin: 0 0 28px;
+}
+
+/* Order ID box */
+.osp-order-box {
+  background: #f8faff;
+  border: 1.5px dashed #a5b4fc;
+  border-radius: 14px;
+  padding: 18px 20px;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.osp-order-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 8px;
+}
+
+.osp-order-id-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.osp-order-id {
+  font-size: 32px;
+  font-weight: 900;
+  color: #4f46e5;
+  letter-spacing: -0.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.osp-copy-btn {
+  border: 1.5px solid #c7d2fe;
+  background: #fff;
+  color: #4f46e5;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.14s, border-color 0.14s;
+}
+.osp-copy-btn:hover { background: #eef2ff; border-color: #a5b4fc; }
+
+.osp-order-hint {
+  font-size: 12.5px;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Steps */
+.osp-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 28px;
+}
+
+.osp-step {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.osp-step-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.osp-step-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 2px;
+}
+
+.osp-step-desc {
+  font-size: 12.5px;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Actions */
+.osp-actions {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.osp-btn-outline {
+  flex: 1;
+  height: 44px;
+  border: 1.5px solid #d1d5db;
+  background: #fff;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.14s, border-color 0.14s;
+}
+.osp-btn-outline:hover { background: #f9fafb; border-color: #9ca3af; }
+
+.osp-btn-primary {
+  flex: 1;
+  height: 44px;
+  border: none;
+  background: #4f46e5;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.14s;
+}
+.osp-btn-primary:hover { background: #4338ca; }

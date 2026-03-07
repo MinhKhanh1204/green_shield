@@ -1,0 +1,35 @@
+.texture-management {
+  padding: 0;
+}
+
+.texture-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 0;
+}
+
+.texture-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--color-dark);
+}
+
+.texture-management .ant-table {
+  background: transparent;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+}
+
+.texture-management .ant-btn-primary {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.texture-management .ant-btn-primary:hover {
+  background: #3d8f5e;
+  border-color: #3d8f5e;
+}

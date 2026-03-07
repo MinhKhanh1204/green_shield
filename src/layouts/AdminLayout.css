@@ -1,0 +1,75 @@
+.admin-layout {
+  min-height: 100vh;
+  background: var(--color-bg);
+}
+
+.admin-sider {
+  background: var(--color-dark) !important;
+}
+
+.admin-sider .ant-menu {
+  background: transparent !important;
+  border: none;
+}
+
+.admin-sider .ant-menu-item {
+  color: rgba(255, 255, 255, 0.75);
+  margin: 4px 8px;
+  border-radius: var(--border-radius-sm);
+}
+
+.admin-sider .ant-menu-item:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.admin-sider .ant-menu-item-selected {
+  color: #fff;
+  background: var(--color-primary) !important;
+}
+
+.admin-logo {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0 16px;
+}
+
+.admin-header {
+  background: #fff !important;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--elev-sm);
+}
+
+.admin-trigger {
+  font-size: 18px;
+  color: var(--color-dark);
+}
+
+.admin-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-avatar {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.admin-content {
+  margin: 24px;
+  padding: 24px;
+  background: #fff;
+  border-radius: var(--border-radius);
+  box-shadow: var(--elev-sm);
+  min-height: calc(100vh - 64px - 48px - 48px);
+}

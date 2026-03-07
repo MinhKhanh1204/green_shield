@@ -1,5 +1,6 @@
 import React, { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { App as AntApp } from 'antd'
 import App from './App'
 import 'antd/dist/reset.css';
 import './index.css'
@@ -17,6 +18,8 @@ AOS.init({
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    <AntApp>
+      <App />
+    </AntApp>
   </StrictMode>,
 )
