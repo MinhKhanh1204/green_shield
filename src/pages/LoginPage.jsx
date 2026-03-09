@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Form, Input, Button, message, Spin } from 'antd';
+import { Form, Input, Button, Spin, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { login, checkAuth } from '../services/texture';
 import './LoginPage.css';

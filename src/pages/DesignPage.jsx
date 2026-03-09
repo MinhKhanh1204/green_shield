@@ -21,6 +21,7 @@ import { fabric } from 'fabric';
 import { getBagTemplate } from '../services/bagTemplate';
 import { getTextures } from '../services/texture';
 import { generateAiImage } from '../services/ai';
+import QRCode from 'qrcode';
 import logo from '../assets/logo.png';
 import logolg from '../assets/logo-lg.png';
 import './DesignPage.css';
@@ -198,6 +199,10 @@ export default function DesignPage() {
   const [greenAiGenerating, setGreenAiGenerating] = useState(false);
   const [greenAiImageDataUrl, setGreenAiImageDataUrl] = useState(null);
   const [greenAiError, setGreenAiError] = useState(null);
+  const [greenQrText, setGreenQrText] = useState('');
+  const [greenQrColor, setGreenQrColor] = useState('#16a34a');
+  const [greenQrStyle, setGreenQrStyle] = useState('heartbeat');
+  const [greenQrGenerating, setGreenQrGenerating] = useState(false);
 
   useEffect(() => {
     const snapshot = state?.designSnapshot;
@@ -562,15 +567,19 @@ export default function DesignPage() {
 
   const addImage = (file) => {
     if (!fabricRef.current || !file) return;
-    const url = URL.createObjectURL(file);
-    fabric.Image.fromURL(url, (img) => {
-      img.scaleToWidth(150);
-      img.set({ left: 150, top: 150 });
-      fabricRef.current.add(img);
-      fabricRef.current.setActiveObject(img);
-      fabricRef.current.renderAll();
-      URL.revokeObjectURL(url);
-    });
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target?.result;
+      if (!dataUrl) return;
+      fabric.Image.fromURL(dataUrl, (img) => {
+        img.scaleToWidth(150);
+        img.set({ left: 150, top: 150 });
+        fabricRef.current.add(img);
+        fabricRef.current.setActiveObject(img);
+        fabricRef.current.renderAll();
+      });
+    };
+    reader.readAsDataURL(file);
   };
 
   const addImageFromDataUrl = useCallback((dataUrl) => {
@@ -583,6 +592,88 @@ export default function DesignPage() {
       fabricRef.current.requestRenderAll();
     });
   }, []);
+
+  const generateGreenQr = useCallback(async () => {
+    const text = (greenQrText || '').trim();
+    if (!text) {
+      message.warning('Vui lòng nhập nội dung để tạo QR.');
+      return;
+    }
+    setGreenQrGenerating(true);
+    try {
+      const base64url = btoa(unescape(encodeURIComponent(text)))
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');
+      const url = `${window.location.origin}/audio/${base64url}`;
+      const size = 512;
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+
+      await QRCode.toCanvas(canvas, url, {
+        width: size,
+        margin: 2,
+        color: {
+          dark: greenQrColor || '#000000',
+          light: '#ffffff',
+        },
+        errorCorrectionLevel: 'H',
+      });
+
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        const cx = size / 2;
+        const cy = size / 2;
+        const boxSize = size * 0.32;
+        const half = boxSize / 2;
+
+        ctx.fillStyle = '#ffffff';
+        const radius = boxSize * 0.2;
+        ctx.beginPath();
+        ctx.moveTo(cx - half + radius, cy - half);
+        ctx.lineTo(cx + half - radius, cy - half);
+        ctx.quadraticCurveTo(cx + half, cy - half, cx + half, cy - half + radius);
+        ctx.lineTo(cx + half, cy + half - radius);
+        ctx.quadraticCurveTo(cx + half, cy + half, cx + half - radius, cy + half);
+        ctx.lineTo(cx - half + radius, cy + half);
+        ctx.quadraticCurveTo(cx - half, cy + half, cx - half, cy + half - radius);
+        ctx.lineTo(cx - half, cy - half + radius);
+        ctx.quadraticCurveTo(cx - half, cy - half, cx - half + radius, cy - half);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.strokeStyle = greenQrColor || '#16a34a';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        const waveLeft = cx - half * 0.8;
+        const waveRight = cx + half * 0.8;
+        const midY = cy;
+        ctx.moveTo(waveLeft, midY);
+        ctx.lineTo(cx - half * 0.3, midY);
+        ctx.lineTo(cx - half * 0.15, midY - half * 0.4);
+        ctx.lineTo(cx, midY + half * 0.3);
+        ctx.lineTo(cx + half * 0.2, midY - half * 0.5);
+        ctx.lineTo(cx + half * 0.4, midY);
+        ctx.lineTo(waveRight, midY);
+        ctx.stroke();
+
+        ctx.strokeStyle = 'rgba(22,163,74,0.35)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(cx, cy, boxSize * 0.7, -Math.PI / 3, Math.PI * 4 / 3);
+        ctx.stroke();
+      }
+
+      const dataUrl = canvas.toDataURL('image/png');
+      addImageFromDataUrl(dataUrl);
+      message.success('Đã thêm QR Green vào thiết kế');
+    } catch (e) {
+      message.error('Không thể tạo QR. Vui lòng thử lại.');
+    } finally {
+      setGreenQrGenerating(false);
+    }
+  }, [greenQrText, greenQrColor, addImageFromDataUrl]);
 
   const handleGreenAiGenerate = useCallback(async () => {
     const prompt = (greenAiPrompt || '').trim();
@@ -671,6 +762,7 @@ export default function DesignPage() {
               { key: 'image',      icon: <PictureOutlined />,   label: 'Add Image'  },
               { key: 'icon',       icon: <PiStar />,            label: 'Icon'       },
               { key: 'greenai',    icon: <PiSparkle />,         label: 'Green AI'   },
+              { key: 'greenqr',    icon: <PiLeaf />,            label: 'Green QR'   },
               { key: 'background', icon: <BgColorsOutlined />,  label: 'Background' },
               { key: 'elements',   icon: <AppstoreOutlined />,  label: 'Elements'   },
             ].map(({ key, icon, label }) => (
@@ -694,6 +786,7 @@ export default function DesignPage() {
                   {activeTab === 'image'      && 'Add Image'}
                   {activeTab === 'icon'       && 'Icons'}
                   {activeTab === 'greenai'    && 'Green AI'}
+                  {activeTab === 'greenqr'    && 'Green QR – Mã âm thanh xanh'}
                   {activeTab === 'background' && 'Background'}
                   {activeTab === 'elements'   && 'Elements'}
                 </span>
@@ -838,6 +931,52 @@ export default function DesignPage() {
                       </Button>
                     </div>
                   )}
+                </div>
+              )}
+
+              {activeTab === 'greenqr' && (
+                <div className="design-tab-panel-body">
+                  <p className="panel-hint">
+                    Nhập một câu, tên bài hát hoặc thông điệp. Hệ thống sẽ tạo mã QR để gắn lên túi.
+                    Khi quét, trình duyệt sẽ mở đường dẫn dạng <code>/audio/&lt;text&gt;</code> để phát âm thanh sau này.
+                  </p>
+                  <Input.TextArea
+                    rows={3}
+                    placeholder="VD: Lời chúc sinh nhật, câu quote yêu thích..."
+                    value={greenQrText}
+                    onChange={(e) => setGreenQrText(e.target.value)}
+                    className="green-qr-input"
+                  />
+
+                  <div className="green-qr-color-row">
+                    <span>Màu QR</span>
+                    <div className="green-qr-color-controls">
+                      <input
+                        type="color"
+                        value={greenQrColor}
+                        onChange={(e) => setGreenQrColor(e.target.value)}
+                      />
+                      <Input
+                        value={greenQrColor}
+                        onChange={(e) => setGreenQrColor(e.target.value)}
+                        style={{ maxWidth: 120 }}
+                      />
+                    </div>
+                  </div>
+
+                  <p className="panel-hint">
+                    QR được thiết kế với nhịp sóng (heartbeat / waveform) ở giữa để gợi cảm giác âm thanh.
+                  </p>
+
+                  <Button
+                    type="primary"
+                    block
+                    loading={greenQrGenerating}
+                    onClick={generateGreenQr}
+                    className="panel-main-btn"
+                  >
+                    {greenQrGenerating ? 'Đang tạo QR...' : 'Tạo QR Green Sound'}
+                  </Button>
                 </div>
               )}
 

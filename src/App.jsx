@@ -22,6 +22,7 @@ import PreviewPage from './pages/PreviewPage'
 import CheckoutPage from './pages/CheckoutPage'
 import OrderSuccessPage from './pages/OrderSuccessPage'
 import OrderLookupPage from './pages/OrderLookupPage'
+import AudioPage from './pages/AudioPage'
 import TextureManagementPage from './pages/TextureManagementPage'
 import BagTemplateManagementPage from './pages/BagTemplateManagementPage'
 import OrderManagementPage from './pages/OrderManagementPage'
@@ -73,6 +74,7 @@ function App() {
         <Route path="/custom-bag/:templateId/checkout" element={<CustomBagLayout><CheckoutPage /></CustomBagLayout>} />
         <Route path="/order-success" element={<OrderSuccessPage />} />
         <Route path="/order-lookup" element={<OrderLookupPage />} />
+        <Route path="/audio/:code" element={<AudioPage />} />
         <Route path="/admin" element={<LoginPage />} />
         <Route
           path="/admin/dashboard"
