@@ -20,13 +20,13 @@ import {
 import { fabric } from 'fabric';
 import { getBagTemplate } from '../services/bagTemplate';
 import { getTextures } from '../services/texture';
-import { generateAiImage } from '../services/ai';
+import { generateBagDesign } from '../services/ai';
 import QRCode from 'qrcode';
-import logo from '../assets/logo.png';
-import logolg from '../assets/logo-lg.png';
 import './DesignPage.css';
 
 const CANVAS_SIZE = 680;
+const API_BASE = (import.meta.env.VITE_API_BASE || '').replace(/\/$/, '');
+const MAX_AUDIO_BYTES = 5 * 1024 * 1024;
 
 const CURVE_PRESETS = {
   arcUp: 'M 0 80 Q 100 0 200 80',
@@ -181,9 +181,9 @@ export default function DesignPage() {
   const { templateId } = useParams();
   const { state } = useLocation();
   const navigate = useNavigate();
-  const canvasRef = useRef(null);
   const fabricRef = useRef(null);
   const clipBoundsRef = useRef(null); // { clipX, clipY, clipW, clipH }
+  const clipSideRef = useRef('front'); // side tương ứng với clipBoundsRef
   const bgRectRef = useRef(null);     // fabric.Rect for edit-area background fill
   const [template, setTemplate] = useState(null);
   const [textures, setTextures] = useState([]);
@@ -199,9 +199,12 @@ export default function DesignPage() {
   const [greenAiGenerating, setGreenAiGenerating] = useState(false);
   const [greenAiImageDataUrl, setGreenAiImageDataUrl] = useState(null);
   const [greenAiError, setGreenAiError] = useState(null);
+  const [pendingFrontAiImageDataUrl, setPendingFrontAiImageDataUrl] = useState(null);
+  const [pendingBackAiImageDataUrl, setPendingBackAiImageDataUrl] = useState(null);
+  const [greenQrMode, setGreenQrMode] = useState('tts'); // 'tts' | 'audio'
   const [greenQrText, setGreenQrText] = useState('');
+  const [greenQrAudioFile, setGreenQrAudioFile] = useState(null);
   const [greenQrColor, setGreenQrColor] = useState('#16a34a');
-  const [greenQrStyle, setGreenQrStyle] = useState('heartbeat');
   const [greenQrGenerating, setGreenQrGenerating] = useState(false);
 
   useEffect(() => {
@@ -211,7 +214,9 @@ export default function DesignPage() {
         const parsed = typeof snapshot === 'string' ? JSON.parse(snapshot) : snapshot;
         designRef.current.front = parsed.front ?? null;
         designRef.current.back = parsed.back ?? null;
-      } catch (_) {}
+      } catch {
+        // ignore invalid snapshot
+      }
     }
   }, [state?.designSnapshot]);
 
@@ -292,8 +297,9 @@ export default function DesignPage() {
         evented: false,
       });
 
-      // Store clip bounds for external use (applyBgColor)
+      // Store clip bounds for external use (applyBgColor, AI patch)
       clipBoundsRef.current = { clipX, clipY, clipW, clipH };
+      clipSideRef.current = side;
       bgRectRef.current = null;
 
       let guideRect;
@@ -555,7 +561,9 @@ export default function DesignPage() {
           try {
             const path = new fabric.Path(svg, { fill: 'transparent', stroke: 'transparent', visible: false, selectable: false, evented: false });
             obj.set('path', path);
-          } catch (_) {}
+          } catch {
+            // ignore invalid path preset
+          }
         }
       }
     } else {
@@ -593,19 +601,79 @@ export default function DesignPage() {
     });
   }, []);
 
-  const generateGreenQr = useCallback(async () => {
-    const text = (greenQrText || '').trim();
-    if (!text) {
-      message.warning('Vui lòng nhập nội dung để tạo QR.');
-      return;
+  const addImageToClipAreaFromDataUrl = useCallback((dataUrl) => {
+    if (!fabricRef.current || !dataUrl || !clipBoundsRef.current) return;
+    const { clipX, clipY, clipW, clipH } = clipBoundsRef.current;
+    fabric.Image.fromURL(dataUrl, (img) => {
+      const imgW = img?.width || 1;
+      const imgH = img?.height || 1;
+      const scale = Math.min(clipW / imgW, clipH / imgH);
+      const drawW = imgW * scale;
+      const drawH = imgH * scale;
+      img.set({
+        left: clipX + (clipW - drawW) / 2,
+        top: clipY + (clipH - drawH) / 2,
+        scaleX: scale,
+        scaleY: scale,
+      });
+      fabricRef.current.add(img);
+      fabricRef.current.setActiveObject(img);
+      fabricRef.current.requestRenderAll();
+    });
+  }, []);
+
+  const toBase64UrlUtf8 = (text) =>
+    btoa(unescape(encodeURIComponent(text)))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+
+  const uploadGreenAudio = async (file) => {
+    const fd = new FormData();
+    fd.append('file', file);
+    const res = await fetch(`${API_BASE}/api/v1/audio/upload`, { method: 'POST', body: fd });
+    let data = null;
+    try { data = await res.json(); } catch {
+      // ignore non-json error body
     }
+    if (!res.ok) {
+      const msg = data?.message || 'Không thể upload audio. Vui lòng thử lại.';
+      throw new Error(msg);
+    }
+    if (!data?.id) throw new Error('Upload thành công nhưng thiếu id.');
+    return data.id;
+  };
+
+  const generateGreenQr = useCallback(async () => {
     setGreenQrGenerating(true);
     try {
-      const base64url = btoa(unescape(encodeURIComponent(text)))
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/=+$/, '');
-      const url = `${window.location.origin}/audio/${base64url}`;
+      let url = '';
+      if (greenQrMode === 'audio') {
+        const f = greenQrAudioFile;
+        if (!f) {
+          message.warning('Vui lòng chọn file audio (tối đa 5MB).');
+          return;
+        }
+        if (f.size > MAX_AUDIO_BYTES) {
+          message.error('File audio vượt quá 5MB.');
+          return;
+        }
+        if (!String(f.type || '').toLowerCase().startsWith('audio/')) {
+          message.error('Chỉ hỗ trợ file audio (audio/*).');
+          return;
+        }
+        const id = await uploadGreenAudio(f);
+        url = `${window.location.origin}/audio-file/${id}`;
+      } else {
+        const text = (greenQrText || '').trim();
+        if (!text) {
+          message.warning('Vui lòng nhập nội dung để tạo QR.');
+          return;
+        }
+        const base64url = toBase64UrlUtf8(text);
+        url = `${window.location.origin}/tts/${base64url}`;
+      }
+
       const size = 512;
       const canvas = document.createElement('canvas');
       canvas.width = size;
@@ -669,11 +737,11 @@ export default function DesignPage() {
       addImageFromDataUrl(dataUrl);
       message.success('Đã thêm QR Green vào thiết kế');
     } catch (e) {
-      message.error('Không thể tạo QR. Vui lòng thử lại.');
+      message.error(e?.message || 'Không thể tạo QR. Vui lòng thử lại.');
     } finally {
       setGreenQrGenerating(false);
     }
-  }, [greenQrText, greenQrColor, addImageFromDataUrl]);
+  }, [greenQrMode, greenQrAudioFile, greenQrText, greenQrColor, addImageFromDataUrl]);
 
   const handleGreenAiGenerate = useCallback(async () => {
     const prompt = (greenAiPrompt || '').trim();
@@ -683,16 +751,71 @@ export default function DesignPage() {
     }
     setGreenAiError(null);
     setGreenAiImageDataUrl(null);
+    setPendingFrontAiImageDataUrl(null);
+    setPendingBackAiImageDataUrl(null);
     setGreenAiGenerating(true);
     try {
-      const { imageBase64 } = await generateAiImage(prompt);
-      setGreenAiImageDataUrl(`data:image/png;base64,${imageBase64}`);
+      const tplId = Number(templateId);
+      if (!tplId || Number.isNaN(tplId)) {
+        throw new Error('Thiếu thông tin mẫu túi để tạo thiết kế AI.');
+      }
+      const data = await generateBagDesign({
+        prompt,
+        templateId: tplId,
+        generateFront: true,
+        generateBack: true,
+      });
+      const frontDataUrl = data?.frontImageBase64
+        ? `data:image/png;base64,${data.frontImageBase64}`
+        : null;
+      const backDataUrl = data?.backImageBase64
+        ? `data:image/png;base64,${data.backImageBase64}`
+        : null;
+
+      // Lưu để hiển thị preview nhỏ (nếu muốn tái dùng logic cũ)
+      setGreenAiImageDataUrl(frontDataUrl || backDataUrl || null);
+
+      // Áp dụng cho mặt hiện tại và lưu patch cho mặt còn lại
+      if (side === 'front') {
+        if (frontDataUrl) {
+          addImageToClipAreaFromDataUrl(frontDataUrl);
+        } else if (backDataUrl) {
+          addImageToClipAreaFromDataUrl(backDataUrl);
+        }
+        if (backDataUrl) {
+          setPendingBackAiImageDataUrl(backDataUrl);
+        }
+      } else {
+        if (backDataUrl) {
+          addImageToClipAreaFromDataUrl(backDataUrl);
+        } else if (frontDataUrl) {
+          addImageToClipAreaFromDataUrl(frontDataUrl);
+        }
+        if (frontDataUrl) {
+          setPendingFrontAiImageDataUrl(frontDataUrl);
+        }
+      }
     } catch (e) {
-      setGreenAiError(e.message || 'Không thể tạo ảnh');
+      setGreenAiError(e.message || 'Không thể tạo thiết kế túi bằng AI');
     } finally {
       setGreenAiGenerating(false);
     }
-  }, [greenAiPrompt]);
+  }, [greenAiPrompt, templateId, side, addImageToClipAreaFromDataUrl]);
+
+  // Khi người dùng chuyển mặt và canvas cho mặt đó đã sẵn sàng + có patch pending, tự chèn vào vùng custom
+  useEffect(() => {
+    if (!fabricRef.current || !clipBoundsRef.current) return;
+    if (clipSideRef.current !== side) return; // đảm bảo clipBounds thuộc đúng mặt hiện tại
+
+    if (side === 'front' && pendingFrontAiImageDataUrl) {
+      addImageToClipAreaFromDataUrl(pendingFrontAiImageDataUrl);
+      setPendingFrontAiImageDataUrl(null);
+    }
+    if (side === 'back' && pendingBackAiImageDataUrl) {
+      addImageToClipAreaFromDataUrl(pendingBackAiImageDataUrl);
+      setPendingBackAiImageDataUrl(null);
+    }
+  }, [side, pendingFrontAiImageDataUrl, pendingBackAiImageDataUrl, addImageToClipAreaFromDataUrl]);
 
   const buildSnapshot = () => {
     if (fabricRef.current) {
@@ -926,9 +1049,10 @@ export default function DesignPage() {
                   {greenAiImageDataUrl && (
                     <div className="green-ai-result">
                       <img src={greenAiImageDataUrl} alt="AI generated" className="green-ai-preview-img" />
-                      <Button block onClick={() => addImageFromDataUrl(greenAiImageDataUrl)} className="panel-main-btn">
-                        Thêm vào thiết kế
-                      </Button>
+                      <p className="panel-hint">
+                        Thiết kế AI đã được tự động gắn vào vùng in trên túi. Bạn vẫn có thể thêm lại ảnh này
+                        như một layer riêng nếu muốn.
+                      </p>
                     </div>
                   )}
                 </div>
@@ -937,16 +1061,51 @@ export default function DesignPage() {
               {activeTab === 'greenqr' && (
                 <div className="design-tab-panel-body">
                   <p className="panel-hint">
-                    Nhập một câu, tên bài hát hoặc thông điệp. Hệ thống sẽ tạo mã QR để gắn lên túi.
-                    Khi quét, trình duyệt sẽ mở đường dẫn dạng <code>/audio/&lt;text&gt;</code> để phát âm thanh sau này.
+                    Tạo mã QR âm thanh theo 2 cách: (1) Text → hệ thống đọc (TTS), (2) Upload file audio (≤ 5MB).
                   </p>
-                  <Input.TextArea
-                    rows={3}
-                    placeholder="VD: Lời chúc sinh nhật, câu quote yêu thích..."
-                    value={greenQrText}
-                    onChange={(e) => setGreenQrText(e.target.value)}
-                    className="green-qr-input"
-                  />
+
+                  <div className="green-qr-color-row">
+                    <span>Loại nội dung</span>
+                    <Select
+                      value={greenQrMode}
+                      onChange={(v) => setGreenQrMode(v)}
+                      style={{ width: '100%' }}
+                      options={[
+                        { value: 'tts', label: 'Text (TTS)' },
+                        { value: 'audio', label: 'Upload audio (≤ 5MB)' },
+                      ]}
+                    />
+                  </div>
+
+                  {greenQrMode === 'tts' ? (
+                    <Input.TextArea
+                      rows={3}
+                      placeholder="VD: Lời chúc sinh nhật, câu quote yêu thích..."
+                      value={greenQrText}
+                      onChange={(e) => setGreenQrText(e.target.value)}
+                      className="green-qr-input"
+                    />
+                  ) : (
+                    <div style={{ marginTop: 10 }}>
+                      <Upload
+                        showUploadList={false}
+                        accept="audio/*"
+                        beforeUpload={(f) => {
+                          setGreenQrAudioFile(f);
+                          return false;
+                        }}
+                      >
+                        <Button block className="panel-main-btn">
+                          Chọn file audio
+                        </Button>
+                      </Upload>
+                      {greenQrAudioFile && (
+                        <p className="panel-hint" style={{ marginTop: 8 }}>
+                          Đã chọn: <code>{greenQrAudioFile.name}</code> ({Math.round(greenQrAudioFile.size / 1024)} KB)
+                        </p>
+                      )}
+                    </div>
+                  )}
 
                   <div className="green-qr-color-row">
                     <span>Màu QR</span>

@@ -23,6 +23,7 @@ import CheckoutPage from './pages/CheckoutPage'
 import OrderSuccessPage from './pages/OrderSuccessPage'
 import OrderLookupPage from './pages/OrderLookupPage'
 import AudioPage from './pages/AudioPage'
+import AudioFilePage from './pages/AudioFilePage'
 import TextureManagementPage from './pages/TextureManagementPage'
 import BagTemplateManagementPage from './pages/BagTemplateManagementPage'
 import OrderManagementPage from './pages/OrderManagementPage'
@@ -75,6 +76,8 @@ function App() {
         <Route path="/order-success" element={<OrderSuccessPage />} />
         <Route path="/order-lookup" element={<OrderLookupPage />} />
         <Route path="/audio/:code" element={<AudioPage />} />
+        <Route path="/tts/:code" element={<AudioPage />} />
+        <Route path="/audio-file/:id" element={<AudioFilePage />} />
         <Route path="/admin" element={<LoginPage />} />
         <Route
           path="/admin/dashboard"
