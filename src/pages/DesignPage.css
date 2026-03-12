@@ -409,6 +409,69 @@
   display: block;
 }
 
+/* Green QR - audio record */
+.green-qr-record {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.green-qr-record-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.green-qr-record-timer {
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  color: #6b7280;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+}
+
+.green-qr-record-timer.active {
+  color: #dc2626;
+  border-color: rgba(220,38,38,0.35);
+  background: rgba(220,38,38,0.06);
+}
+
+.green-qr-record-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.green-qr-record-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.green-qr-record-clear {
+  border: none;
+  background: transparent;
+  color: #ef4444;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 8px;
+}
+
+.green-qr-record-clear:hover {
+  background: rgba(239,68,68,0.08);
+}
+
 /* Icon grid */
 .icon-grid {
   display: grid;

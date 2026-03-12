@@ -63,8 +63,9 @@ export default function AudioFilePage() {
   };
 
   const fmt = (s) => {
-    if (!s || isNaN(s)) return '0:00';
-    return `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+    const n = Number(s);
+    if (!Number.isFinite(n) || n <= 0) return '0:00';
+    return `${Math.floor(n / 60)}:${String(Math.floor(n % 60)).padStart(2, '0')}`;
   };
 
   return (
