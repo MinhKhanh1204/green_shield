@@ -1,6 +1,5 @@
 // src/sections/CommunitySection.jsx
 import React from 'react'
-import { Typography } from 'antd'
 import { useTranslation } from 'react-i18next'
 import Marquee from '../components/Marquee'
 
@@ -17,12 +16,13 @@ export default function CommunitySection() {
     <section id="community" className="section section--community">
       <div className="community-wrap">
         <div className="community-grid">
-          {/* Left: stacked heading like reference */}
+          {/* Left: stacked heading */}
           <div className="community-left">
             <div className="stacked-title">
               <span>{t('community.title', { defaultValue: 'Cộng đồng' }).toUpperCase()}</span>
             </div>
           </div>
+          
           {/* Right: split into scroller (top) + static black tile (bottom) */}
           <div className="community-right">
             <div className="community-scroller marquee">

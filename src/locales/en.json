@@ -3,9 +3,10 @@
     "home": "Home",
     "about": "About",
     "products": "Products",
-    "custom": "Custom Bag",
+    "custom": "3D Design Lab",
     "advantages": "Advantages",
     "mission": "Context",
+    "material": "Material Zones",
     "community": "Community",
     "contact": "Contact"
   },
@@ -94,7 +95,11 @@
     "qrTitle": "Scan QR to view page",
     "join": "Join the community",
     "joinBtn": "Join",
-    "testimonialsTitle": "Community feedback"
+    "testimonialsTitle": "Community feedback",
+    "viewMap": "View detailed map",
+    "zones": "Material Zones",
+    "farmers": "Farmer Households",
+    "collectionPoints": "Collection Points"
   },
   "impact": {
     "title": "Green packaging innovation from Mekong hyacinth",
@@ -153,5 +158,43 @@
       "note": "By subscribing, you agree to the ",
       "privacy": "Privacy Policy"
     }
+  },
+  "map": {
+    "title": "Water Hyacinth Material Zone Map",
+    "subtitle": "Monitor cultivation areas, farmer households and collection points in real-time",
+    "zones": "Zones",
+    "farmers": "Farmers",
+    "farmerCapacity": "Farmer Capacity",
+    "collectionPoints": "Collection Points",
+    "totalStock": "Total Stock",
+    "stockRate": "Stock Rate",
+    "active": "Active",
+    "inactive": "Inactive",
+    "planning": "Planning",
+    "capacity": "Capacity",
+    "currentStock": "Current Stock",
+    "phone": "Phone",
+    "joinedDate": "Join Date",
+    "manager": "Manager",
+    "zone": "Zone",
+    "layers": "Layers",
+    "filter": "Filter",
+    "selectZone": "Select material zone",
+    "viewAll": "All",
+    "viewZones": "Zones",
+    "viewFarmers": "Farmers",
+    "viewPoints": "Points",
+    "activeZone": "Active Zone",
+    "planningZone": "Planning Zone",
+    "activeFarmer": "Active Farmer",
+    "inactiveFarmer": "Inactive Farmer",
+    "activePoint": "Active Collection Point",
+    "close": "Close",
+    "largeFarmer": "Large capacity",
+    "mediumFarmer": "Medium capacity",
+    "smallFarmer": "Small capacity",
+    "lowStock": "Low stock",
+    "mediumStock": "Medium stock",
+    "highStock": "High stock"
   }
 }

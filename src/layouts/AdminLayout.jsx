@@ -10,6 +10,7 @@ import {
   MenuUnfoldOutlined,
   ShoppingOutlined,
   GiftOutlined,
+  EnvironmentOutlined,
 } from '@ant-design/icons';
 import { logout } from '../services/texture';
 import './AdminLayout.css';
@@ -21,6 +22,7 @@ const menuItems = [
   { key: '/admin/dashboard/bag-templates', icon: <GiftOutlined />, label: 'Mẫu túi' },
   { key: '/admin/dashboard/textures', icon: <PictureOutlined />, label: 'Textures' },
   { key: '/admin/dashboard/orders', icon: <ShoppingOutlined />, label: 'Đơn hàng' },
+  { key: '/admin/dashboard/map', icon: <EnvironmentOutlined />, label: 'Vùng nguyên liệu' },
   // { key: '/admin/dashboard/settings', icon: <SettingOutlined />, label: 'Cài đặt' },
 ];
 

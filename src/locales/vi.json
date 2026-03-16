@@ -3,9 +3,10 @@
     "home": "TRANG CHỦ",
     "about": "GIỚI THIỆU",
     "products": "SẢN PHẨM",
-    "custom": "CUSTOM TÚI",
+    "custom": "LAB 3D",
     "advantages": "LỢI THẾ",
     "mission": "THỰC TRẠNG",
+    "material": "VÙNG NGUYÊN LIỆU",
     "community": "CỘNG ĐỒNG",
     "contact": "LIÊN HỆ"
   },
@@ -121,7 +122,11 @@
     "qrTitle": "Quét QR để xem trang",
     "join": "Tham gia cộng đồng",
     "joinBtn": "Tham gia",
-    "testimonialsTitle": "Phản hồi từ cộng đồng"
+    "testimonialsTitle": "Phản hồi từ cộng đồng",
+    "viewMap": "Xem bản đồ chi tiết",
+    "zones": "Vùng nguyên liệu",
+    "farmers": "Hộ dân",
+    "collectionPoints": "Điểm thu gom"
   },
   "footer": {
     "tagline": "Lá chắn xanh cho trái cây miền sông nước",
@@ -153,5 +158,43 @@
       "note": "Bằng việc đăng ký, bạn đồng ý với ",
       "privacy": "Chính sách bảo mật"
     }
+  },
+  "map": {
+    "title": "Bản đồ Vùng Nguyên Liệu Lục Bình",
+    "subtitle": "Theo dõi vùng trồng, hộ dân và điểm thu gom theo thời gian thực",
+    "zones": "Vùng NL",
+    "farmers": "Hộ dân",
+    "farmerCapacity": "Công suất hộ",
+    "collectionPoints": "Điểm thu gom",
+    "totalStock": "Tồn kho",
+    "stockRate": "Tỷ lệ tồn kho",
+    "active": "Hoạt động",
+    "inactive": "Ngừng",
+    "planning": "Quy hoạch",
+    "capacity": "Công suất",
+    "currentStock": "Tồn kho",
+    "phone": "Điện thoại",
+    "joinedDate": "Ngày tham gia",
+    "manager": "Quản lý",
+    "zone": "Vùng",
+    "layers": "Lớp hiển thị",
+    "filter": "Lọc",
+    "selectZone": "Chọn vùng nguyên liệu",
+    "viewAll": "Tất cả",
+    "viewZones": "Vùng NL",
+    "viewFarmers": "Hộ dân",
+    "viewPoints": "Điểm thu",
+    "activeZone": "Vùng hoạt động",
+    "planningZone": "Vùng quy hoạch",
+    "activeFarmer": "Hộ hoạt động",
+    "inactiveFarmer": "Hộ ngừng",
+    "activePoint": "Điểm thu hoạt động",
+    "close": "Đóng",
+    "largeFarmer": "Công suất lớn",
+    "mediumFarmer": "Công suất trung bình",
+    "smallFarmer": "Công suất nhỏ",
+    "lowStock": "Tồn kho thấp",
+    "mediumStock": "Tồn kho trung bình",
+    "highStock": "Tồn kho cao"
   }
 }

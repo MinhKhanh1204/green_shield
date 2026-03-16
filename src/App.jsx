@@ -29,7 +29,11 @@ import BagTemplateManagementPage from './pages/BagTemplateManagementPage'
 import OrderManagementPage from './pages/OrderManagementPage'
 import DashboardOverview from './pages/DashboardOverview'
 import DashboardSettings from './pages/DashboardSettings'
+import MapPage from './pages/MapPage'
+import AdminMapPage from './pages/AdminMapPage'
+import MainLayout from './layouts/MainLayout'
 import ProtectedRoute from './components/ProtectedRoute'
+import { MaterialDataProvider } from './context/MaterialDataContext'
 
 function MainSite() {
   return (
@@ -67,6 +71,7 @@ function MainSite() {
 function App() {
   return (
     <BrowserRouter>
+    <MaterialDataProvider>
       <Routes>
         <Route path="/" element={<MainSite />} />
         <Route path="/custom-bag" element={<CustomBagLayout><BagTemplateSelectPage /></CustomBagLayout>} />
@@ -79,6 +84,7 @@ function App() {
         <Route path="/tts/:code" element={<AudioPage />} />
         <Route path="/audio-file/:id" element={<AudioFilePage />} />
         <Route path="/admin" element={<LoginPage />} />
+                  <Route path="/map" element={<MainLayout><MapPage /></MainLayout>} />
         <Route
           path="/admin/dashboard"
           element={
@@ -92,11 +98,13 @@ function App() {
           <Route path="bag-templates" element={<BagTemplateManagementPage />} />
           <Route path="textures" element={<TextureManagementPage />} />
           <Route path="orders" element={<OrderManagementPage />} />
+                      <Route path="map" element={<AdminMapPage />} />
           <Route path="settings" element={<DashboardSettings />} />
         </Route>
         <Route path="/admin/textures" element={<Navigate to="/admin/dashboard/textures" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      </MaterialDataProvider>
     </BrowserRouter>
   )
 }
