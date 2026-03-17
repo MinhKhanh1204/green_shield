@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useCallback, createElement } from '
 import { renderToStaticMarkup } from 'react-dom/server';
 import { useParams, useLocation, useNavigate, Link } from 'react-router-dom';
 import { Button, Upload, message, Slider, Select, Input } from 'antd';
-import { FontSizeOutlined, PictureOutlined, AppstoreOutlined, BgColorsOutlined, UndoOutlined, RedoOutlined, EyeOutlined } from '@ant-design/icons';
+import { FontSizeOutlined, PictureOutlined, AppstoreOutlined, BgColorsOutlined, UndoOutlined, RedoOutlined, EyeOutlined, DeleteOutlined } from '@ant-design/icons';
 import {
   PiHeart, PiStar, PiFlower, PiSun, PiLeaf, PiCheck, PiPlus, PiGift,
   PiCake, PiCamera, PiCoffee, PiPizza, PiTree, PiFish, PiBird, PiCat,
@@ -21,6 +21,7 @@ import { fabric } from 'fabric';
 import { getBagTemplate } from '../services/bagTemplate';
 import { getTextures } from '../services/texture';
 import { generateBagDesign } from '../services/ai';
+import { loadAiGenerated, addAiGenerated, removeAiGenerated } from '../utils/aiGeneratedStorage';
 import QRCode from 'qrcode';
 import './DesignPage.css';
 
@@ -199,6 +200,8 @@ export default function DesignPage() {
   const [greenAiGenerating, setGreenAiGenerating] = useState(false);
   const [greenAiImageDataUrl, setGreenAiImageDataUrl] = useState(null);
   const [greenAiError, setGreenAiError] = useState(null);
+  const [savedAiItems, setSavedAiItems] = useState([]);
+  const [canvasSideReady, setCanvasSideReady] = useState(null);
   const [pendingFrontAiImageDataUrl, setPendingFrontAiImageDataUrl] = useState(null);
   const [pendingBackAiImageDataUrl, setPendingBackAiImageDataUrl] = useState(null);
   const [greenQrMode, setGreenQrMode] = useState('tts'); // 'tts' | 'audio'
@@ -394,6 +397,10 @@ export default function DesignPage() {
   }, [templateId]);
 
   useEffect(() => {
+    loadAiGenerated().then(setSavedAiItems);
+  }, []);
+
+  useEffect(() => {
     if (!template || loading) return;
     let disposed = false;
     const c = new fabric.Canvas('design-canvas', { width: CANVAS_SIZE, height: CANVAS_SIZE });
@@ -463,6 +470,7 @@ export default function DesignPage() {
       // Store clip bounds for external use (applyBgColor, AI patch)
       clipBoundsRef.current = { clipX, clipY, clipW, clipH };
       clipSideRef.current = side;
+      if (!disposed) setCanvasSideReady(side);
       bgRectRef.current = null;
 
       let guideRect;
@@ -770,7 +778,7 @@ export default function DesignPage() {
     fabric.Image.fromURL(dataUrl, (img) => {
       const imgW = img?.width || 1;
       const imgH = img?.height || 1;
-      const scale = Math.min(clipW / imgW, clipH / imgH);
+      const scale = Math.max(clipW / imgW, clipH / imgH);
       const drawW = imgW * scale;
       const drawH = imgH * scale;
       img.set({
@@ -938,6 +946,14 @@ export default function DesignPage() {
       // Lưu để hiển thị preview nhỏ (nếu muốn tái dùng logic cũ)
       setGreenAiImageDataUrl(frontDataUrl || backDataUrl || null);
 
+      // Lưu vào IndexedDB để người dùng chọn lại sau
+      await addAiGenerated({
+        prompt,
+        frontDataUrl: frontDataUrl || undefined,
+        backDataUrl: backDataUrl || undefined,
+      });
+      setSavedAiItems(await loadAiGenerated());
+
       // Áp dụng cho mặt hiện tại và lưu patch cho mặt còn lại
       if (side === 'front') {
         if (frontDataUrl) {
@@ -965,10 +981,10 @@ export default function DesignPage() {
     }
   }, [greenAiPrompt, templateId, side, addImageToClipAreaFromDataUrl]);
 
-  // Khi người dùng chuyển mặt và canvas cho mặt đó đã sẵn sàng + có patch pending, tự chèn vào vùng custom
+  // Khi canvas cho mặt hiện tại đã sẵn sàng và có patch pending, tự chèn vào vùng custom
   useEffect(() => {
     if (!fabricRef.current || !clipBoundsRef.current) return;
-    if (clipSideRef.current !== side) return; // đảm bảo clipBounds thuộc đúng mặt hiện tại
+    if (clipSideRef.current !== side) return;
 
     if (side === 'front' && pendingFrontAiImageDataUrl) {
       addImageToClipAreaFromDataUrl(pendingFrontAiImageDataUrl);
@@ -978,7 +994,27 @@ export default function DesignPage() {
       addImageToClipAreaFromDataUrl(pendingBackAiImageDataUrl);
       setPendingBackAiImageDataUrl(null);
     }
-  }, [side, pendingFrontAiImageDataUrl, pendingBackAiImageDataUrl, addImageToClipAreaFromDataUrl]);
+  }, [side, canvasSideReady, pendingFrontAiImageDataUrl, pendingBackAiImageDataUrl, addImageToClipAreaFromDataUrl]);
+
+  const applySavedAiItem = useCallback(
+    (item) => {
+      const dataUrl = item.frontDataUrl || item.backDataUrl;
+      if (!dataUrl) {
+        message.warning('Thiết kế này không có ảnh.');
+        return;
+      }
+      addImageToClipAreaFromDataUrl(dataUrl);
+      message.success('Đã thêm thiết kế vào vùng in');
+    },
+    [addImageToClipAreaFromDataUrl]
+  );
+
+  const removeSavedAiItem = useCallback(async (id, e) => {
+    e?.stopPropagation?.();
+    await removeAiGenerated(id);
+    setSavedAiItems(await loadAiGenerated());
+    message.success('Đã xóa khỏi lịch sử');
+  }, []);
 
   const buildSnapshot = () => {
     if (fabricRef.current) {
@@ -1065,7 +1101,7 @@ export default function DesignPage() {
 
           {/* Sliding panel */}
           {activeTab && (
-            <div className="design-tab-panel">
+            <div className={`design-tab-panel${activeTab === 'greenai' ? ' design-tab-panel--wide' : ''}`}>
               <div className="design-tab-panel-header">
                 <span>
                   {activeTab === 'text'       && 'Add text to your design'}
@@ -1213,9 +1249,46 @@ export default function DesignPage() {
                     <div className="green-ai-result">
                       <img src={greenAiImageDataUrl} alt="AI generated" className="green-ai-preview-img" />
                       <p className="panel-hint">
-                        Thiết kế AI đã được tự động gắn vào vùng in trên túi. Bạn vẫn có thể thêm lại ảnh này
-                        như một layer riêng nếu muốn.
+                        Thiết kế AI đã được tự động gắn vào vùng in trên túi. Đã lưu vào lịch sử để chọn lại.
                       </p>
+                    </div>
+                  )}
+
+                  {savedAiItems.length > 0 && (
+                    <div className="green-ai-saved">
+                      <p className="panel-section-title">Thiết kế đã lưu (chọn để thêm vào vùng in)</p>
+                      <div className="green-ai-saved-grid">
+                        {savedAiItems.map((item) => {
+                          const thumbUrl = item.frontDataUrl || item.backDataUrl;
+                          return (
+                            <div
+                              key={item.id}
+                              className="green-ai-saved-item"
+                              onClick={() => applySavedAiItem(item)}
+                              role="button"
+                              tabIndex={0}
+                              onKeyDown={(e) => e.key === 'Enter' && applySavedAiItem(item)}
+                            >
+                              {thumbUrl ? (
+                                <img src={thumbUrl} alt="" className="green-ai-saved-thumb" />
+                              ) : (
+                                <div className="green-ai-saved-thumb green-ai-saved-thumb--empty" />
+                              )}
+                              <span className="green-ai-saved-prompt" title={item.prompt}>
+                                {item.prompt.length > 20 ? `${item.prompt.slice(0, 20)}…` : item.prompt}
+                              </span>
+                              <button
+                                type="button"
+                                className="green-ai-saved-delete"
+                                onClick={(e) => removeSavedAiItem(item.id, e)}
+                                aria-label="Xóa"
+                              >
+                                <DeleteOutlined />
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
                   )}
                 </div>

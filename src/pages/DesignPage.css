@@ -251,6 +251,9 @@
   overflow: hidden;
   animation: slideInPanel 0.16s ease;
 }
+.design-tab-panel--wide {
+  width: 360px;
+}
 
 @keyframes slideInPanel {
   from { opacity: 0; transform: translateX(-10px); }
@@ -407,6 +410,84 @@
   border-radius: 10px;
   border: 1px solid #e5e7eb;
   display: block;
+}
+
+.green-ai-saved {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.green-ai-saved-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.green-ai-saved-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.green-ai-saved-item:hover {
+  border-color: #4338ca;
+  box-shadow: 0 2px 8px rgba(67, 56, 202, 0.15);
+}
+
+.green-ai-saved-thumb {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 6px;
+  background: #f3f4f6;
+}
+
+.green-ai-saved-thumb--empty {
+  min-height: 48px;
+}
+
+.green-ai-saved-prompt {
+  font-size: 11px;
+  color: #6b7280;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.green-ai-saved-delete {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.15s;
+}
+
+.green-ai-saved-delete:hover {
+  opacity: 1;
+  background: #dc2626;
 }
 
 /* Green QR - audio record */
