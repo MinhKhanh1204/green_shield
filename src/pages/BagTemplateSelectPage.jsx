@@ -99,7 +99,7 @@ export default function BagTemplateSelectPage() {
                 search
               </span>
               <input
-                placeholder="Tìm mẫu túi..."
+                placeholder="Tra cứu đơn hàng..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
