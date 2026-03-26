@@ -1,4 +1,4 @@
-# Water-hyacinth
+﻿# Water-hyacinth
 
 Frontend powered by React + Vite. This codebase includes a minimal Vite setup with HMR and ESLint, plus project-specific components and sections for GreenShield Mekong.
 
@@ -12,4 +12,3 @@ Getting started (local):
 1. Install dependencies: npm install
 2. Run dev server: npm run dev
 3. Build for prod: npm run build
-

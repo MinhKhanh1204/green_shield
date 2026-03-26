@@ -29,4 +29,16 @@
 
   /* transitions */
   --transition-fast: 180ms cubic-bezier(.2, .9, .2, 1);
+
+  /* design lab shared tokens */
+  --dl-bg: #ffffff;
+  --dl-surface: #f8fafc;
+  --dl-border: #e5e7eb;
+  --dl-text: #0f172a;
+  --dl-subtext: #64748b;
+  --dl-primary: #16a34a;
+  --dl-primary-soft: #dcfce7;
+  --dl-elev-sm: 0 4px 12px rgba(1, 50, 55, 0.06);
+  --dl-radius-sm: 6px;
+  --dl-radius-md: 10px;
 }

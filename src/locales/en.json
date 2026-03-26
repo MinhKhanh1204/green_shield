@@ -161,6 +161,11 @@
   },
   "map": {
     "title": "Water Hyacinth Material Zone Map",
+    "loading": "Loading map...",
+    "error": "Error loading map",
+    "mode2D": "2D",
+    "mode3D": "3D",
+    "modeLabel": "Map display mode",
     "subtitle": "Monitor cultivation areas, farmer households and collection points in real-time",
     "zones": "Zones",
     "farmers": "Farmers",
@@ -195,6 +200,15 @@
     "smallFarmer": "Small capacity",
     "lowStock": "Low stock",
     "mediumStock": "Medium stock",
-    "highStock": "High stock"
+    "highStock": "High stock",
+    "insightHigh": "Stock is high, prioritize clearing large collection points.",
+    "insightMedium": "Supply is stable, monitor points with fast stock inflow.",
+    "insightLow": "Stock is healthy, you can expand collection in active zones.",
+    "comparedToLastWeek": "vs last week",
+    "participationRate": "participation rate",
+    "highStockAlert": "High-pressure collection points need close monitoring",
+    "safeStockAlert": "Stock level is in a safe zone",
+    "ton": "tons",
+    "tonPerYear": "tons/year"
   }
 }

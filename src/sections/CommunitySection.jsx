@@ -52,7 +52,7 @@ export default function CommunitySection() {
       <Marquee
         className="section-marquee section-marquee--community"
         items={t('ticker.community', { returnObjects: true })}
-        separator="✳"
+        separator={<span className="material-symbols-rounded">asterisk</span>}
         speed={30}
       />
     </section>

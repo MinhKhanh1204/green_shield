@@ -1,0 +1,150 @@
+.mapgl-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+}
+
+.mapgl-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.map-mode-toggle {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 10;
+  background: #ffffff;
+  border-radius: 999px;
+  display: flex;
+  box-shadow: var(--card-shadow);
+  border: 1px solid rgba(1, 50, 55, 0.1);
+  overflow: hidden;
+}
+
+.map-mode-toggle button {
+  padding: 6px 12px;
+  border: none;
+  background: transparent;
+  color: var(--color-dark);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.map-mode-toggle button.active {
+  background: var(--color-primary);
+  color: #ffffff;
+}
+
+.farmer-marker {
+  position: relative;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.76rem;
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.46),
+    0 0 14px rgba(1, 50, 55, 0.3);
+  cursor: pointer;
+  pointer-events: auto;
+  z-index: 30;
+  isolation: isolate;
+}
+
+.farmer-marker:hover {
+  filter: brightness(1.06);
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.58),
+    0 0 18px rgba(76, 167, 113, 0.42);
+}
+
+.farmer-marker::after {
+  content: none;
+}
+
+.farmer-marker.is-pulse::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(76, 167, 113, 0.45);
+  animation: markerPulse 2.8s ease-out infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.point-marker {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, 0.52),
+    0 0 16px rgba(1, 50, 55, 0.32);
+  cursor: pointer;
+  pointer-events: auto;
+  z-index: 30;
+  isolation: isolate;
+}
+
+.point-marker:hover {
+  filter: brightness(1.08);
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, 0.62),
+    0 0 22px rgba(1, 50, 55, 0.4);
+}
+
+.point-marker::after {
+  content: none;
+}
+
+.point-marker.is-pulse::after {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 1.5px solid color-mix(in srgb, var(--pulse-color, #4CA771) 78%, white 22%);
+  animation: markerPulse 2.2s ease-out infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.farmer-large {
+  background: var(--color-primary);
+}
+
+.farmer-medium {
+  background: var(--color-warning);
+}
+
+.farmer-small {
+  background: color-mix(in srgb, var(--color-success) 70%, white 20%);
+}
+
+@keyframes markerPulse {
+  0% {
+    opacity: 0.48;
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--pulse-color, #4CA771) 42%, white 20%);
+  }
+  70% {
+    opacity: 0.14;
+    box-shadow: 0 0 0 8px color-mix(in srgb, var(--pulse-color, #4CA771) 18%, white 35%);
+  }
+  100% {
+    opacity: 0;
+    box-shadow: 0 0 0 12px color-mix(in srgb, var(--pulse-color, #4CA771) 0%, white 100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .farmer-marker.is-pulse::after,
+  .point-marker.is-pulse::after {
+    animation: none;
+    opacity: 0;
+  }
+}

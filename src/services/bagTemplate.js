@@ -1,4 +1,4 @@
-const API_BASE = (import.meta.env.VITE_API_BASE || '').replace(/\/$/, '');
+﻿const API_BASE = (import.meta.env.VITE_API_BASE || '').replace(/\/$/, '');
 
 async function authFetch(url, options = {}) {
   const res = await fetch(url, {

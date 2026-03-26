@@ -69,7 +69,7 @@ export default function AboutSection(){
       <Marquee
         className="section-marquee section-marquee--about"
         items={t('ticker.about', { returnObjects: true })}
-        separator="✳"
+        separator={<span className="material-symbols-rounded">asterisk</span>}
         speed={28}
       />
     </section>
