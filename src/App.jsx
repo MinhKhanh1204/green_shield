@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import Nav from './components/Nav'
 import LanguageToggle from './components/LanguageToggle'
@@ -18,6 +18,7 @@ import AdminLayout from './layouts/AdminLayout'
 import CustomBagLayout from './layouts/CustomBagLayout'
 import BagTemplateSelectPage from './pages/BagTemplateSelectPage'
 import DesignPage from './pages/DesignPage'
+import LabLoading from './pages/LabLoading'
 import PreviewPage from './pages/PreviewPage'
 import CheckoutPage from './pages/CheckoutPage'
 import OrderSuccessPage from './pages/OrderSuccessPage'
@@ -34,6 +35,32 @@ import AdminMapPage from './pages/AdminMapPage'
 import MainLayout from './layouts/MainLayout'
 import ProtectedRoute from './components/ProtectedRoute'
 import { MaterialDataProvider } from './context/MaterialDataContext'
+
+const DARK_ROUTE_PATTERNS = ['/design', '/audio', '/audio-file', '/custom', '/order', '/checkout', '/tts'];
+
+function ThemeRouteScope() {
+  const location = useLocation();
+
+  useEffect(() => {
+    const pathname = location.pathname.toLowerCase();
+    const root = document.documentElement;
+    const inDarkScope = DARK_ROUTE_PATTERNS.some((route) => pathname.includes(route));
+
+    let nextTheme = 'light';
+    if (inDarkScope) {
+      const savedTheme = localStorage.getItem('greenshield-theme');
+      nextTheme = savedTheme === 'light' ? 'light' : 'dark';
+    }
+
+    root.classList.add('theme-transition');
+    root.setAttribute('data-theme', nextTheme);
+    const timer = window.setTimeout(() => root.classList.remove('theme-transition'), 420);
+
+    return () => window.clearTimeout(timer);
+  }, [location.pathname]);
+
+  return null;
+}
 
 function MainSite() {
   const location = useLocation()
@@ -86,13 +113,37 @@ function MainSite() {
   )
 }
 
+function CustomBagRoute() {
+  const location = useLocation()
+  const [showIntro, setShowIntro] = useState(() => Boolean(location.state?.fromHome))
+
+  useEffect(() => {
+    setShowIntro(Boolean(location.state?.fromHome))
+  }, [location.state])
+
+  useEffect(() => {
+    if (!showIntro) return
+    const timer = window.setTimeout(() => setShowIntro(false), 3000)
+    return () => window.clearTimeout(timer)
+  }, [showIntro])
+
+  if (showIntro) return <LabLoading />
+
+  return (
+    <CustomBagLayout>
+      <BagTemplateSelectPage />
+    </CustomBagLayout>
+  )
+}
+
 function App() {
   return (
     <BrowserRouter>
+    <ThemeRouteScope />
     <MaterialDataProvider>
       <Routes>
         <Route path="/" element={<MainSite />} />
-        <Route path="/custom-bag" element={<CustomBagLayout><BagTemplateSelectPage /></CustomBagLayout>} />
+        <Route path="/custom-bag" element={<CustomBagRoute />} />
         <Route path="/custom-bag/:templateId/design" element={<CustomBagLayout><DesignPage /></CustomBagLayout>} />
         <Route path="/custom-bag/:templateId/preview" element={<CustomBagLayout><PreviewPage /></CustomBagLayout>} />
         <Route path="/custom-bag/:templateId/checkout" element={<CustomBagLayout><CheckoutPage /></CustomBagLayout>} />

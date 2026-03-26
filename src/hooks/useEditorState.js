@@ -5,7 +5,6 @@ export default function useEditorState() {
   const [leftSidebarWidth, setLeftSidebarWidth] = useState(332);
   const [activeTab, setActiveTab] = useState(null);
   const [contextMenu, setContextMenu] = useState(null);
-  const [floatingTool, setFloatingTool] = useState(null);
   const [floatingObjectMenuPos, setFloatingObjectMenuPos] = useState(null);
   const [showLayerOverlay, setShowLayerOverlay] = useState(false);
   const [dragLayerId, setDragLayerId] = useState(null);
@@ -20,8 +19,6 @@ export default function useEditorState() {
     setActiveTab,
     contextMenu,
     setContextMenu,
-    floatingTool,
-    setFloatingTool,
     floatingObjectMenuPos,
     setFloatingObjectMenuPos,
     showLayerOverlay,

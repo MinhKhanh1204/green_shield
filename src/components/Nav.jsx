@@ -9,12 +9,12 @@ const links = [
   { id: 'home', labelKey: 'nav.home' },
   { id: 'about', labelKey: 'nav.about' },
   { id: 'products', labelKey: 'nav.products' },
-  { id: 'custom', labelKey: 'nav.custom', href: '/custom-bag' },
   { id: 'advantages', labelKey: 'nav.advantages' },
   { id: 'mission', labelKey: 'nav.mission' },
-  { id: 'material', labelKey: 'nav.material', href: '/map' },
   { id: 'community', labelKey: 'nav.community' },
   { id: 'contact', labelKey: 'nav.contact' },
+  { id: 'custom', labelKey: 'nav.custom', href: '/custom-bag' },
+  { id: 'material', labelKey: 'nav.material', href: '/map' },
 ]
 
 export default function Nav() {
@@ -48,10 +48,15 @@ export default function Nav() {
     const className = isActive ? 'nav-link active' : 'nav-link'
 
     if (l.href) {
+      const linkState = isHomePage && l.href === '/custom-bag'
+        ? { fromHome: true }
+        : undefined;
+
       // Links with href always use router
       return (
         <Link
           to={l.href}
+          state={linkState}
           className={className}
           style={{ textDecoration: 'none', color: 'var(--color-dark)' }}
         >

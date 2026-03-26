@@ -1,13 +1,16 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+﻿import React, { useEffect, useRef, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import './AudioPage.css';
 
 const API_BASE = (import.meta.env.VITE_API_BASE || '').replace(/\/$/, '');
-
 const BARS = 40;
 
 export default function AudioFilePage() {
   const { id } = useParams();
+  const [themeMode, setThemeMode] = useState(() => {
+    if (typeof window === 'undefined') return 'dark';
+    return localStorage.getItem('greenshield-theme') || 'dark';
+  });
   const [audioUrl, setAudioUrl] = useState(null);
   const [error, setError] = useState(null);
   const [playing, setPlaying] = useState(false);
@@ -15,7 +18,18 @@ export default function AudioFilePage() {
   const [duration, setDuration] = useState(0);
   const audioRef = useRef(null);
 
-  const title = useMemo(() => (id ? `Green QR Audio` : 'Green QR Audio'), [id]);
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.add('theme-transition');
+    root.setAttribute('data-theme', themeMode);
+    localStorage.setItem('greenshield-theme', themeMode);
+    const timer = window.setTimeout(() => root.classList.remove('theme-transition'), 420);
+    return () => window.clearTimeout(timer);
+  }, [themeMode]);
+
+  const handleToggleTheme = () => {
+    setThemeMode((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  };
 
   useEffect(() => {
     setError(null);
@@ -70,16 +84,24 @@ export default function AudioFilePage() {
 
   return (
     <div className="ap-root">
-      <div className="ap-blob ap-blob--a" />
-      <div className="ap-blob ap-blob--b" />
-      <div className="ap-blob ap-blob--c" />
+      <div className="ap-blob ap-blob--a bg-ambient" />
+      <div className="ap-blob ap-blob--b bg-ambient" />
+      <div className="ap-blob ap-blob--c bg-ambient" />
 
       <Link to="/" className="ap-logo">
         <span className="ap-logo-dot" />
         GreenShield
       </Link>
+      <button
+        type="button"
+        className="ap-theme-toggle"
+        onClick={handleToggleTheme}
+        aria-label={themeMode === 'dark' ? 'Chuyển sang giao diện sáng' : 'Chuyển sang giao diện tối'}
+      >
+        {themeMode === 'dark' ? '☀️ Sáng' : '🌙 Tối'}
+      </button>
 
-      <div className="ap-card">
+      <div className="ap-card glass-card">
         <div className="ap-artwork" aria-hidden="true">
           <div className="ap-artwork-ring ap-artwork-ring--outer" />
           <div className="ap-artwork-ring ap-artwork-ring--mid" />
@@ -101,9 +123,9 @@ export default function AudioFilePage() {
         </div>
 
         <div className="ap-meta">
-          <p className="ap-label">Green QR • Audio File</p>
-          <h1 className="ap-title">{title}</h1>
-          <p className="ap-sub">Một file audio được gắn vào chiếc túi này. Nhấn phát để nghe.</p>
+          <p className="ap-label">Green QR • Tệp âm thanh</p>
+          <h1 className="ap-title">Green QR Audio</h1>
+          <p className="ap-sub">Một tệp âm thanh được gắn vào chiếc túi này. Nhấn phát để nghe.</p>
         </div>
 
         {audioUrl && !error && (
@@ -120,7 +142,7 @@ export default function AudioFilePage() {
         )}
 
         <div className="ap-controls">
-          <button className={`ap-play-btn${playing ? ' playing' : ''}`} onClick={handleTogglePlay} disabled={!audioUrl}>
+          <button className={`ap-play-btn btn-glow${playing ? ' playing' : ''}`} onClick={handleTogglePlay} disabled={!audioUrl}>
             {playing ? <PauseIcon /> : <PlayIcon />}
             <span>{playing ? 'Tạm dừng' : 'Phát audio'}</span>
           </button>
@@ -168,4 +190,3 @@ function PauseIcon() {
     </svg>
   );
 }
-

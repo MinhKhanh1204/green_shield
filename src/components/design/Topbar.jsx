@@ -1,11 +1,7 @@
-import React from 'react';
+﻿import React from 'react';
 import { Link } from 'react-router-dom';
-import { Tooltip } from 'antd';
-import { UndoOutlined, RedoOutlined, EyeOutlined } from '@ant-design/icons';
-import logo from '../../assets/logo.png';
-import logolg from '../../assets/logo-lg.png';
 
-export default function Topbar({
+export function Topbar({
   templateName,
   canUndo,
   canRedo,
@@ -14,42 +10,63 @@ export default function Topbar({
   onPreview,
   onOrder,
   onBack,
+  themeMode,
+  onToggleTheme,
 }) {
   return (
     <header className="design-topbar">
-      <div className="design-topbar-left">
-        <button className="design-back-btn" onClick={onBack}>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
-          Back
+      <div className="topbar-left">
+        <button className="topbar-back-btn" onClick={onBack} aria-label="Quay lại">
+          <span className="material-symbols-rounded">arrow_back</span>
         </button>
-        <Link to="/" className="design-brand-link">
-          <img src={logo} alt="GreenShield logo" width="22" height="22" />
-          <img src={logolg} alt="GreenShield" className="design-brand-wordmark" />
-        </Link>
-        <div className="design-topbar-meta">
-          <span className="design-topbar-name">{templateName}</span>
-          <span className="design-topbar-saved">
-            <span className="saved-dot" />
-            Da luu
-          </span>
+        <div className="design-meta">
+          <div className="design-name">{templateName || 'Túi tote'}</div>
+          <div className="design-status">
+            <span className="dot" />
+            Đã lưu
+          </div>
         </div>
       </div>
 
-      <div className="design-topbar-center">
-        <span className="design-lab-badge">Design Lab</span>
+      <div className="topbar-center">
+        <div className="design-badge">
+          <span className="material-symbols-rounded">auto_awesome</span>
+          <span>Phòng thiết kế</span>
+        </div>
       </div>
 
-      <div className="design-topbar-right">
-        <Tooltip title="Undo (Ctrl+Z)"><button className="design-icon-btn" disabled={!canUndo} onClick={onUndo}><UndoOutlined /></button></Tooltip>
-        <Tooltip title="Redo (Ctrl+Y)"><button className="design-icon-btn" disabled={!canRedo} onClick={onRedo}><RedoOutlined /></button></Tooltip>
-        <div className="design-topbar-divider" />
-        <button className="design-preview-ghost-btn" onClick={onPreview}>
-          <EyeOutlined /> Preview
+      <div className="topbar-right">
+        <button
+          className={`icon-btn design-theme-btn theme-toggle${themeMode === 'dark' ? ' is-dark' : ''}`}
+          onClick={onToggleTheme}
+          aria-label={themeMode === 'dark' ? 'Chuyển sang giao diện sáng' : 'Chuyển sang giao diện tối'}
+          title={themeMode === 'dark' ? 'Chuyển sang sáng' : 'Chuyển sang tối'}
+        >
+          <span className="theme-toggle-track">
+            <span className="theme-toggle-thumb" />
+            <span className="material-symbols-rounded theme-toggle-icon theme-toggle-icon--sun">light_mode</span>
+            <span className="material-symbols-rounded theme-toggle-icon theme-toggle-icon--moon">dark_mode</span>
+          </span>
         </button>
-        <button className="design-next-btn" onClick={onOrder}>
-          Dat hang
+        <button className="icon-btn" disabled={!canUndo} onClick={onUndo} aria-label="Hoàn tác">
+          <span className="material-symbols-rounded">undo</span>
+        </button>
+        <button className="icon-btn" disabled={!canRedo} onClick={onRedo} aria-label="Làm lại">
+          <span className="material-symbols-rounded">redo</span>
+        </button>
+
+        <button className="btn-ghost" onClick={onPreview}>
+          <span className="material-symbols-rounded">visibility</span>
+          Xem trước
+        </button>
+
+        <button className="btn-primary glow" onClick={onOrder}>
+          Đặt hàng
+          <span className="material-symbols-rounded">arrow_forward</span>
         </button>
       </div>
     </header>
   );
 }
+
+export default Topbar;
