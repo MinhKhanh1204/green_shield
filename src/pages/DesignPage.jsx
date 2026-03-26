@@ -2337,6 +2337,8 @@ export default function DesignPage() {
                   generateGreenQr={generateGreenQr}
                 />
               )}
+              textures={textures}
+              addTexture={addTexture}
               iconList={ICON_LIST}
               addIconToCanvas={addIconToCanvas}
               startResizePanel={startResizePanel}
