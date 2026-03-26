@@ -5,7 +5,8 @@ import logo from '../../assets/logo.png';
 const TABS = [
   { key: 'text', icon: 'text_fields', label: 'Thêm chữ' },
   { key: 'image', icon: 'image', label: 'Thêm ảnh' },
-  { key: 'icon', icon: 'category', label: 'Biểu tượng' },
+  { key: 'texture', icon: 'texture', label: 'Texture' },
+  { key: 'elements', icon: 'apps', label: 'Elements' },
   { key: 'greenai', icon: 'auto_awesome', label: 'AI Xanh' },
   { key: 'greenqr', icon: 'qr_code_2', label: 'QR Xanh' },
 ];
@@ -20,6 +21,8 @@ export default function LeftPanel({
   addImage,
   greenAiPanel,
   greenQrPanel,
+  textures = [],
+  addTexture,
   iconList,
   addIconToCanvas,
   startResizePanel,
@@ -49,10 +52,14 @@ export default function LeftPanel({
   ];
 
   const renderTabButton = ({ key, icon, label }) => {
+    const isElementTab = key === 'elements';
+    const isActive = isElementTab
+      ? activeTab === 'elements' || activeTab === 'element' || activeTab === 'icon'
+      : activeTab === key;
     const button = (
       <button
-        className={`design-tab-btn${activeTab === key ? ' active' : ''}`}
-        onClick={() => setActiveTab(activeTab === key ? null : key)}
+        className={`design-tab-btn${isActive ? ' active' : ''}`}
+        onClick={() => setActiveTab(isActive ? null : key)}
       >
         <span className="design-tab-icon material-symbols-rounded">{icon}</span>
         <span className="design-tab-label">{label}</span>
@@ -86,7 +93,8 @@ export default function LeftPanel({
               <span>
                 {activeTab === 'text' && 'Thêm chữ vào thiết kế'}
                 {activeTab === 'image' && 'Thêm ảnh'}
-                {activeTab === 'icon' && 'Biểu tượng'}
+                {activeTab === 'texture' && 'Texture'}
+                {(activeTab === 'elements' || activeTab === 'element' || activeTab === 'icon') && 'Elements'}
                 {activeTab === 'greenai' && 'AI Xanh'}
                 {activeTab === 'greenqr' && 'QR Xanh'}
                 {activeTab === 'color-fill' && (activeObjectInfo?.type === 'i-text' ? 'Màu chữ' : 'Màu đối tượng')}
@@ -209,10 +217,32 @@ export default function LeftPanel({
               </div>
             )}
 
+            {activeTab === 'texture' && (
+              <div className="design-tab-panel-body">
+                {textures.length === 0 ? (
+                  <p className="panel-hint">Chưa có texture nào.</p>
+                ) : (
+                  <div className="texture-grid">
+                    {textures.map((t) => (
+                      <button
+                        key={t.id}
+                        type="button"
+                        className="texture-item"
+                        onClick={() => addTexture?.(t)}
+                        title={t.name || 'Texture'}
+                      >
+                        <img src={t.imageUrl} alt={t.name || 'Texture'} />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
             {activeTab === 'greenai' && greenAiPanel}
             {activeTab === 'greenqr' && greenQrPanel}
 
-            {activeTab === 'icon' && (
+            {(activeTab === 'elements' || activeTab === 'element' || activeTab === 'icon') && (
               <div className="design-tab-panel-body">
                 <p className="panel-hint">Thêm icon nhanh để tạo nhấn nhá hoặc build một badge nhỏ cho thiết kế.</p>
 
