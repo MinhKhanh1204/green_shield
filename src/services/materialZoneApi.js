@@ -1,4 +1,7 @@
-const API_BASE_URL = 'http://localhost:8080/api/material-zones';
+// API_BASE lấy từ Vite env (VITE_API_BASE), ví dụ: http://<backend-host>:<port>
+// Nếu không có API_BASE (build/host), fallback gọi relative `/api/...`.
+const API_BASE = (import.meta.env.VITE_API_BASE || '').replace(/\/$/, '');
+const API_BASE_URL = API_BASE ? `${API_BASE}/api/material-zones` : '/api/material-zones';
 
 // Helper function for fetch
 const fetchApi = async (endpoint, options = {}) => {
