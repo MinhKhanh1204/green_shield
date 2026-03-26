@@ -2,11 +2,11 @@ import React, { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 const steps = [
-  { key: 'collect', img: 'https://res.cloudinary.com/dnini39bp/image/upload/IMG_4283_bi5hjv.jpg' },
-  { key: 'process', img: 'https://res.cloudinary.com/dnini39bp/image/upload/IMG_3692_new_xdyohd.jpg' },
-  { key: 'mold', img: 'https://res.cloudinary.com/dnini39bp/image/upload/IMG_3699_new_t6rk5v.jpg' },
-  { key: 'coat', img: 'https://res.cloudinary.com/dnini39bp/image/upload/step3_b6mhei.jpg' },
-  { key: 'pack', img: 'https://res.cloudinary.com/dnini39bp/image/upload/IMG_3920-da_chinh_hfotmm.jpg' },
+  { key: 'collect', img: 'https://res.cloudinary.com/dnini39bp/image/upload/v1774525576/thu_gom_i88yio.jpg' },
+  { key: 'process', img: 'https://res.cloudinary.com/dnini39bp/image/upload/v1774525576/ph%C6%A1i_kh%C3%B4_apdkfb.jpg' },
+  { key: 'mold', img: 'https://res.cloudinary.com/dnini39bp/image/upload/v1774525576/x%E1%BB%AD_l%C3%AD_yympqv.jpg' },
+  { key: 'coat', img: 'https://res.cloudinary.com/dnini39bp/image/upload/v1774525631/%C3%89p_khu%C3%B4n_dcrnms.jpg' },
+  { key: 'pack', img: 'https://res.cloudinary.com/dnini39bp/image/upload/v1774525577/%C4%91%C3%B3ng_g%C3%B3i_rdiy7q.jpg' },
 ]
 
 const StepCard = memo(({ s, idx, t }) => {

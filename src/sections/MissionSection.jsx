@@ -7,7 +7,7 @@ import NumberTicker from '../components/NumberTicker'
 export default function MissionSection() {
   const { t } = useTranslation()
   const tiles = [
-    { key: 'a', variant: 'media', bg: "url('https://res.cloudinary.com/dnini39bp/image/upload/z7036284704623_aae64d76745a3583c28a1657dbd18a3f_xoqkzn.jpg')" },
+    { key: 'a', variant: 'media', bg: "url('https://res.cloudinary.com/dnini39bp/image/upload/v1774525576/thu_gom_i88yio.jpg')" },
     { key: 'b', variant: 'lime' },
     { key: 'c', variant: 'soft' },
     { key: 'd', variant: 'dark' }
