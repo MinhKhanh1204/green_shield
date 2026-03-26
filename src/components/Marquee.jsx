@@ -4,22 +4,24 @@ import React, { useMemo } from 'react'
  * Magic UI style Marquee (lightweight implementation)
  * Props:
  *  - items?: string[]
- *  - separator?: string (default '*')
+ *  - separator?: ReactNode
  *  - speed?: number (seconds for one loop)
  *  - className?: string
  *  - children?: ReactNode (custom content overrides items)
  *  - weight?: number (font-weight)
  *  - uppercase?: boolean (default true)
  */
+
 export default function Marquee({
 	items,
-	separator = '*',
+	separator = <span className="material-symbols-rounded">asterisk</span>,
 	speed = 26,
 	className = '',
 	children,
 	weight = 700,
 	uppercase = true,
 }) {
+	
 	const content = useMemo(() => {
 		if (children) return children
 		if (!items?.length) return null

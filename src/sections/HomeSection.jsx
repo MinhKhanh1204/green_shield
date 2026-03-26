@@ -20,6 +20,9 @@ export default function HomeSection() {
             text={t('home.key-title')}
             type="words"
           />
+          <div className="bg-red-500 text-white p-4">
+            TEST TAILWIND
+          </div>
           <SplitText
             key={t('home.title')}
             as="span"
@@ -38,7 +41,7 @@ export default function HomeSection() {
           delay={0.15}
           stagger={0.035}
         />
-        <div className="btn-group-banner" data-aos="fade-up" style={{ display: 'inline-flex', gap: '1rem'}}>
+        <div className="btn-group-banner" data-aos="fade-up" style={{ display: 'inline-flex', gap: '1rem' }}>
           <a className="btn btn-primary" href="#products">{t('cta.explore')}
             <span className="material-symbols-rounded">arrow_outward</span>
           </a>

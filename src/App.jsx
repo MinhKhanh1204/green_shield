@@ -1,5 +1,5 @@
-import React from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import React, { useEffect } from 'react'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import Nav from './components/Nav'
 import LanguageToggle from './components/LanguageToggle'
 import HomeSection from './sections/HomeSection'
@@ -36,6 +36,24 @@ import ProtectedRoute from './components/ProtectedRoute'
 import { MaterialDataProvider } from './context/MaterialDataContext'
 
 function MainSite() {
+  const location = useLocation()
+
+  useEffect(() => {
+    if (!location.hash) return
+
+    const sectionId = location.hash.replace('#', '')
+    if (!sectionId) return
+
+    const scrollToSection = () => {
+      const target = document.getElementById(sectionId)
+      if (!target) return
+      target.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
+    }
+
+    const raf = requestAnimationFrame(scrollToSection)
+    return () => cancelAnimationFrame(raf)
+  }, [location.hash])
+
   return (
     <>
       <header className="header">

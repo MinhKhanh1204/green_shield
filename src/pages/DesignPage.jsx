@@ -1,8 +1,27 @@
-import React, { useEffect, useRef, useState, useCallback, createElement } from 'react';
+﻿import React, { useEffect, useRef, useState, useCallback, createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { useParams, useLocation, useNavigate, Link } from 'react-router-dom';
-import { Button, Upload, message, Slider, Select, Input } from 'antd';
-import { FontSizeOutlined, PictureOutlined, AppstoreOutlined, BgColorsOutlined, UndoOutlined, RedoOutlined, EyeOutlined, DeleteOutlined } from '@ant-design/icons';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
+import { message, Slider, Tooltip, ConfigProvider, theme } from 'antd';
+import {
+  FontSizeOutlined,
+  PictureOutlined,
+  AppstoreOutlined,
+  BgColorsOutlined,
+  UndoOutlined,
+  RedoOutlined,
+  EyeOutlined,
+  DeleteOutlined,
+  ArrowUpOutlined,
+  ArrowDownOutlined,
+  VerticalAlignTopOutlined,
+  VerticalAlignBottomOutlined,
+  EyeInvisibleOutlined,
+  LockOutlined,
+  UnlockOutlined,
+  CopyOutlined,
+  AlignCenterOutlined,
+  ColumnHeightOutlined,
+} from '@ant-design/icons';
 import {
   PiHeart, PiStar, PiFlower, PiSun, PiLeaf, PiCheck, PiPlus, PiGift,
   PiCake, PiCamera, PiCoffee, PiPizza, PiTree, PiFish, PiBird, PiCat,
@@ -20,14 +39,33 @@ import {
 import { fabric } from 'fabric';
 import { getBagTemplate } from '../services/bagTemplate';
 import { getTextures } from '../services/texture';
-import { generateBagDesign } from '../services/ai';
-import { loadAiGenerated, addAiGenerated, removeAiGenerated } from '../utils/aiGeneratedStorage';
-import QRCode from 'qrcode';
+import GreenAiPanel from '../components/design/GreenAiPanel';
+import GreenQrPanel from '../components/design/GreenQrPanel';
+import Topbar from '../components/design/Topbar';
+import LeftPanel from '../components/design/LeftPanel';
+import FloatingToolbar from '../components/design/FloatingToolbar';
+import useGreenAi from '../hooks/useGreenAi';
+import useGreenQr from '../hooks/useGreenQr';
+import useEditorState from '../hooks/useEditorState';
+import useFabricCanvas from '../hooks/useFabricCanvas';
 import './DesignPage.css';
 
 const CANVAS_SIZE = 680;
 const API_BASE = (import.meta.env.VITE_API_BASE || '').replace(/\/$/, '');
-const MAX_AUDIO_BYTES = 5 * 1024 * 1024;
+const FABRIC_JSON_PROPS = [
+  'name',
+  'excludeFromExport',
+  'curveType',
+  'dataId',
+  'dataRole',
+  'locked',
+  'lockMovementX',
+  'lockMovementY',
+  'lockScalingX',
+  'lockScalingY',
+  'lockRotation',
+  'hasControls',
+];
 
 const CURVE_PRESETS = {
   arcUp: 'M 0 80 Q 100 0 200 80',
@@ -38,81 +76,81 @@ const CURVE_PRESETS = {
 };
 
 const ICON_LIST = [
-  { Icon: PiHeart, label: 'Trái tim' },
-  { Icon: PiHeartStraight, label: 'Trái tim thẳng' },
-  { Icon: PiStar, label: 'Ngôi sao' },
-  { Icon: PiStarHalf, label: 'Nửa sao' },
-  { Icon: PiSparkle, label: 'Lấp lánh' },
+  { Icon: PiHeart, label: 'TrÃ¡i tim' },
+  { Icon: PiHeartStraight, label: 'TrÃ¡i tim tháº³ng' },
+  { Icon: PiStar, label: 'NgÃ´i sao' },
+  { Icon: PiStarHalf, label: 'Ná»­a sao' },
+  { Icon: PiSparkle, label: 'Láº¥p lÃ¡nh' },
   { Icon: PiFlower, label: 'Hoa' },
   { Icon: PiFlowerLotus, label: 'Hoa sen' },
   { Icon: PiFlowerTulip, label: 'Tulip' },
-  { Icon: PiSun, label: 'Mặt trời' },
-  { Icon: PiMoon, label: 'Mặt trăng' },
-  { Icon: PiCloud, label: 'Mây' },
-  { Icon: PiCloudSun, label: 'Mây nắng' },
-  { Icon: PiCloudRain, label: 'Mây mưa' },
-  { Icon: PiSnowflake, label: 'Tuyết' },
-  { Icon: PiRainbow, label: 'Cầu vồng' },
-  { Icon: PiLightning, label: 'Sét' },
-  { Icon: PiFire, label: 'Lửa' },
-  { Icon: PiLeaf, label: 'Lá' },
-  { Icon: PiTree, label: 'Cây' },
-  { Icon: PiTreePalm, label: 'Cây cọ' },
-  { Icon: PiTreeEvergreen, label: 'Cây thông' },
-  { Icon: PiMountains, label: 'Núi' },
-  { Icon: PiWaves, label: 'Sóng' },
+  { Icon: PiSun, label: 'Máº·t trá»i' },
+  { Icon: PiMoon, label: 'Máº·t trÄƒng' },
+  { Icon: PiCloud, label: 'MÃ¢y' },
+  { Icon: PiCloudSun, label: 'MÃ¢y náº¯ng' },
+  { Icon: PiCloudRain, label: 'MÃ¢y mÆ°a' },
+  { Icon: PiSnowflake, label: 'Tuyáº¿t' },
+  { Icon: PiRainbow, label: 'Cáº§u vá»“ng' },
+  { Icon: PiLightning, label: 'SÃ©t' },
+  { Icon: PiFire, label: 'Lá»­a' },
+  { Icon: PiLeaf, label: 'LÃ¡' },
+  { Icon: PiTree, label: 'CÃ¢y' },
+  { Icon: PiTreePalm, label: 'CÃ¢y cá»' },
+  { Icon: PiTreeEvergreen, label: 'CÃ¢y thÃ´ng' },
+  { Icon: PiMountains, label: 'NÃºi' },
+  { Icon: PiWaves, label: 'SÃ³ng' },
   { Icon: PiCheck, label: 'Check' },
-  { Icon: PiPlus, label: 'Cộng' },
-  { Icon: PiGift, label: 'Quà' },
-  { Icon: PiCake, label: 'Bánh' },
-  { Icon: PiCoffee, label: 'Cà phê' },
+  { Icon: PiPlus, label: 'Cá»™ng' },
+  { Icon: PiGift, label: 'QuÃ ' },
+  { Icon: PiCake, label: 'BÃ¡nh' },
+  { Icon: PiCoffee, label: 'CÃ  phÃª' },
   { Icon: PiPizza, label: 'Pizza' },
   { Icon: PiHamburger, label: 'Hamburger' },
   { Icon: PiCookie, label: 'Cookie' },
   { Icon: PiIceCream, label: 'Kem' },
-  { Icon: PiWine, label: 'Rượu' },
+  { Icon: PiWine, label: 'RÆ°á»£u' },
   { Icon: PiBeerBottle, label: 'Bia' },
-  { Icon: PiCamera, label: 'Máy ảnh' },
-  { Icon: PiFish, label: 'Cá' },
+  { Icon: PiCamera, label: 'MÃ¡y áº£nh' },
+  { Icon: PiFish, label: 'CÃ¡' },
   { Icon: PiBird, label: 'Chim' },
-  { Icon: PiCat, label: 'Mèo' },
-  { Icon: PiDog, label: 'Chó' },
-  { Icon: PiPawPrint, label: 'Dấu chân' },
-  { Icon: PiButterfly, label: 'Bướm' },
-  { Icon: PiMusicNote, label: 'Nốt nhạc' },
-  { Icon: PiBookmark, label: 'Đánh dấu' },
-  { Icon: PiMapPin, label: 'Vị trí' },
-  { Icon: PiEnvelope, label: 'Thư' },
-  { Icon: PiEnvelopeOpen, label: 'Thư mở' },
-  { Icon: PiPhone, label: 'Điện thoại' },
-  { Icon: PiHouse, label: 'Nhà' },
-  { Icon: PiCar, label: 'Xe hơi' },
-  { Icon: PiAirplane, label: 'Máy bay' },
-  { Icon: PiBicycle, label: 'Xe đạp' },
-  { Icon: PiRocket, label: 'Tên lửa' },
-  { Icon: PiAnchor, label: 'Mỏ neo' },
-  { Icon: PiBalloon, label: 'Bóng bay' },
-  { Icon: PiSailboat, label: 'Thuyền' },
-  { Icon: PiFlag, label: 'Cờ' },
-  { Icon: PiTrophy, label: 'Cúp' },
-  { Icon: PiMedal, label: 'Huy chương' },
-  { Icon: PiCrown, label: 'Vương miện' },
-  { Icon: PiDiamond, label: 'Kim cương' },
-  { Icon: PiDiamondsFour, label: 'Bốn ô' },
-  { Icon: PiSmiley, label: 'Mặt cười' },
-  { Icon: PiSmileyWink, label: 'Mặt nháy mắt' },
+  { Icon: PiCat, label: 'MÃ¨o' },
+  { Icon: PiDog, label: 'ChÃ³' },
+  { Icon: PiPawPrint, label: 'Dáº¥u chÃ¢n' },
+  { Icon: PiButterfly, label: 'BÆ°á»›m' },
+  { Icon: PiMusicNote, label: 'Ná»‘t nháº¡c' },
+  { Icon: PiBookmark, label: 'ÄÃ¡nh dáº¥u' },
+  { Icon: PiMapPin, label: 'Vá»‹ trÃ­' },
+  { Icon: PiEnvelope, label: 'ThÆ°' },
+  { Icon: PiEnvelopeOpen, label: 'ThÆ° má»Ÿ' },
+  { Icon: PiPhone, label: 'Äiá»‡n thoáº¡i' },
+  { Icon: PiHouse, label: 'NhÃ ' },
+  { Icon: PiCar, label: 'Xe hÆ¡i' },
+  { Icon: PiAirplane, label: 'MÃ¡y bay' },
+  { Icon: PiBicycle, label: 'Xe Ä‘áº¡p' },
+  { Icon: PiRocket, label: 'TÃªn lá»­a' },
+  { Icon: PiAnchor, label: 'Má» neo' },
+  { Icon: PiBalloon, label: 'BÃ³ng bay' },
+  { Icon: PiSailboat, label: 'Thuyá»n' },
+  { Icon: PiFlag, label: 'Cá»' },
+  { Icon: PiTrophy, label: 'CÃºp' },
+  { Icon: PiMedal, label: 'Huy chÆ°Æ¡ng' },
+  { Icon: PiCrown, label: 'VÆ°Æ¡ng miá»‡n' },
+  { Icon: PiDiamond, label: 'Kim cÆ°Æ¡ng' },
+  { Icon: PiDiamondsFour, label: 'Bá»‘n Ã´' },
+  { Icon: PiSmiley, label: 'Máº·t cÆ°á»i' },
+  { Icon: PiSmileyWink, label: 'Máº·t nhÃ¡y máº¯t' },
   { Icon: PiThumbsUp, label: 'Like' },
   { Icon: PiThumbsDown, label: 'Dislike' },
-  { Icon: PiCircle, label: 'Hình tròn' },
-  { Icon: PiSquare, label: 'Hình vuông' },
-  { Icon: PiHexagon, label: 'Lục giác' },
-  { Icon: PiTriangle, label: 'Tam giác' },
-  { Icon: PiUser, label: 'Người' },
-  { Icon: PiUsers, label: 'Nhóm người' },
+  { Icon: PiCircle, label: 'HÃ¬nh trÃ²n' },
+  { Icon: PiSquare, label: 'HÃ¬nh vuÃ´ng' },
+  { Icon: PiHexagon, label: 'Lá»¥c giÃ¡c' },
+  { Icon: PiTriangle, label: 'Tam giÃ¡c' },
+  { Icon: PiUser, label: 'NgÆ°á»i' },
+  { Icon: PiUsers, label: 'NhÃ³m ngÆ°á»i' },
   { Icon: PiVideoCamera, label: 'Video' },
-  { Icon: PiWatch, label: 'Đồng hồ' },
-  { Icon: PiSunglasses, label: 'Kính râm' },
-  { Icon: PiUmbrella, label: 'Ô' },
+  { Icon: PiWatch, label: 'Äá»“ng há»“' },
+  { Icon: PiSunglasses, label: 'KÃ­nh rÃ¢m' },
+  { Icon: PiUmbrella, label: 'Ã”' },
 ];
 
 const FONT_OPTIONS = [
@@ -178,200 +216,106 @@ const FONT_OPTIONS = [
   { value: 'Space Mono', label: 'Space Mono' },
 ];
 
+const FONT_SIZE_PRESETS = [12, 14, 16, 20, 24, 32, 40, 48, 64, 96];
+
 export default function DesignPage() {
+  const LEFT_TAB_BAR_WIDTH = 76;
+  const LEFT_MIN_WIDTH = 280;
+  const LEFT_MAX_WIDTH = 420;
+  const MIN_CENTER_WIDTH = 560;
+
   const { templateId } = useParams();
   const { state } = useLocation();
   const navigate = useNavigate();
   const fabricRef = useRef(null);
   const clipBoundsRef = useRef(null); // { clipX, clipY, clipW, clipH }
-  const clipSideRef = useRef('front'); // side tương ứng với clipBoundsRef
+  const clipSideRef = useRef('front'); // side tÆ°Æ¡ng á»©ng vá»›i clipBoundsRef
   const bgRectRef = useRef(null);     // fabric.Rect for edit-area background fill
   const [template, setTemplate] = useState(null);
   const [textures, setTextures] = useState([]);
   const [side, setSide] = useState('front');
   const designRef = useRef({ front: null, back: null });
   const [loading, setLoading] = useState(true);
-  const [zoom, setZoom] = useState(100);
-  const [activeTab, setActiveTab] = useState(null);
+  const {
+    zoom,
+    setZoom,
+    leftSidebarWidth,
+    setLeftSidebarWidth,
+    activeTab,
+    setActiveTab,
+    contextMenu,
+    setContextMenu,
+    floatingTool,
+    setFloatingTool,
+    floatingObjectMenuPos,
+    setFloatingObjectMenuPos,
+    showLayerOverlay,
+    setShowLayerOverlay,
+    dragLayerId,
+    setDragLayerId,
+    dragOverLayerId,
+    setDragOverLayerId,
+  } = useEditorState();
   const [bgColor, setBgColorState] = useState('#ffffff');
-  const [textProps, setTextProps] = useState(null); // { fontFamily, fontSize, fill, fontWeight, fontStyle, charSpacing } khi chọn text
+  const [textProps, setTextProps] = useState(null); // { fontFamily, fontSize, fill, fontWeight, fontStyle, charSpacing } khi chá»n text
   const selectedTextRef = useRef(null);
-  const [greenAiPrompt, setGreenAiPrompt] = useState('');
-  const [greenAiGenerating, setGreenAiGenerating] = useState(false);
-  const [greenAiImageDataUrl, setGreenAiImageDataUrl] = useState(null);
-  const [greenAiError, setGreenAiError] = useState(null);
-  const [savedAiItems, setSavedAiItems] = useState([]);
+  const [activeObjectInfo, setActiveObjectInfo] = useState(null);
+  const [isCanvasHovered, setIsCanvasHovered] = useState(false);
+  const [layers, setLayers] = useState([]);
   const [canvasSideReady, setCanvasSideReady] = useState(null);
-  const [pendingFrontAiImageDataUrl, setPendingFrontAiImageDataUrl] = useState(null);
-  const [pendingBackAiImageDataUrl, setPendingBackAiImageDataUrl] = useState(null);
-  const [greenQrMode, setGreenQrMode] = useState('tts'); // 'tts' | 'audio'
-  const [greenQrText, setGreenQrText] = useState('');
-  const [greenQrAudioFile, setGreenQrAudioFile] = useState(null);
-  const [greenQrColor, setGreenQrColor] = useState('#16a34a');
-  const [greenQrGenerating, setGreenQrGenerating] = useState(false);
-  const [greenQrRecordedFile, setGreenQrRecordedFile] = useState(null);
-  const [greenQrRecordedUrl, setGreenQrRecordedUrl] = useState(null);
-  const [greenQrRecording, setGreenQrRecording] = useState(false);
-  const [greenQrRecordSeconds, setGreenQrRecordSeconds] = useState(0);
-  const mediaRecorderRef = useRef(null);
-  const mediaStreamRef = useRef(null);
-  const recordChunksRef = useRef([]);
-  const recordTimerRef = useRef(null);
-  const recordMimeRef = useRef('');
+  const historyRef = useRef({ front: [], back: [] });
+  const historyIndexRef = useRef({ front: -1, back: -1 });
+  const isRestoringHistoryRef = useRef(false);
+  const [canUndo, setCanUndo] = useState(false);
+  const [canRedo, setCanRedo] = useState(false);
+  const isSpacePressedRef = useRef(false);
+  const objectIdCounterRef = useRef(1);
+  const resizeStateRef = useRef(null);
+  const canvasInitializedRef = useRef(false);
+  const initializedSideRef = useRef(null);
+  const isUnmountingRef = useRef(false);
+  const lastCanvasLoadKeyRef = useRef('');
 
-  const cleanupRecorder = useCallback(() => {
-    if (recordTimerRef.current) {
-      clearInterval(recordTimerRef.current);
-      recordTimerRef.current = null;
-    }
-    recordChunksRef.current = [];
-    if (mediaRecorderRef.current) {
-      mediaRecorderRef.current.ondataavailable = null;
-      mediaRecorderRef.current.onstop = null;
-      mediaRecorderRef.current.onerror = null;
-      mediaRecorderRef.current = null;
-    }
-    if (mediaStreamRef.current) {
-      try {
-        mediaStreamRef.current.getTracks().forEach((t) => t.stop());
-      } catch {
-        // ignore
-      }
-      mediaStreamRef.current = null;
-    }
-    recordMimeRef.current = '';
-    setGreenQrRecording(false);
-    setGreenQrRecordSeconds(0);
+  useEffect(() => () => {
+    isUnmountingRef.current = true;
   }, []);
 
-  const clearRecordedAudio = useCallback(() => {
-    setGreenQrRecordedFile(null);
-    setGreenQrRecordedUrl((prev) => {
-      if (prev) URL.revokeObjectURL(prev);
-      return null;
-    });
-  }, []);
+  const closeContextMenu = useCallback(() => setContextMenu(null), [setContextMenu]);
 
-  const fmtMmSs = (totalSeconds) => {
-    const s = Math.max(0, Number(totalSeconds || 0));
-    const mm = Math.floor(s / 60);
-    const ss = Math.floor(s % 60);
-    return `${mm}:${String(ss).padStart(2, '0')}`;
-  };
-
-  const pickSupportedRecordMime = () => {
-    const candidates = [
-      'audio/webm;codecs=opus',
-      'audio/webm',
-      'audio/ogg;codecs=opus',
-      'audio/ogg',
-    ];
-    const MR = window?.MediaRecorder;
-    if (!MR || typeof MR.isTypeSupported !== 'function') return '';
-    return candidates.find((t) => MR.isTypeSupported(t)) || '';
-  };
-
-  const startGreenQrRecording = useCallback(async () => {
-    if (greenQrRecording) return;
-    if (!navigator?.mediaDevices?.getUserMedia) {
-      message.error('Trình duyệt không hỗ trợ ghi âm (getUserMedia).');
-      return;
-    }
-    if (!window?.MediaRecorder) {
-      message.error('Trình duyệt không hỗ trợ ghi âm (MediaRecorder).');
-      return;
-    }
-
-    // Nếu đang chọn upload file thì reset để ưu tiên bản ghi mới
-    setGreenQrAudioFile(null);
-    clearRecordedAudio();
-    setGreenQrRecordSeconds(0);
-
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaStreamRef.current = stream;
-
-      const mimeType = pickSupportedRecordMime();
-      recordMimeRef.current = mimeType || '';
-
-      const mr = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
-      mediaRecorderRef.current = mr;
-      recordChunksRef.current = [];
-
-      mr.ondataavailable = (e) => {
-        if (e?.data && e.data.size > 0) recordChunksRef.current.push(e.data);
-      };
-
-      mr.onerror = () => {
-        message.error('Ghi âm bị lỗi. Vui lòng thử lại.');
-        cleanupRecorder();
-      };
-
-      mr.onstop = () => {
-        if (recordTimerRef.current) {
-          clearInterval(recordTimerRef.current);
-          recordTimerRef.current = null;
-        }
-
-        const chunks = recordChunksRef.current || [];
-        recordChunksRef.current = [];
-        const type = recordMimeRef.current || (chunks[0]?.type || '');
-        const blob = new Blob(chunks, type ? { type } : undefined);
-        if (!blob || blob.size === 0) {
-          message.warning('Không có dữ liệu ghi âm.');
-          cleanupRecorder();
-          return;
-        }
-        if (blob.size > MAX_AUDIO_BYTES) {
-          message.error('Bản ghi vượt quá 5MB. Vui lòng ghi ngắn hơn.');
-          cleanupRecorder();
-          return;
-        }
-
-        const ext = (type || '').includes('ogg') ? 'ogg' : 'webm';
-        const file = new File([blob], `recording.${ext}`, { type: type || 'audio/webm' });
-        const url = URL.createObjectURL(blob);
-
-        setGreenQrRecordedFile(file);
-        setGreenQrRecordedUrl((prev) => {
-          if (prev) URL.revokeObjectURL(prev);
-          return url;
-        });
-
-        cleanupRecorder();
-      };
-
-      setGreenQrRecording(true);
-      recordTimerRef.current = setInterval(() => setGreenQrRecordSeconds((s) => s + 1), 1000);
-      mr.start(250);
-    } catch {
-      message.error('Không thể truy cập micro. Vui lòng cấp quyền và thử lại.');
-      cleanupRecorder();
-    }
-  }, [clearRecordedAudio, cleanupRecorder, greenQrRecording]);
-
-  const stopGreenQrRecording = useCallback(() => {
-    const mr = mediaRecorderRef.current;
-    if (!mr) {
-      cleanupRecorder();
-      return;
-    }
-    try {
-      if (mr.state !== 'inactive') mr.stop();
-    } catch {
-      cleanupRecorder();
-    }
-  }, [cleanupRecorder]);
+  const startResizePanel = useCallback((panel, event) => {
+    event.preventDefault();
+    resizeStateRef.current = {
+      panel,
+      startX: event.clientX,
+      startLeftWidth: leftSidebarWidth,
+    };
+  }, [leftSidebarWidth]);
 
   useEffect(() => {
-    return () => {
-      cleanupRecorder();
-      setGreenQrRecordedUrl((prev) => {
-        if (prev) URL.revokeObjectURL(prev);
-        return null;
-      });
+    const onMouseMove = (event) => {
+      const stateInfo = resizeStateRef.current;
+      if (!stateInfo) return;
+      const viewportWidth = window.innerWidth;
+
+      if (stateInfo.panel === 'left') {
+        const maxByViewport = viewportWidth - MIN_CENTER_WIDTH;
+        const next = stateInfo.startLeftWidth + (event.clientX - stateInfo.startX);
+        const clamped = Math.max(LEFT_MIN_WIDTH, Math.min(Math.min(LEFT_MAX_WIDTH, maxByViewport), next));
+        setLeftSidebarWidth(clamped);
+      }
     };
-  }, [cleanupRecorder]);
+
+    const onMouseUp = () => {
+      resizeStateRef.current = null;
+    };
+
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+    };
+  }, [leftSidebarWidth, setLeftSidebarWidth]);
 
   useEffect(() => {
     const snapshot = state?.designSnapshot;
@@ -396,31 +340,291 @@ export default function DesignPage() {
       .finally(() => setLoading(false));
   }, [templateId]);
 
-  useEffect(() => {
-    loadAiGenerated().then(setSavedAiItems);
+  const isEditableObject = useCallback((obj) => {
+    if (!obj) return false;
+    if (obj.dataRole === 'system') return false;
+    if (obj.name === '__bgRect__') return false;
+    if (obj.excludeFromExport) return false;
+    return true;
   }, []);
+
+  const applyObjectLockState = useCallback((obj, locked) => {
+    if (!obj) return;
+    obj.locked = Boolean(locked);
+    obj.set({
+      lockMovementX: Boolean(locked),
+      lockMovementY: Boolean(locked),
+      lockScalingX: Boolean(locked),
+      lockScalingY: Boolean(locked),
+      lockRotation: Boolean(locked),
+      hasControls: !locked,
+    });
+  }, []);
+
+  const syncSelectionState = useCallback((obj) => {
+    const clearSelectionGlow = () => {
+      const canvas = fabricRef.current;
+      if (!canvas) return;
+      canvas.getObjects().forEach((item) => {
+        if (!item?.__hasSelectionGlow) return;
+        item.set({ shadow: item.__baseSelectionShadow || null });
+        item.__baseSelectionShadow = null;
+        item.__hasSelectionGlow = false;
+      });
+      canvas.requestRenderAll();
+    };
+
+    if (!isEditableObject(obj)) {
+      clearSelectionGlow();
+      selectedTextRef.current = null;
+      setTextProps(null);
+      setActiveObjectInfo(null);
+      setFloatingTool(null);
+      setFloatingObjectMenuPos(null);
+      return;
+    }
+
+    const canvas = fabricRef.current;
+    if (canvas?.upperCanvasEl && typeof obj.getBoundingRect === 'function') {
+      const r = obj.getBoundingRect(true, true);
+      const vpt = canvas.viewportTransform || [1, 0, 0, 1, 0, 0];
+      const p = fabric.util.transformPoint(new fabric.Point(r.left + r.width, r.top), vpt);
+      const canvasRect = canvas.upperCanvasEl.getBoundingClientRect();
+      setFloatingObjectMenuPos({
+        x: Math.max(10, Math.min(window.innerWidth - 240, canvasRect.left + p.x + 10)),
+        y: Math.max(84, Math.min(window.innerHeight - 56, canvasRect.top + p.y - 34)),
+      });
+    }
+
+    clearSelectionGlow();
+    if (!obj.__hasSelectionGlow) {
+      obj.__baseSelectionShadow = obj.shadow || null;
+    }
+    obj.__hasSelectionGlow = true;
+    obj.set({
+      borderColor: '#22c55e',
+      cornerColor: '#22c55e',
+      cornerStrokeColor: '#16a34a',
+      cornerSize: 10,
+      shadow: {
+        color: 'rgba(34, 197, 94, 0.2)',
+        blur: 18,
+        offsetX: 0,
+        offsetY: 0,
+      },
+    });
+
+    const type = obj.type || 'object';
+    setActiveObjectInfo({
+      type,
+      opacity: typeof obj.opacity === 'number' ? obj.opacity : 1,
+      angle: Number(obj.angle || 0),
+      scale: Number((((obj.scaleX || 1) + (obj.scaleY || 1)) / 2).toFixed(2)),
+      visible: obj.visible !== false,
+      x: Number(obj.left || 0),
+      y: Number(obj.top || 0),
+      locked: Boolean(obj.locked),
+    });
+
+    if (type !== 'i-text') {
+      selectedTextRef.current = null;
+      setTextProps(null);
+      return;
+    }
+
+    selectedTextRef.current = obj;
+    setTextProps({
+      fontFamily: obj.fontFamily || 'Arial',
+      fontSize: obj.fontSize || 24,
+      fill: obj.fill || '#000000',
+      fontWeight: obj.fontWeight || 'normal',
+      fontStyle: obj.fontStyle || 'normal',
+      underline: Boolean(obj.underline),
+      linethrough: Boolean(obj.linethrough),
+      textAlign: obj.textAlign || 'left',
+      charSpacing: obj.charSpacing || 0,
+      curveType: obj.curveType || (obj.path ? 'arcUp' : 'none'),
+    });
+    setActiveTab('text');
+  }, [isEditableObject, setActiveTab, setFloatingObjectMenuPos, setFloatingTool]);
+
+  const ensureObjectId = useCallback((obj) => {
+    if (!obj) return null;
+    if (!obj.dataId) {
+      obj.dataId = `obj-${Date.now()}-${objectIdCounterRef.current++}`;
+    }
+    return obj.dataId;
+  }, []);
+
+  const syncLayers = useCallback((canvas = fabricRef.current) => {
+    if (!canvas) {
+      setLayers([]);
+      return;
+    }
+    const active = canvas.getActiveObject();
+    const editable = canvas.getObjects().filter(isEditableObject);
+    const mapped = editable
+      .map((obj, index) => {
+        const id = ensureObjectId(obj);
+        return {
+          id,
+          type: obj.type || 'object',
+          visible: obj.visible !== false,
+          locked: Boolean(obj.locked),
+          zIndex: index,
+          isActive: active?.dataId === id,
+        };
+      })
+      .reverse();
+    setLayers(mapped);
+  }, [ensureObjectId, isEditableObject]);
+
+  const exportCanvasJson = useCallback((canvas) => canvas.toJSON(FABRIC_JSON_PROPS), []);
+
+  const serializeCanvas = useCallback((canvas) => (
+    JSON.stringify(exportCanvasJson(canvas))
+  ), [exportCanvasJson]);
+
+  const updateHistoryButtons = useCallback((targetSide = side) => {
+    const arr = historyRef.current[targetSide] || [];
+    const idx = historyIndexRef.current[targetSide] ?? -1;
+    setCanUndo(idx > 0);
+    setCanRedo(idx >= 0 && idx < arr.length - 1);
+  }, [side]);
+
+  const initHistoryForCurrentSide = useCallback((canvas) => {
+    const json = serializeCanvas(canvas);
+    historyRef.current[side] = [json];
+    historyIndexRef.current[side] = 0;
+    updateHistoryButtons(side);
+  }, [serializeCanvas, side, updateHistoryButtons]);
+
+  const pushHistory = useCallback((canvas) => {
+    if (isRestoringHistoryRef.current) return;
+    const json = serializeCanvas(canvas);
+    const arr = historyRef.current[side] || [];
+    const idx = historyIndexRef.current[side] ?? -1;
+    if (idx >= 0 && arr[idx] === json) return;
+
+    const next = arr.slice(0, idx + 1);
+    next.push(json);
+    const limit = 60;
+    if (next.length > limit) next.shift();
+
+    historyRef.current[side] = next;
+    historyIndexRef.current[side] = next.length - 1;
+    updateHistoryButtons(side);
+  }, [serializeCanvas, side, updateHistoryButtons]);
+
+  const applyHistoryIndex = useCallback((nextIndex) => {
+    const canvas = fabricRef.current;
+    if (!canvas) return;
+    const arr = historyRef.current[side] || [];
+    if (nextIndex < 0 || nextIndex >= arr.length) return;
+
+    isRestoringHistoryRef.current = true;
+    canvas.loadFromJSON(arr[nextIndex], () => {
+      canvas.requestRenderAll();
+      historyIndexRef.current[side] = nextIndex;
+      isRestoringHistoryRef.current = false;
+      syncSelectionState(canvas.getActiveObject());
+      syncLayers(canvas);
+      updateHistoryButtons(side);
+    });
+  }, [side, syncSelectionState, syncLayers, updateHistoryButtons]);
+
+  const handleUndo = useCallback(() => {
+    const idx = historyIndexRef.current[side] ?? -1;
+    if (idx <= 0) return;
+    applyHistoryIndex(idx - 1);
+  }, [applyHistoryIndex, side]);
+
+  const handleRedo = useCallback(() => {
+    const arr = historyRef.current[side] || [];
+    const idx = historyIndexRef.current[side] ?? -1;
+    if (idx < 0 || idx >= arr.length - 1) return;
+    applyHistoryIndex(idx + 1);
+  }, [applyHistoryIndex, side]);
+
+  useEffect(() => {
+    updateHistoryButtons(side);
+  }, [side, updateHistoryButtons]);
 
   useEffect(() => {
     if (!template || loading) return;
-    let disposed = false;
-    const c = new fabric.Canvas('design-canvas', { width: CANVAS_SIZE, height: CANVAS_SIZE });
-    fabricRef.current = c;
+    const loadKey = `${template?.id || 'template'}:${side}:${loading ? '1' : '0'}`;
+    if (lastCanvasLoadKeyRef.current === loadKey) return;
+    lastCanvasLoadKeyRef.current = loadKey;
 
-    // Khai báo ở scope ngoài để cleanup có thể truy cập
+    canvasInitializedRef.current = true;
+    initializedSideRef.current = side;
+    let disposed = false;
+    let blockNativeContextMenu = null;
+    const currentSide = side;
+    const designStore = designRef.current;
+    const c = fabricRef.current || new fabric.Canvas('design-canvas', { width: CANVAS_SIZE, height: CANVAS_SIZE });
+    fabricRef.current = c;
+    c.off();
+    c.clear();
+    c.setWidth(CANVAS_SIZE);
+    c.setHeight(CANVAS_SIZE);
+    c.setViewportTransform([1, 0, 0, 1, 0, 0]);
+
+    // Keep handlers in outer scope so cleanup can detach them safely.
     const onKeyDown = (e) => {
       if (disposed) return;
-      if (e.key !== 'Delete' && e.key !== 'Backspace') return;
+
+      if (e.code === 'Space') {
+        isSpacePressedRef.current = true;
+      }
+
+      const isUndo = (e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'z';
+      const isRedo = ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y')
+        || ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'z');
+      if (isUndo) {
+        e.preventDefault();
+        handleUndo();
+        return;
+      }
+      if (isRedo) {
+        e.preventDefault();
+        handleRedo();
+        return;
+      }
+
       const active = c.getActiveObject();
-      if (!active) return;
+      if (!active || !isEditableObject(active)) return;
       if (active.type === 'i-text' && active.isEditing) return;
-      if (active.name === '__bgRect__' || active.excludeFromExport) return;
-      c.remove(active);
-      c.discardActiveObject();
-      c.requestRenderAll();
+
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        c.remove(active);
+        c.discardActiveObject();
+        c.requestRenderAll();
+        syncSelectionState(null);
+        pushHistory(c);
+        return;
+      }
+
+      const step = e.shiftKey ? 10 : 1;
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (e.key === 'ArrowLeft') active.set('left', (active.left || 0) - step);
+        if (e.key === 'ArrowRight') active.set('left', (active.left || 0) + step);
+        if (e.key === 'ArrowUp') active.set('top', (active.top || 0) - step);
+        if (e.key === 'ArrowDown') active.set('top', (active.top || 0) + step);
+        active.setCoords();
+        c.requestRenderAll();
+        syncSelectionState(active);
+        pushHistory(c);
+      }
+    };
+    const onKeyUp = (e) => {
+      if (e.code === 'Space') isSpacePressedRef.current = false;
     };
     document.addEventListener('keydown', onKeyDown);
+    document.addEventListener('keyup', onKeyUp);
 
-    /* Nhỏ gọn nút kéo/resize */
+    /* Nhá» gá»n nÃºt kÃ©o/resize */
     const origCornerSize = fabric.Object.prototype.cornerSize;
     const origPadding = fabric.Object.prototype.padding;
     fabric.Object.prototype.cornerSize = 8;
@@ -449,12 +653,28 @@ export default function DesignPage() {
       const imgLeft = (CANVAS_SIZE - scaledW) / 2;
       const imgTop = (CANVAS_SIZE - scaledH) / 2;
 
-      // x, y, width, height là % theo ẢNH (như ImageAreaSelector),
-      // nên quy về toạ độ theo ảnh đã scale & căn giữa
+      // x, y, width, height are percentages on the source image.
+      // Convert them to coordinates on the scaled and centered image.
       const clipX = imgLeft + (scaledW * x) / 100;
       const clipY = imgTop + (scaledH * y) / 100;
       const clipW = (scaledW * width) / 100;
       const clipH = (scaledH * height) / 100;
+
+      const createObjectClipPath = () => new fabric.Rect({
+        left: clipX,
+        top: clipY,
+        width: clipW,
+        height: clipH,
+        absolutePositioned: true,
+        selectable: false,
+        evented: false,
+        excludeFromExport: true,
+      });
+
+      const applyObjectClipPath = (obj) => {
+        if (!isEditableObject(obj)) return;
+        obj.clipPath = createObjectClipPath();
+      };
 
       img.set({
         scaleX: scale,
@@ -474,9 +694,25 @@ export default function DesignPage() {
       bgRectRef.current = null;
 
       let guideRect;
+      let snapGuideV;
+      let snapGuideH;
       let isPanning = false;
       let lastPosX = 0;
       let lastPosY = 0;
+      let historyReady = false;
+      let snapFadeTimerV = null;
+      let snapFadeTimerH = null;
+
+      const lerp = (start, end, t) => start + (end - start) * t;
+      const smoothMove = (obj, targetLeft, targetTop) => {
+        const startLeft = Number.isFinite(obj.__smoothLeft) ? obj.__smoothLeft : (obj.left || 0);
+        const startTop = Number.isFinite(obj.__smoothTop) ? obj.__smoothTop : (obj.top || 0);
+        const nextLeft = lerp(startLeft, targetLeft, 0.35);
+        const nextTop = lerp(startTop, targetTop, 0.35);
+        obj.__smoothLeft = nextLeft;
+        obj.__smoothTop = nextTop;
+        obj.set({ left: nextLeft, top: nextTop });
+      };
 
       const clampToClip = (obj) => {
         if (!obj || obj === guideRect || obj === bgRectRef.current) return;
@@ -498,6 +734,168 @@ export default function DesignPage() {
         });
       };
 
+      const showSnapGuides = (x, y) => {
+        if (snapGuideV) {
+          if (Number.isFinite(x)) {
+            snapGuideV.set({
+              x1: x,
+              y1: clipY,
+              x2: x,
+              y2: clipY + clipH,
+              visible: true,
+              stroke: '#22c55e',
+              strokeWidth: 1.5,
+              opacity: 0.8,
+            });
+            if (snapFadeTimerV) clearTimeout(snapFadeTimerV);
+            snapFadeTimerV = setTimeout(() => {
+              snapGuideV?.set({ opacity: 0.4 });
+              c.requestRenderAll();
+            }, 120);
+          } else {
+            snapGuideV.set({ visible: false });
+          }
+        }
+        if (snapGuideH) {
+          if (Number.isFinite(y)) {
+            snapGuideH.set({
+              x1: clipX,
+              y1: y,
+              x2: clipX + clipW,
+              y2: y,
+              visible: true,
+              stroke: '#22c55e',
+              strokeWidth: 1.5,
+              opacity: 0.8,
+            });
+            if (snapFadeTimerH) clearTimeout(snapFadeTimerH);
+            snapFadeTimerH = setTimeout(() => {
+              snapGuideH?.set({ opacity: 0.4 });
+              c.requestRenderAll();
+            }, 120);
+          } else {
+            snapGuideH.set({ visible: false });
+          }
+        }
+      };
+
+      const hideSnapGuides = () => {
+        if (snapFadeTimerV) {
+          clearTimeout(snapFadeTimerV);
+          snapFadeTimerV = null;
+        }
+        if (snapFadeTimerH) {
+          clearTimeout(snapFadeTimerH);
+          snapFadeTimerH = null;
+        }
+        showSnapGuides(null, null);
+      };
+
+      const applyDraggingVisual = (obj) => {
+        if (!obj || !isEditableObject(obj) || obj.__dragLifted) return;
+        obj.__baseScaleX = obj.scaleX || 1;
+        obj.__baseScaleY = obj.scaleY || 1;
+        obj.__baseShadow = obj.shadow || null;
+        obj.__dragLifted = true;
+        obj.set({
+          scaleX: (obj.__baseScaleX || 1) * 1.015,
+          scaleY: (obj.__baseScaleY || 1) * 1.015,
+          shadow: {
+            color: 'rgba(22,163,74,0.25)',
+            blur: 28,
+            offsetX: 0,
+            offsetY: 12,
+          },
+        });
+      };
+
+      const clearDraggingVisual = (obj) => {
+        if (!obj || !obj.__dragLifted) return;
+        obj.set({
+          scaleX: obj.__baseScaleX || 1,
+          scaleY: obj.__baseScaleY || 1,
+          shadow: obj.__baseShadow || null,
+        });
+        obj.__baseScaleX = null;
+        obj.__baseScaleY = null;
+        obj.__baseShadow = null;
+        obj.__dragLifted = false;
+        obj.__smoothLeft = null;
+        obj.__smoothTop = null;
+      };
+
+      const applySnapToClip = (obj) => {
+        if (!obj || !isEditableObject(obj)) return;
+
+        const threshold = 8;
+        const centerX = clipX + clipW / 2;
+        const centerY = clipY + clipH / 2;
+        const rect = obj.getBoundingRect(true, true);
+        const sourceX = [
+          { key: 'left', value: rect.left },
+          { key: 'center', value: rect.left + rect.width / 2 },
+          { key: 'right', value: rect.left + rect.width },
+        ];
+        const sourceY = [
+          { key: 'top', value: rect.top },
+          { key: 'center', value: rect.top + rect.height / 2 },
+          { key: 'bottom', value: rect.top + rect.height },
+        ];
+        const targetsX = [
+          { value: clipX, tag: 'clip-left' },
+          { value: centerX, tag: 'clip-center' },
+          { value: clipX + clipW, tag: 'clip-right' },
+        ];
+        const targetsY = [
+          { value: clipY, tag: 'clip-top' },
+          { value: centerY, tag: 'clip-center' },
+          { value: clipY + clipH, tag: 'clip-bottom' },
+        ];
+
+        c.getObjects().forEach((other) => {
+          if (other === obj || !isEditableObject(other) || other.visible === false) return;
+          const r = other.getBoundingRect(true, true);
+          targetsX.push(
+            { value: r.left, tag: 'obj-left' },
+            { value: r.left + r.width / 2, tag: 'obj-center' },
+            { value: r.left + r.width, tag: 'obj-right' }
+          );
+          targetsY.push(
+            { value: r.top, tag: 'obj-top' },
+            { value: r.top + r.height / 2, tag: 'obj-center' },
+            { value: r.top + r.height, tag: 'obj-bottom' }
+          );
+        });
+
+        let bestX = null;
+        sourceX.forEach((s) => {
+          targetsX.forEach((t) => {
+            const diff = t.value - s.value;
+            const abs = Math.abs(diff);
+            if (abs > threshold) return;
+            if (!bestX || abs < bestX.abs) bestX = { diff, abs, target: t.value, tag: t.tag };
+          });
+        });
+
+        let bestY = null;
+        sourceY.forEach((s) => {
+          targetsY.forEach((t) => {
+            const diff = t.value - s.value;
+            const abs = Math.abs(diff);
+            if (abs > threshold) return;
+            if (!bestY || abs < bestY.abs) bestY = { diff, abs, target: t.value, tag: t.tag };
+          });
+        });
+
+        if (bestX) obj.set('left', (obj.left || 0) + bestX.diff);
+        if (bestY) obj.set('top', (obj.top || 0) + bestY.diff);
+
+        showSnapGuides(
+          bestX?.target ?? null,
+          bestY?.target ?? null
+        );
+      };
+
       c.setBackgroundImage(img, () => {
         if (disposed) return;
 
@@ -513,6 +911,7 @@ export default function DesignPage() {
             evented: false,
             excludeFromExport: false,
             name: '__bgRect__',
+            dataRole: 'system',
           });
           c.add(br);
           bgRectRef.current = br;
@@ -531,55 +930,158 @@ export default function DesignPage() {
             selectable: false,
             evented: false,
             excludeFromExport: true,
+            dataRole: 'system',
           });
           c.add(guideRect);
           guideRect.bringToFront();
+
+          snapGuideV = new fabric.Line([0, 0, 0, 0], {
+            stroke: '#00e0a4',
+            strokeWidth: 1,
+            selectable: false,
+            evented: false,
+            excludeFromExport: true,
+            visible: false,
+            name: '__snapGuide__',
+            dataRole: 'system',
+          });
+          snapGuideH = new fabric.Line([0, 0, 0, 0], {
+            stroke: '#00e0a4',
+            strokeWidth: 1,
+            selectable: false,
+            evented: false,
+            excludeFromExport: true,
+            visible: false,
+            name: '__snapGuide__',
+            dataRole: 'system',
+          });
+          c.add(snapGuideV);
+          c.add(snapGuideH);
+          snapGuideV.bringToFront();
+          snapGuideH.bringToFront();
         };
 
-        const saved = designRef.current[side];
+        const saved = designStore[currentSide];
         if (saved) {
           c.loadFromJSON(saved, () => {
             if (disposed) return;
-            // Remove any old bgRect loaded from JSON (we recreate it)
-            c.getObjects().forEach((o) => { if (o.name === '__bgRect__') c.remove(o); });
+            // Remove system artifacts loaded from previous snapshots, then recreate stable guides
+            c.getObjects().forEach((o) => {
+              const isLegacyBgRect =
+                o?.type === 'rect'
+                && Math.abs((o.left || 0) - clipX) < 0.5
+                && Math.abs((o.top || 0) - clipY) < 0.5
+                && Math.abs((o.width || 0) - clipW) < 0.5
+                && Math.abs((o.height || 0) - clipH) < 0.5
+                && o?.selectable === false
+                && o?.evented === false;
+              if (o.dataRole === 'system' || o.name === '__bgRect__' || o.excludeFromExport || isLegacyBgRect) {
+                c.remove(o);
+              }
+            });
             createGuide();
-            c.forEachObject((o) => { o.set({ cornerSize: 8, padding: 0 }); clampToClip(o); });
+            c.forEachObject((o) => {
+              o.set({ cornerSize: 8, padding: 0 });
+              ensureObjectId(o);
+              applyObjectClipPath(o);
+              applyObjectLockState(o, Boolean(o.locked));
+              clampToClip(o);
+            });
             c.renderAll();
+            initHistoryForCurrentSide(c);
+            syncLayers(c);
+            historyReady = true;
           });
         } else {
           createGuide();
           c.renderAll();
+          initHistoryForCurrentSide(c);
+          syncLayers(c);
+          historyReady = true;
         }
       });
 
       const onAdded = (e) => {
         if (disposed) return;
         const obj = e.target;
+        if (!obj) return;
+        ensureObjectId(obj);
+        applyObjectClipPath(obj);
         obj.set({ cornerSize: 8, padding: 0 });
+        applyObjectLockState(obj, Boolean(obj.locked));
         clampToClip(obj);
+        syncLayers(c);
+        if (historyReady) pushHistory(c);
       };
       const onModified = (e) => {
         if (disposed) return;
+        hideSnapGuides();
+        clearDraggingVisual(e.target);
         clampToClip(e.target);
+        syncLayers(c);
+        if (historyReady) pushHistory(c);
       };
       const onMoving = (e) => {
         if (disposed) return;
+        const obj = e.target;
+        if (!obj) return;
+        const targetLeft = obj.left || 0;
+        const targetTop = obj.top || 0;
+        smoothMove(obj, targetLeft, targetTop);
+        applyDraggingVisual(e.target);
+        applySnapToClip(e.target);
         clampToClip(e.target);
       };
       const onScaling = (e) => {
         if (disposed) return;
+        hideSnapGuides();
+        clearDraggingVisual(e.target);
         clampToClip(e.target);
+      };
+      const onRemoved = () => {
+        if (disposed) return;
+        hideSnapGuides();
+        syncLayers(c);
+        if (historyReady) pushHistory(c);
+      };
+      const onTextChanged = () => {
+        if (disposed) return;
+        if (historyReady) pushHistory(c);
       };
 
       c.on('object:added', onAdded);
       c.on('object:modified', onModified);
       c.on('object:moving', onMoving);
       c.on('object:scaling', onScaling);
+      c.on('object:removed', onRemoved);
+      c.on('text:changed', onTextChanged);
 
       // kéo canvas như scroll (pan view)
       const onMouseDown = (opt) => {
         if (disposed) return;
-        if (opt.target) return; // đang kéo object thì không pan
+        if (opt.e?.button === 2) {
+          const target = opt.target;
+          if (isEditableObject(target)) {
+            ensureObjectId(target);
+            c.setActiveObject(target);
+            c.requestRenderAll();
+            syncSelectionState(target);
+            syncLayers(c);
+            const menuWidth = 210;
+            const menuHeight = 220;
+            setContextMenu({
+              x: Math.max(8, Math.min(opt.e.clientX, window.innerWidth - menuWidth)),
+              y: Math.max(8, Math.min(opt.e.clientY, window.innerHeight - menuHeight)),
+              objectId: target.dataId,
+            });
+          } else {
+            setContextMenu(null);
+          }
+          return;
+        }
+
+        setContextMenu(null);
+        if (opt.target && !isSpacePressedRef.current) return; // đang kéo object thì không pan (trừ khi giữ Space)
         isPanning = true;
         lastPosX = opt.e.clientX;
         lastPosY = opt.e.clientY;
@@ -601,56 +1103,83 @@ export default function DesignPage() {
         if (disposed) return;
         isPanning = false;
         c.setCursor('default');
+        hideSnapGuides();
+        clearDraggingVisual(c.getActiveObject());
+        c.requestRenderAll();
+      };
+      const onMouseWheel = (opt) => {
+        if (disposed) return;
+        const delta = opt.e.deltaY;
+        setZoom((prev) => Math.max(50, Math.min(300, Math.round((prev - delta * 0.05)))));
+        opt.e.preventDefault();
+        opt.e.stopPropagation();
       };
 
       c.on('mouse:down', onMouseDown);
       c.on('mouse:move', onMouseMove);
       c.on('mouse:up', onMouseUp);
+      c.on('mouse:wheel', onMouseWheel);
 
-      // Khi chọn object → nếu là text, hiện panel edit
-      const syncTextProps = (obj) => {
-        if (disposed) return;
-        if (!obj || obj.type !== 'i-text') {
-          selectedTextRef.current = null;
-          setTextProps(null);
-          return;
-        }
-        selectedTextRef.current = obj;
-        setTextProps({
-          fontFamily: obj.fontFamily || 'Arial',
-          fontSize: obj.fontSize || 24,
-          fill: obj.fill || '#000000',
-          fontWeight: obj.fontWeight || 'normal',
-          fontStyle: obj.fontStyle || 'normal',
-          charSpacing: obj.charSpacing || 0,
-          curveType: obj.curveType || (obj.path ? 'arcUp' : 'none'),
-        });
-        setActiveTab('text');
+      blockNativeContextMenu = (event) => event.preventDefault();
+      c.upperCanvasEl?.addEventListener('contextmenu', blockNativeContextMenu);
+      document.addEventListener('click', closeContextMenu);
+
+      const onSelectionCreated = (e) => {
+        syncSelectionState(e.selected?.[0]);
+        syncLayers(c);
       };
-      const onSelectionCreated = (e) => { syncTextProps(e.selected?.[0]); };
-      const onSelectionUpdated = (e) => { syncTextProps(e.selected?.[0]); };
+      const onSelectionUpdated = (e) => {
+        syncSelectionState(e.selected?.[0]);
+        syncLayers(c);
+      };
       const onSelectionCleared = () => {
         if (disposed) return;
-        selectedTextRef.current = null;
-        setTextProps(null);
+        syncSelectionState(null);
+        syncLayers(c);
       };
       c.on('selection:created', onSelectionCreated);
       c.on('selection:updated', onSelectionUpdated);
       c.on('selection:cleared', onSelectionCleared);
-    });
+    }, { crossOrigin: 'anonymous' });
 
     return () => {
       disposed = true;
       selectedTextRef.current = null;
       setTextProps(null);
-      designRef.current[side] = c.toJSON();
+      setActiveObjectInfo(null);
+      designStore[currentSide] = exportCanvasJson(c);
       c.off();
+      if (blockNativeContextMenu) {
+        c.upperCanvasEl?.removeEventListener('contextmenu', blockNativeContextMenu);
+      }
+      document.removeEventListener('click', closeContextMenu);
       document.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener('keyup', onKeyUp);
       fabric.Object.prototype.cornerSize = origCornerSize;
       fabric.Object.prototype.padding = origPadding;
-      c.dispose();
+      if (isUnmountingRef.current) {
+        c.dispose();
+        fabricRef.current = null;
+      }
     };
-  }, [template, side, loading]);
+  }, [
+    template,
+    loading,
+    side,
+    applyObjectLockState,
+    closeContextMenu,
+    ensureObjectId,
+    exportCanvasJson,
+    handleRedo,
+    handleUndo,
+    initHistoryForCurrentSide,
+    isEditableObject,
+    pushHistory,
+    setContextMenu,
+    setZoom,
+    syncLayers,
+    syncSelectionState,
+  ]);
 
   useEffect(() => {
     if (fabricRef.current) {
@@ -660,17 +1189,36 @@ export default function DesignPage() {
     }
   }, [zoom]);
 
+  const { switchSide, saveCurrentSide } = useFabricCanvas({
+    fabricRef,
+    designRef,
+    side,
+    setSide,
+    exportCanvasJson,
+  });
 
-  const saveAndSwitch = () => {
-    if (fabricRef.current) {
-      designRef.current[side] = fabricRef.current.toJSON();
-    }
+  const hexToRgba = (hex, alpha = 0.28) => {
+    if (!hex || typeof hex !== 'string') return `rgba(0,0,0,${alpha})`;
+    const clean = hex.replace('#', '');
+    const normalized = clean.length === 3
+      ? clean.split('').map((c) => `${c}${c}`).join('')
+      : clean;
+    const n = Number.parseInt(normalized, 16);
+    if (!Number.isFinite(n)) return `rgba(0,0,0,${alpha})`;
+    const r = (n >> 16) & 255;
+    const g = (n >> 8) & 255;
+    const b = n & 255;
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
   };
 
   const applyBgColor = (color) => {
     setBgColorState(color);
     if (!fabricRef.current || !bgRectRef.current) return;
-    bgRectRef.current.set({ fill: color });
+    if (!color || color === 'none' || color === 'transparent') {
+      bgRectRef.current.set({ fill: 'rgba(0,0,0,0)' });
+    } else {
+      bgRectRef.current.set({ fill: hexToRgba(color, 0.28) });
+    }
     fabricRef.current.requestRenderAll();
   };
 
@@ -710,14 +1258,17 @@ export default function DesignPage() {
   const updateTextProp = useCallback((key, value) => {
     const obj = selectedTextRef.current;
     if (!obj || !fabricRef.current) return;
+    const canvas = fabricRef.current;
 
     if (key === 'fontFamily') {
       const fontSize = obj.fontSize || 24;
       document.fonts.load(`${fontSize}px "${value}"`).then(() => {
         obj.set('fontFamily', value);
         if (typeof obj.initDimensions === 'function') obj.initDimensions();
-        fabricRef.current?.requestRenderAll();
+        canvas?.requestRenderAll();
         setTextProps((p) => (p ? { ...p, [key]: value } : null));
+        syncSelectionState(obj);
+        pushHistory(canvas);
       });
       return;
     }
@@ -740,9 +1291,331 @@ export default function DesignPage() {
     } else {
       obj.set(key, value);
     }
-    fabricRef.current.requestRenderAll();
+    canvas.requestRenderAll();
     setTextProps((p) => (p ? { ...p, [key]: value } : null));
+    syncSelectionState(obj);
+    pushHistory(canvas);
+  }, [pushHistory, syncSelectionState]);
+
+  const cycleTextCase = useCallback(() => {
+    const canvas = fabricRef.current;
+    const obj = selectedTextRef.current;
+    if (!canvas || !obj || obj.type !== 'i-text') return;
+    const mode = obj.textCaseMode || 'normal';
+    const current = String(obj.text || '');
+    let nextMode = 'upper';
+    let nextText = current.toUpperCase();
+    if (mode === 'upper') {
+      nextMode = 'lower';
+      nextText = current.toLowerCase();
+    } else if (mode === 'lower') {
+      nextMode = 'title';
+      nextText = current.replace(/\w\S*/g, (w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
+    } else if (mode === 'title') {
+      nextMode = 'normal';
+      nextText = current;
+    }
+    obj.textCaseMode = nextMode;
+    obj.set('text', nextText);
+    if (typeof obj.initDimensions === 'function') obj.initDimensions();
+    obj.setCoords();
+    canvas.requestRenderAll();
+    syncSelectionState(obj);
+    pushHistory(canvas);
+  }, [pushHistory, syncSelectionState]);
+
+  const cycleTextAlign = useCallback(() => {
+    const obj = selectedTextRef.current;
+    if (!obj || obj.type !== 'i-text') return;
+    const order = ['left', 'center', 'right'];
+    const idx = order.indexOf(obj.textAlign || 'left');
+    const next = order[(idx + 1) % order.length];
+    updateTextProp('textAlign', next);
+  }, [updateTextProp]);
+
+  const updateActiveObjectStyle = useCallback((patch) => {
+    const canvas = fabricRef.current;
+    const obj = canvas?.getActiveObject();
+    if (!canvas || !isEditableObject(obj)) return;
+
+    if (Object.prototype.hasOwnProperty.call(patch, 'fill')) {
+      obj.set({ fill: patch.fill });
+    }
+    if (Object.prototype.hasOwnProperty.call(patch, 'stroke')) {
+      obj.set({ stroke: patch.stroke });
+    }
+    if (Object.prototype.hasOwnProperty.call(patch, 'strokeWidth')) {
+      obj.set({ strokeWidth: Number(patch.strokeWidth) || 0 });
+    }
+    if (Object.prototype.hasOwnProperty.call(patch, 'radius')) {
+      const radius = Math.max(0, Number(patch.radius) || 0);
+      obj.set({ rx: radius, ry: radius });
+    }
+    if (Object.prototype.hasOwnProperty.call(patch, 'flipX')) {
+      obj.set({ flipX: Boolean(patch.flipX) });
+    }
+    if (Object.prototype.hasOwnProperty.call(patch, 'flipY')) {
+      obj.set({ flipY: Boolean(patch.flipY) });
+    }
+
+    obj.setCoords();
+    canvas.requestRenderAll();
+    syncSelectionState(obj);
+    pushHistory(canvas);
+  }, [isEditableObject, pushHistory, syncSelectionState]);
+
+  const updateActiveObjectProp = useCallback((patch) => {
+    const canvas = fabricRef.current;
+    const obj = canvas?.getActiveObject();
+    if (!canvas || !isEditableObject(obj)) return;
+
+    if (Object.prototype.hasOwnProperty.call(patch, 'scale')) {
+      const s = Math.max(0.1, Number(patch.scale) || 1);
+      obj.set({ scaleX: s, scaleY: s });
+    }
+    if (Object.prototype.hasOwnProperty.call(patch, 'opacity')) {
+      const opacity = Math.max(0.05, Math.min(1, Number(patch.opacity) || 1));
+      obj.set({ opacity });
+    }
+    if (Object.prototype.hasOwnProperty.call(patch, 'angle')) {
+      obj.set({ angle: Number(patch.angle) || 0 });
+    }
+    if (Object.prototype.hasOwnProperty.call(patch, 'x')) {
+      obj.set({ left: Number(patch.x) || 0 });
+    }
+    if (Object.prototype.hasOwnProperty.call(patch, 'y')) {
+      obj.set({ top: Number(patch.y) || 0 });
+    }
+    if (Object.prototype.hasOwnProperty.call(patch, 'visible')) {
+      obj.set({ visible: Boolean(patch.visible) });
+    }
+
+    obj.setCoords();
+    canvas.requestRenderAll();
+    syncSelectionState(obj);
+    pushHistory(canvas);
+  }, [isEditableObject, pushHistory, syncSelectionState]);
+
+  const deleteActiveObject = useCallback(() => {
+    const canvas = fabricRef.current;
+    const obj = canvas?.getActiveObject();
+    if (!canvas || !isEditableObject(obj)) return;
+    canvas.remove(obj);
+    canvas.discardActiveObject();
+    canvas.requestRenderAll();
+    syncSelectionState(null);
+    pushHistory(canvas);
+    syncLayers(canvas);
+  }, [isEditableObject, pushHistory, syncLayers, syncSelectionState]);
+
+  const selectLayer = useCallback((id) => {
+    const canvas = fabricRef.current;
+    if (!canvas) return;
+    const obj = canvas.getObjects().find((o) => o.dataId === id);
+    if (!isEditableObject(obj)) return;
+    canvas.setActiveObject(obj);
+    canvas.requestRenderAll();
+    syncSelectionState(obj);
+    syncLayers(canvas);
+  }, [isEditableObject, syncLayers, syncSelectionState]);
+
+  const toggleLayerVisibility = useCallback((id) => {
+    const canvas = fabricRef.current;
+    if (!canvas) return;
+    const obj = canvas.getObjects().find((o) => o.dataId === id);
+    if (!isEditableObject(obj)) return;
+    obj.set({ visible: obj.visible === false });
+    canvas.requestRenderAll();
+    if (canvas.getActiveObject() === obj && obj.visible === false) {
+      canvas.discardActiveObject();
+      syncSelectionState(null);
+    } else if (canvas.getActiveObject() === obj) {
+      syncSelectionState(obj);
+    }
+    pushHistory(canvas);
+    syncLayers(canvas);
+  }, [isEditableObject, pushHistory, syncLayers, syncSelectionState]);
+
+  const moveLayer = useCallback((id, direction) => {
+    const canvas = fabricRef.current;
+    if (!canvas) return;
+    const obj = canvas.getObjects().find((o) => o.dataId === id);
+    if (!isEditableObject(obj)) return;
+
+    const editableObjects = canvas.getObjects().filter(isEditableObject);
+    const editableIndexes = editableObjects.map((o) => canvas.getObjects().indexOf(o)).filter((n) => n >= 0);
+    const minEditableIndex = Math.min(...editableIndexes);
+    const maxEditableIndex = Math.max(...editableIndexes);
+
+    if (direction === 'up') canvas.bringForward(obj);
+    if (direction === 'down') canvas.sendBackwards(obj);
+    if (direction === 'top') obj.moveTo(maxEditableIndex);
+    if (direction === 'bottom') obj.moveTo(minEditableIndex);
+
+    canvas.setActiveObject(obj);
+    canvas.requestRenderAll();
+    syncSelectionState(obj);
+    pushHistory(canvas);
+    syncLayers(canvas);
+  }, [isEditableObject, pushHistory, syncLayers, syncSelectionState]);
+
+  const reorderLayerByDrag = useCallback((dragId, overId) => {
+    const canvas = fabricRef.current;
+    if (!canvas || !dragId || !overId || dragId === overId) return;
+
+    const editable = canvas.getObjects().filter(isEditableObject);
+    const from = editable.findIndex((o) => o.dataId === dragId);
+    const to = editable.findIndex((o) => o.dataId === overId);
+    if (from < 0 || to < 0 || from === to) return;
+
+    const reordered = [...editable];
+    const [moved] = reordered.splice(from, 1);
+    reordered.splice(to, 0, moved);
+
+    const editableIndexes = editable
+      .map((o) => canvas.getObjects().indexOf(o))
+      .filter((idx) => idx >= 0)
+      .sort((a, b) => a - b);
+    const baseIndex = editableIndexes[0] ?? 0;
+
+    reordered.forEach((obj, idx) => {
+      obj.moveTo(baseIndex + idx);
+    });
+
+    canvas.setActiveObject(moved);
+    canvas.requestRenderAll();
+    syncSelectionState(moved);
+    pushHistory(canvas);
+    syncLayers(canvas);
+  }, [isEditableObject, pushHistory, syncLayers, syncSelectionState]);
+
+  const getLayerLabel = useCallback((layer) => {
+    const t = String(layer?.type || '').toLowerCase();
+    if (t === 'i-text' || t === 'text') return 'Text';
+    if (t === 'image') return 'Image';
+    if (t === 'group') return 'Icon';
+    if (t === 'path') return 'Shape';
+    return 'Object';
   }, []);
+
+  const toggleLayerLock = useCallback((id) => {
+    const canvas = fabricRef.current;
+    if (!canvas) return;
+    const obj = canvas.getObjects().find((o) => o.dataId === id);
+    if (!isEditableObject(obj)) return;
+    const nextLocked = !obj.locked;
+    applyObjectLockState(obj, nextLocked);
+    if (canvas.getActiveObject() === obj && nextLocked) {
+      canvas.discardActiveObject();
+      syncSelectionState(null);
+    } else if (canvas.getActiveObject() === obj) {
+      syncSelectionState(obj);
+    }
+    canvas.requestRenderAll();
+    pushHistory(canvas);
+    syncLayers(canvas);
+  }, [applyObjectLockState, isEditableObject, pushHistory, syncLayers, syncSelectionState]);
+
+  const getActiveEditableObject = useCallback(() => {
+    const canvas = fabricRef.current;
+    const obj = canvas?.getActiveObject();
+    if (!canvas || !isEditableObject(obj)) return null;
+    return obj;
+  }, [isEditableObject]);
+
+  const duplicateActiveObject = useCallback(() => {
+    const canvas = fabricRef.current;
+    const obj = getActiveEditableObject();
+    if (!canvas || !obj) return;
+    obj.clone((cloned) => {
+      cloned.set({
+        left: (obj.left || 0) + 20,
+        top: (obj.top || 0) + 20,
+      });
+      ensureObjectId(cloned);
+      applyObjectLockState(cloned, false);
+      canvas.add(cloned);
+      canvas.setActiveObject(cloned);
+      canvas.requestRenderAll();
+      syncSelectionState(cloned);
+      pushHistory(canvas);
+      syncLayers(canvas);
+    });
+  }, [applyObjectLockState, ensureObjectId, getActiveEditableObject, pushHistory, syncLayers, syncSelectionState]);
+
+  const alignActiveObject = useCallback((mode) => {
+    const canvas = fabricRef.current;
+    const obj = getActiveEditableObject();
+    const clip = clipBoundsRef.current;
+    if (!canvas || !obj || !clip) return;
+    const { clipX, clipY, clipW, clipH } = clip;
+    const rect = obj.getBoundingRect(true, true);
+    const centerX = clipX + clipW / 2;
+    const centerY = clipY + clipH / 2;
+    const objCx = rect.left + rect.width / 2;
+    const objCy = rect.top + rect.height / 2;
+
+    if (mode === 'left') obj.set('left', (obj.left || 0) + (clipX - rect.left));
+    if (mode === 'center') obj.set('left', (obj.left || 0) + (centerX - objCx));
+    if (mode === 'right') obj.set('left', (obj.left || 0) + ((clipX + clipW) - (rect.left + rect.width)));
+    if (mode === 'top') obj.set('top', (obj.top || 0) + (clipY - rect.top));
+    if (mode === 'middle') obj.set('top', (obj.top || 0) + (centerY - objCy));
+    if (mode === 'bottom') obj.set('top', (obj.top || 0) + ((clipY + clipH) - (rect.top + rect.height)));
+
+    obj.setCoords();
+    canvas.requestRenderAll();
+    syncSelectionState(obj);
+    pushHistory(canvas);
+    syncLayers(canvas);
+  }, [getActiveEditableObject, pushHistory, syncLayers, syncSelectionState]);
+
+  const fitImageToClip = useCallback(() => {
+    const canvas = fabricRef.current;
+    const obj = getActiveEditableObject();
+    const clip = clipBoundsRef.current;
+    if (!canvas || !obj || !clip || obj.type !== 'image') return;
+    const { clipX, clipY, clipW, clipH } = clip;
+    const imgW = obj.width || 1;
+    const imgH = obj.height || 1;
+    const scale = Math.max(clipW / imgW, clipH / imgH);
+    const drawW = imgW * scale;
+    const drawH = imgH * scale;
+    obj.set({
+      scaleX: scale,
+      scaleY: scale,
+      left: clipX + (clipW - drawW) / 2,
+      top: clipY + (clipH - drawH) / 2,
+    });
+    obj.setCoords();
+    canvas.requestRenderAll();
+    syncSelectionState(obj);
+    pushHistory(canvas);
+    syncLayers(canvas);
+  }, [getActiveEditableObject, pushHistory, syncLayers, syncSelectionState]);
+
+  const handleContextAction = useCallback((action) => {
+    const targetId = contextMenu?.objectId;
+    if (!targetId) return;
+    selectLayer(targetId);
+    if (action === 'select') {
+      setActiveTab(null);
+      closeContextMenu();
+      return;
+    }
+    if (action === 'duplicate') duplicateActiveObject();
+    if (action === 'align-center') alignActiveObject('center');
+    if (action === 'align-middle') alignActiveObject('middle');
+    if (action === 'delete') deleteActiveObject();
+    closeContextMenu();
+  }, [
+    alignActiveObject,
+    closeContextMenu,
+    contextMenu?.objectId,
+    deleteActiveObject,
+    duplicateActiveObject,
+    setActiveTab,
+    selectLayer,
+  ]);
 
   const addImage = (file) => {
     if (!fabricRef.current || !file) return;
@@ -793,233 +1666,56 @@ export default function DesignPage() {
     });
   }, []);
 
-  const toBase64UrlUtf8 = (text) =>
-    btoa(unescape(encodeURIComponent(text)))
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=+$/, '');
+  const canApplyToCurrentSide = useCallback(() => {
+    if (!fabricRef.current || !clipBoundsRef.current) return false;
+    if (clipSideRef.current !== side) return false;
+    return true;
+  }, [side]);
 
-  const uploadGreenAudio = async (file) => {
-    const fd = new FormData();
-    fd.append('file', file);
-    const res = await fetch(`${API_BASE}/api/v1/audio/upload`, { method: 'POST', body: fd });
-    let data = null;
-    try { data = await res.json(); } catch {
-      // ignore non-json error body
-    }
-    if (!res.ok) {
-      const msg = data?.message || 'Không thể upload audio. Vui lòng thử lại.';
-      throw new Error(msg);
-    }
-    if (!data?.id) throw new Error('Upload thành công nhưng thiếu id.');
-    return data.id;
-  };
+  const {
+    greenAiPrompt,
+    setGreenAiPrompt,
+    greenAiGenerating,
+    greenAiImageDataUrl,
+    greenAiError,
+    savedAiItems,
+    handleGreenAiGenerate,
+    applySavedAiItem,
+    removeSavedAiItem,
+  } = useGreenAi({
+    templateId,
+    side,
+    canvasSideReady,
+    canApplyToCurrentSide,
+    addImageToClipAreaFromDataUrl,
+  });
 
-  const generateGreenQr = useCallback(async () => {
-    setGreenQrGenerating(true);
-    try {
-      let url = '';
-      if (greenQrMode === 'audio') {
-        const f = greenQrRecordedFile || greenQrAudioFile;
-        if (!f) {
-          message.warning('Vui lòng chọn file audio hoặc ghi âm (tối đa 5MB).');
-          return;
-        }
-        if (f.size > MAX_AUDIO_BYTES) {
-          message.error('File audio vượt quá 5MB.');
-          return;
-        }
-        if (!String(f.type || '').toLowerCase().startsWith('audio/')) {
-          message.error('Chỉ hỗ trợ file audio (audio/*).');
-          return;
-        }
-        const id = await uploadGreenAudio(f);
-        url = `${window.location.origin}/audio-file/${id}`;
-      } else {
-        const text = (greenQrText || '').trim();
-        if (!text) {
-          message.warning('Vui lòng nhập nội dung để tạo QR.');
-          return;
-        }
-        const base64url = toBase64UrlUtf8(text);
-        url = `${window.location.origin}/tts/${base64url}`;
-      }
-
-      const size = 512;
-      const canvas = document.createElement('canvas');
-      canvas.width = size;
-      canvas.height = size;
-
-      await QRCode.toCanvas(canvas, url, {
-        width: size,
-        margin: 2,
-        color: {
-          dark: greenQrColor || '#000000',
-          light: '#ffffff',
-        },
-        errorCorrectionLevel: 'H',
-      });
-
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        const cx = size / 2;
-        const cy = size / 2;
-        const boxSize = size * 0.32;
-        const half = boxSize / 2;
-
-        ctx.fillStyle = '#ffffff';
-        const radius = boxSize * 0.2;
-        ctx.beginPath();
-        ctx.moveTo(cx - half + radius, cy - half);
-        ctx.lineTo(cx + half - radius, cy - half);
-        ctx.quadraticCurveTo(cx + half, cy - half, cx + half, cy - half + radius);
-        ctx.lineTo(cx + half, cy + half - radius);
-        ctx.quadraticCurveTo(cx + half, cy + half, cx + half - radius, cy + half);
-        ctx.lineTo(cx - half + radius, cy + half);
-        ctx.quadraticCurveTo(cx - half, cy + half, cx - half, cy + half - radius);
-        ctx.lineTo(cx - half, cy - half + radius);
-        ctx.quadraticCurveTo(cx - half, cy - half, cx - half + radius, cy - half);
-        ctx.closePath();
-        ctx.fill();
-
-        ctx.strokeStyle = greenQrColor || '#16a34a';
-        ctx.lineWidth = 4;
-        ctx.beginPath();
-        const waveLeft = cx - half * 0.8;
-        const waveRight = cx + half * 0.8;
-        const midY = cy;
-        ctx.moveTo(waveLeft, midY);
-        ctx.lineTo(cx - half * 0.3, midY);
-        ctx.lineTo(cx - half * 0.15, midY - half * 0.4);
-        ctx.lineTo(cx, midY + half * 0.3);
-        ctx.lineTo(cx + half * 0.2, midY - half * 0.5);
-        ctx.lineTo(cx + half * 0.4, midY);
-        ctx.lineTo(waveRight, midY);
-        ctx.stroke();
-
-        ctx.strokeStyle = 'rgba(22,163,74,0.35)';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(cx, cy, boxSize * 0.7, -Math.PI / 3, Math.PI * 4 / 3);
-        ctx.stroke();
-      }
-
-      const dataUrl = canvas.toDataURL('image/png');
-      addImageFromDataUrl(dataUrl);
-      message.success('Đã thêm QR Green vào thiết kế');
-    } catch (e) {
-      message.error(e?.message || 'Không thể tạo QR. Vui lòng thử lại.');
-    } finally {
-      setGreenQrGenerating(false);
-    }
-  }, [greenQrMode, greenQrRecordedFile, greenQrAudioFile, greenQrText, greenQrColor, addImageFromDataUrl]);
-
-  const handleGreenAiGenerate = useCallback(async () => {
-    const prompt = (greenAiPrompt || '').trim();
-    if (!prompt) {
-      message.warning('Vui lòng nhập mô tả ảnh.');
-      return;
-    }
-    setGreenAiError(null);
-    setGreenAiImageDataUrl(null);
-    setPendingFrontAiImageDataUrl(null);
-    setPendingBackAiImageDataUrl(null);
-    setGreenAiGenerating(true);
-    try {
-      const tplId = Number(templateId);
-      if (!tplId || Number.isNaN(tplId)) {
-        throw new Error('Thiếu thông tin mẫu túi để tạo thiết kế AI.');
-      }
-      const data = await generateBagDesign({
-        prompt,
-        templateId: tplId,
-        generateFront: true,
-        generateBack: true,
-      });
-      const frontDataUrl = data?.frontImageBase64
-        ? `data:image/png;base64,${data.frontImageBase64}`
-        : null;
-      const backDataUrl = data?.backImageBase64
-        ? `data:image/png;base64,${data.backImageBase64}`
-        : null;
-
-      // Lưu để hiển thị preview nhỏ (nếu muốn tái dùng logic cũ)
-      setGreenAiImageDataUrl(frontDataUrl || backDataUrl || null);
-
-      // Lưu vào IndexedDB để người dùng chọn lại sau
-      await addAiGenerated({
-        prompt,
-        frontDataUrl: frontDataUrl || undefined,
-        backDataUrl: backDataUrl || undefined,
-      });
-      setSavedAiItems(await loadAiGenerated());
-
-      // Áp dụng cho mặt hiện tại và lưu patch cho mặt còn lại
-      if (side === 'front') {
-        if (frontDataUrl) {
-          addImageToClipAreaFromDataUrl(frontDataUrl);
-        } else if (backDataUrl) {
-          addImageToClipAreaFromDataUrl(backDataUrl);
-        }
-        if (backDataUrl) {
-          setPendingBackAiImageDataUrl(backDataUrl);
-        }
-      } else {
-        if (backDataUrl) {
-          addImageToClipAreaFromDataUrl(backDataUrl);
-        } else if (frontDataUrl) {
-          addImageToClipAreaFromDataUrl(frontDataUrl);
-        }
-        if (frontDataUrl) {
-          setPendingFrontAiImageDataUrl(frontDataUrl);
-        }
-      }
-    } catch (e) {
-      setGreenAiError(e.message || 'Không thể tạo thiết kế túi bằng AI');
-    } finally {
-      setGreenAiGenerating(false);
-    }
-  }, [greenAiPrompt, templateId, side, addImageToClipAreaFromDataUrl]);
-
-  // Khi canvas cho mặt hiện tại đã sẵn sàng và có patch pending, tự chèn vào vùng custom
-  useEffect(() => {
-    if (!fabricRef.current || !clipBoundsRef.current) return;
-    if (clipSideRef.current !== side) return;
-
-    if (side === 'front' && pendingFrontAiImageDataUrl) {
-      addImageToClipAreaFromDataUrl(pendingFrontAiImageDataUrl);
-      setPendingFrontAiImageDataUrl(null);
-    }
-    if (side === 'back' && pendingBackAiImageDataUrl) {
-      addImageToClipAreaFromDataUrl(pendingBackAiImageDataUrl);
-      setPendingBackAiImageDataUrl(null);
-    }
-  }, [side, canvasSideReady, pendingFrontAiImageDataUrl, pendingBackAiImageDataUrl, addImageToClipAreaFromDataUrl]);
-
-  const applySavedAiItem = useCallback(
-    (item) => {
-      const dataUrl = item.frontDataUrl || item.backDataUrl;
-      if (!dataUrl) {
-        message.warning('Thiết kế này không có ảnh.');
-        return;
-      }
-      addImageToClipAreaFromDataUrl(dataUrl);
-      message.success('Đã thêm thiết kế vào vùng in');
-    },
-    [addImageToClipAreaFromDataUrl]
-  );
-
-  const removeSavedAiItem = useCallback(async (id, e) => {
-    e?.stopPropagation?.();
-    await removeAiGenerated(id);
-    setSavedAiItems(await loadAiGenerated());
-    message.success('Đã xóa khỏi lịch sử');
-  }, []);
+  const {
+    greenQrMode,
+    setGreenQrMode,
+    greenQrText,
+    setGreenQrText,
+    greenQrAudioFile,
+    setGreenQrAudioFile,
+    greenQrColor,
+    setGreenQrColor,
+    greenQrGenerating,
+    greenQrRecordedFile,
+    greenQrRecordedUrl,
+    greenQrRecording,
+    greenQrRecordSeconds,
+    fmtMmSs,
+    startGreenQrRecording,
+    stopGreenQrRecording,
+    clearRecordedAudio,
+    generateGreenQr,
+  } = useGreenQr({
+    apiBase: API_BASE,
+    addImageFromDataUrl,
+  });
 
   const buildSnapshot = () => {
-    if (fabricRef.current) {
-      designRef.current[side] = fabricRef.current.toJSON();
-    }
+    saveCurrentSide();
     return JSON.stringify({
       front: designRef.current.front,
       back: designRef.current.back,
@@ -1035,510 +1731,235 @@ export default function DesignPage() {
     navigate(`/custom-bag/${templateId}/checkout`, { state: { designSnapshot: buildSnapshot() } });
   };
 
+  const isTextObject = activeObjectInfo?.type === 'i-text';
+  const isImageObject = activeObjectInfo?.type === 'image';
+  const isShapeObject = Boolean(activeObjectInfo) && !isTextObject && !isImageObject;
+  const floatingToolbarPos = floatingObjectMenuPos
+    ? {
+      x: Math.max(96, Math.min(window.innerWidth - 360, floatingObjectMenuPos.x - 230)),
+      y: Math.max(72, floatingObjectMenuPos.y - 54),
+    }
+    : null;
+
   if (loading || !template) {
     return <div className="design-page"><div className="design-loading">Đang tải...</div></div>;
   }
 
   return (
-    <div className="design-page">
-      {/* ── Top bar ── */}
-      <header className="design-topbar">
-        <div className="design-topbar-left">
-          <button className="design-back-btn" onClick={() => navigate('/custom-bag')}>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
-            Back
-          </button>
-          <div className="design-topbar-meta">
-            <span className="design-topbar-name">{template.name}</span>
-            <span className="design-topbar-saved">
-              <span className="saved-dot" />
-              Đã lưu
-            </span>
-          </div>
-        </div>
+    <ConfigProvider
+      theme={{
+        algorithm: theme.defaultAlgorithm,
+        token: {
+          colorPrimary: '#22c55e',
+          colorBgContainer: '#ffffff',
+          colorBorder: '#e5e7eb',
+          colorText: '#111827',
+          borderRadius: 8,
+          controlHeight: 36,
+        },
+      }}
+    >
+      <div className="design-page">
+        <main
+          className="design-canvas-wrap"
+          onMouseEnter={() => setIsCanvasHovered(true)}
+          onMouseLeave={() => setIsCanvasHovered(false)}
+        >
+          <div className={`lab-grid${isCanvasHovered ? ' active' : ''}`} aria-hidden="true" />
+          <Topbar
+            templateName={template.name}
+            canUndo={canUndo}
+            canRedo={canRedo}
+            onUndo={handleUndo}
+            onRedo={handleRedo}
+            onPreview={goToPreview}
+            onOrder={goToOrder}
+            onBack={() => navigate('/custom-bag')}
+          />
 
-        <div className="design-topbar-center">
-          <button className="design-tabnav active">Design</button>
-          <button className="design-tabnav" onClick={goToOrder}>Order</button>
-        </div>
-
-        <div className="design-topbar-right">
-          <button className="design-icon-btn" title="Undo" disabled><UndoOutlined /></button>
-          <button className="design-icon-btn" title="Redo" disabled><RedoOutlined /></button>
-          <div className="design-topbar-divider" />
-          <button className="design-preview-ghost-btn" onClick={goToPreview}>
-            <EyeOutlined /> Preview
-          </button>
-          <button className="design-next-btn" onClick={goToOrder}>
-            Order →
-          </button>
-        </div>
-      </header>
-
-      <div className="design-body">
-        <aside className="design-sidebar">
-          {/* Icon tab bar */}
-          <div className="design-tab-bar">
-            {[
-              { key: 'text',       icon: <FontSizeOutlined />,  label: 'Add Text'   },
-              { key: 'image',      icon: <PictureOutlined />,   label: 'Add Image'  },
-              { key: 'icon',       icon: <PiStar />,            label: 'Icon'       },
-              { key: 'greenai',    icon: <PiSparkle />,         label: 'Green AI'   },
-              { key: 'greenqr',    icon: <PiLeaf />,            label: 'Green QR'   },
-              { key: 'background', icon: <BgColorsOutlined />,  label: 'Background' },
-              { key: 'elements',   icon: <AppstoreOutlined />,  label: 'Elements'   },
-            ].map(({ key, icon, label }) => (
-              <button
-                key={key}
-                className={`design-tab-btn${activeTab === key ? ' active' : ''}`}
-                onClick={() => setActiveTab(activeTab === key ? null : key)}
-              >
-                <span className="design-tab-icon">{icon}</span>
-                <span className="design-tab-label">{label}</span>
-              </button>
-            ))}
-          </div>
-
-          {/* Sliding panel */}
-          {activeTab && (
-            <div className={`design-tab-panel${activeTab === 'greenai' ? ' design-tab-panel--wide' : ''}`}>
-              <div className="design-tab-panel-header">
-                <span>
-                  {activeTab === 'text'       && 'Add text to your design'}
-                  {activeTab === 'image'      && 'Add Image'}
-                  {activeTab === 'icon'       && 'Icons'}
-                  {activeTab === 'greenai'    && 'Green AI'}
-                  {activeTab === 'greenqr'    && 'Green QR – Mã âm thanh xanh'}
-                  {activeTab === 'background' && 'Background'}
-                  {activeTab === 'elements'   && 'Elements'}
-                </span>
-                <button className="design-tab-panel-close" onClick={() => setActiveTab(null)}>✕</button>
-              </div>
-
-              {activeTab === 'text' && (
-                <div className="design-tab-panel-body">
-                  <p className="panel-hint">Click the button below to add text to your design</p>
-                  <Button icon={<FontSizeOutlined />} block onClick={addText} className="panel-main-btn">
-                    Add a text box
-                  </Button>
-
-                  {textProps && (
-                    <div className="text-props-panel">
-                      <p className="panel-section-title">Chỉnh sửa text đã chọn</p>
-
-                      <label className="text-prop-row">
-                        <span>Font</span>
-                        <Select
-                          value={textProps.fontFamily}
-                          onChange={(v) => updateTextProp('fontFamily', v)}
-                          options={FONT_OPTIONS}
-                          style={{ width: '100%' }}
-                          listHeight={320}
-                          showSearch
-                          optionFilterProp="label"
-                          placeholder="Chọn font"
-                        />
-                      </label>
-
-                      <label className="text-prop-row">
-                        <span>Cỡ chữ</span>
-                        <Input
-                          type="number"
-                          min={8}
-                          max={200}
-                          value={textProps.fontSize}
-                          onChange={(e) => updateTextProp('fontSize', parseInt(e.target.value, 10) || 16)}
-                        />
-                      </label>
-
-                      <label className="text-prop-row">
-                        <span>Màu</span>
-                        <div className="text-color-row">
-                          <input
-                            type="color"
-                            value={textProps.fill}
-                            onChange={(e) => updateTextProp('fill', e.target.value)}
-                            className="text-color-picker"
-                          />
-                          <Input
-                            value={textProps.fill}
-                            onChange={(e) => updateTextProp('fill', e.target.value)}
-                            style={{ flex: 1 }}
-                          />
-                        </div>
-                      </label>
-
-                      <label className="text-prop-row">
-                        <span>Đậm / Nghiêng</span>
-                        <div className="text-style-btns">
-                          <button
-                            className={`text-style-btn${textProps.fontWeight === 'bold' ? ' active' : ''}`}
-                            onClick={() => updateTextProp('fontWeight', textProps.fontWeight === 'bold' ? 'normal' : 'bold')}
-                          >
-                            B
-                          </button>
-                          <button
-                            className={`text-style-btn${textProps.fontStyle === 'italic' ? ' active' : ''}`}
-                            onClick={() => updateTextProp('fontStyle', textProps.fontStyle === 'italic' ? 'normal' : 'italic')}
-                          >
-                            I
-                          </button>
-                        </div>
-                      </label>
-
-                      <label className="text-prop-row">
-                        <span>Letter spacing</span>
-                        <Slider
-                          min={-100}
-                          max={200}
-                          value={textProps.charSpacing}
-                          onChange={(v) => updateTextProp('charSpacing', v)}
-                        />
-                      </label>
-
-                      <label className="text-prop-row">
-                        <span>Curve (cong chữ)</span>
-                        <Select
-                          value={textProps.curveType || 'none'}
-                          onChange={(v) => updateTextProp('curveType', v)}
-                          options={[
-                            { value: 'none', label: 'Thẳng' },
-                            { value: 'arcUp', label: 'Cong lên' },
-                            { value: 'arcDown', label: 'Cong xuống' },
-                            { value: 'wave', label: 'Sóng' },
-                            { value: 'arcLeft', label: 'Cong trái' },
-                            { value: 'arcRight', label: 'Cong phải' },
-                          ]}
-                          style={{ width: '100%' }}
-                        />
-                      </label>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {activeTab === 'image' && (
-                <div className="design-tab-panel-body">
-                  <Upload showUploadList={false} beforeUpload={(f) => { addImage(f); return false; }} accept="image/*">
-                    <Button icon={<PictureOutlined />} block className="panel-main-btn">Thêm ảnh từ máy</Button>
-                  </Upload>
-                </div>
-              )}
-
-              {activeTab === 'greenai' && (
-                <div className="design-tab-panel-body">
-                  <p className="panel-hint">Nhập mô tả ảnh, AI sẽ tạo ảnh cho bạn (tối đa 20 ảnh/ngày toàn hệ thống).</p>
-                  <Input.TextArea
-                    placeholder="VD: Một bông hoa sen màu hồng trên nền xanh lá"
-                    value={greenAiPrompt}
-                    onChange={(e) => setGreenAiPrompt(e.target.value)}
-                    rows={3}
-                    className="green-ai-prompt-input"
-                  />
-                  <Button
-                    type="primary"
-                    block
-                    loading={greenAiGenerating}
-                    onClick={handleGreenAiGenerate}
-                    className="panel-main-btn"
-                  >
-                    {greenAiGenerating ? 'Đang tạo ảnh...' : 'Tạo ảnh bằng AI'}
-                  </Button>
-                  {greenAiError && <p className="green-ai-error">{greenAiError}</p>}
-                  {greenAiImageDataUrl && (
-                    <div className="green-ai-result">
-                      <img src={greenAiImageDataUrl} alt="AI generated" className="green-ai-preview-img" />
-                      <p className="panel-hint">
-                        Thiết kế AI đã được tự động gắn vào vùng in trên túi. Đã lưu vào lịch sử để chọn lại.
-                      </p>
-                    </div>
-                  )}
-
-                  {savedAiItems.length > 0 && (
-                    <div className="green-ai-saved">
-                      <p className="panel-section-title">Thiết kế đã lưu (chọn để thêm vào vùng in)</p>
-                      <div className="green-ai-saved-grid">
-                        {savedAiItems.map((item) => {
-                          const thumbUrl = item.frontDataUrl || item.backDataUrl;
-                          return (
-                            <div
-                              key={item.id}
-                              className="green-ai-saved-item"
-                              onClick={() => applySavedAiItem(item)}
-                              role="button"
-                              tabIndex={0}
-                              onKeyDown={(e) => e.key === 'Enter' && applySavedAiItem(item)}
-                            >
-                              {thumbUrl ? (
-                                <img src={thumbUrl} alt="" className="green-ai-saved-thumb" />
-                              ) : (
-                                <div className="green-ai-saved-thumb green-ai-saved-thumb--empty" />
-                              )}
-                              <span className="green-ai-saved-prompt" title={item.prompt}>
-                                {item.prompt.length > 20 ? `${item.prompt.slice(0, 20)}…` : item.prompt}
-                              </span>
-                              <button
-                                type="button"
-                                className="green-ai-saved-delete"
-                                onClick={(e) => removeSavedAiItem(item.id, e)}
-                                aria-label="Xóa"
-                              >
-                                <DeleteOutlined />
-                              </button>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {activeTab === 'greenqr' && (
-                <div className="design-tab-panel-body">
-                  <p className="panel-hint">
-                    Tạo mã QR âm thanh theo 2 cách: (1) Text → hệ thống đọc (TTS), (2) Upload file audio (≤ 5MB).
-                  </p>
-
-                  <div className="green-qr-color-row">
-                    <span>Loại nội dung</span>
-                    <Select
-                      value={greenQrMode}
-                      onChange={(v) => setGreenQrMode(v)}
-                      style={{ width: '100%' }}
-                      options={[
-                        { value: 'tts', label: 'Text (TTS)' },
-                        { value: 'audio', label: 'Upload audio (≤ 5MB)' },
-                      ]}
-                    />
-                  </div>
-
-                  {greenQrMode === 'tts' ? (
-                    <Input.TextArea
-                      rows={3}
-                      placeholder="VD: Lời chúc sinh nhật, câu quote yêu thích..."
-                      value={greenQrText}
-                      onChange={(e) => setGreenQrText(e.target.value)}
-                      className="green-qr-input"
-                    />
-                  ) : (
-                    <div style={{ marginTop: 10 }}>
-                      <Upload
-                        showUploadList={false}
-                        accept="audio/*"
-                        beforeUpload={(f) => {
-                          stopGreenQrRecording();
-                          clearRecordedAudio();
-                          setGreenQrAudioFile(f);
-                          return false;
-                        }}
-                      >
-                        <Button block className="panel-main-btn">
-                          Chọn file audio
-                        </Button>
-                      </Upload>
-                      {greenQrAudioFile && (
-                        <p className="panel-hint" style={{ marginTop: 8 }}>
-                          Đã chọn: <code>{greenQrAudioFile.name}</code> ({Math.round(greenQrAudioFile.size / 1024)} KB)
-                        </p>
-                      )}
-
-                      <div className="green-qr-record">
-                        <div className="green-qr-record-head">
-                          <span>Hoặc ghi âm</span>
-                          <span className={`green-qr-record-timer${greenQrRecording ? ' active' : ''}`}>
-                            {fmtMmSs(greenQrRecordSeconds)}
-                          </span>
-                        </div>
-
-                        <div className="green-qr-record-actions">
-                          {!greenQrRecording ? (
-                            <Button
-                              block
-                              onClick={startGreenQrRecording}
-                              className="panel-main-btn green-qr-record-btn"
-                              disabled={greenQrGenerating}
-                            >
-                              Bắt đầu ghi âm
-                            </Button>
-                          ) : (
-                            <Button
-                              danger
-                              block
-                              onClick={stopGreenQrRecording}
-                              className="panel-main-btn green-qr-record-btn"
-                            >
-                              Dừng ghi âm
-                            </Button>
-                          )}
-                        </div>
-
-                        {greenQrRecordedUrl && (
-                          <div className="green-qr-record-preview">
-                            <audio controls src={greenQrRecordedUrl} style={{ width: '100%' }} />
-                            <div className="green-qr-record-meta">
-                              <span className="panel-hint" style={{ margin: 0 }}>
-                                Bản ghi: <code>{greenQrRecordedFile?.name || 'recording'}</code>
-                              </span>
-                              <button
-                                type="button"
-                                className="green-qr-record-clear"
-                                onClick={clearRecordedAudio}
-                              >
-                                Xóa
-                              </button>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="green-qr-color-row">
-                    <span>Màu QR</span>
-                    <div className="green-qr-color-controls">
-                      <input
-                        type="color"
-                        value={greenQrColor}
-                        onChange={(e) => setGreenQrColor(e.target.value)}
-                      />
-                      <Input
-                        value={greenQrColor}
-                        onChange={(e) => setGreenQrColor(e.target.value)}
-                        style={{ maxWidth: 120 }}
-                      />
-                    </div>
-                  </div>
-
-                  <p className="panel-hint">
-                    QR được thiết kế với nhịp sóng (heartbeat / waveform) ở giữa để gợi cảm giác âm thanh.
-                  </p>
-
-                  <Button
-                    type="primary"
-                    block
-                    loading={greenQrGenerating}
-                    onClick={generateGreenQr}
-                    className="panel-main-btn"
-                  >
-                    {greenQrGenerating ? 'Đang tạo QR...' : 'Tạo QR Green Sound'}
-                  </Button>
-                </div>
-              )}
-
-              {activeTab === 'icon' && (
-                <div className="design-tab-panel-body">
-                  <p className="panel-hint">Chọn icon để thêm vào thiết kế</p>
-                  <div className="icon-grid">
-                    {ICON_LIST.map(({ Icon, label }, i) => (
-                      <button
-                        key={i}
-                        type="button"
-                        className="icon-grid-item"
-                        onClick={() => addIconToCanvas(Icon)}
-                        title={label}
-                      >
-                        <Icon size={28} />
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {activeTab === 'background' && (
-                <div className="design-tab-panel-body">
-                  {/* Swatches */}
-                  <p className="panel-section-title">Swatches</p>
-                  <div className="swatch-grid">
-                    {['#ffffff','#888888','#222222','#a8d8ea','#3b82f6','#7c3aed',
-                      '#f9a8d4','#ec4899','#ef4444','#f97316','#92400e','#eab308'].map((c) => (
-                      <button
-                        key={c}
-                        className={`swatch-dot${bgColor === c ? ' selected' : ''}`}
-                        style={{ background: c }}
-                        onClick={() => applyBgColor(c)}
-                      />
-                    ))}
-                  </div>
-
-                  {/* Custom color */}
-                  <p className="panel-section-title">Custom color</p>
-                  <div className="custom-color-row">
-                    <label className="custom-color-picker-wrap">
-                      <input
-                        type="color"
-                        value={bgColor}
-                        onChange={(e) => applyBgColor(e.target.value)}
-                        className="custom-color-input"
-                      />
-                    </label>
-                    <span className="custom-color-hex">{bgColor.toUpperCase()}</span>
-                  </div>
-                </div>
-              )}
-
-              {activeTab === 'elements' && (
-                <div className="design-tab-panel-body">
-                  {textures.length === 0
-                    ? <p className="panel-hint">Chưa có elements nào.</p>
-                    : (
-                      <div className="texture-grid">
-                        {textures.map((t) => (
-                          <div key={t.id} className="texture-item" onClick={() => addTexture(t)}>
-                            <img src={t.imageUrl} alt={t.name || ''} />
-                          </div>
-                        ))}
-                      </div>
-                    )
-                  }
-                </div>
-              )}
-            </div>
-          )}
-        </aside>
-        <main className="design-canvas-wrap" key={side}>
-          <div className="design-canvas-container">
-            <div className="design-canvas-inner">
-              <canvas id="design-canvas" />
-            </div>
-          </div>
-          <div className="design-zoom-bar">
-            <button className="design-zoom-btn" onClick={() => setZoom((z) => Math.max(50, z - 10))}>−</button>
-            <Slider
-              min={50}
-              max={300}
-              value={zoom}
-              onChange={setZoom}
-              className="design-zoom-slider"
-              tooltip={{ formatter: (v) => `${v}%` }}
+          <div className="design-body">
+            <FloatingToolbar
+              activeObjectInfo={activeObjectInfo}
+              isTextObject={isTextObject}
+              isImageObject={isImageObject}
+              isShapeObject={isShapeObject}
+              textProps={textProps}
+              floatingTool={floatingTool}
+              setFloatingTool={setFloatingTool}
+              setShowLayerOverlay={setShowLayerOverlay}
+              updateTextProp={updateTextProp}
+              cycleTextCase={cycleTextCase}
+              cycleTextAlign={cycleTextAlign}
+              updateActiveObjectStyle={updateActiveObjectStyle}
+              updateActiveObjectProp={updateActiveObjectProp}
+              fitImageToClip={fitImageToClip}
+              duplicateActiveObject={duplicateActiveObject}
+              deleteActiveObject={deleteActiveObject}
+              fontOptions={FONT_OPTIONS}
+              fontSizePresets={FONT_SIZE_PRESETS}
+              activeFillColor={selectedTextRef.current?.fill}
+              toolbarPosition={floatingToolbarPos}
             />
-            <button className="design-zoom-btn" onClick={() => setZoom((z) => Math.min(300, z + 10))}>+</button>
-            <span className="design-zoom-label">{zoom}%</span>
+
+            <LeftPanel
+              activeTab={activeTab}
+              leftSidebarWidth={leftSidebarWidth}
+              setActiveTab={setActiveTab}
+              side={side}
+              switchSide={switchSide}
+              addText={addText}
+              addImage={addImage}
+              greenAiPanel={(
+                <GreenAiPanel
+                  greenAiPrompt={greenAiPrompt}
+                  setGreenAiPrompt={setGreenAiPrompt}
+                  greenAiGenerating={greenAiGenerating}
+                  handleGreenAiGenerate={handleGreenAiGenerate}
+                  greenAiError={greenAiError}
+                  greenAiImageDataUrl={greenAiImageDataUrl}
+                  savedAiItems={savedAiItems}
+                  applySavedAiItem={applySavedAiItem}
+                  removeSavedAiItem={removeSavedAiItem}
+                />
+              )}
+              greenQrPanel={(
+                <GreenQrPanel
+                  greenQrMode={greenQrMode}
+                  setGreenQrMode={setGreenQrMode}
+                  greenQrText={greenQrText}
+                  setGreenQrText={setGreenQrText}
+                  stopGreenQrRecording={stopGreenQrRecording}
+                  clearRecordedAudio={clearRecordedAudio}
+                  setGreenQrAudioFile={setGreenQrAudioFile}
+                  greenQrAudioFile={greenQrAudioFile}
+                  greenQrRecording={greenQrRecording}
+                  greenQrRecordSeconds={greenQrRecordSeconds}
+                  fmtMmSs={fmtMmSs}
+                  startGreenQrRecording={startGreenQrRecording}
+                  greenQrGenerating={greenQrGenerating}
+                  greenQrRecordedUrl={greenQrRecordedUrl}
+                  greenQrRecordedFile={greenQrRecordedFile}
+                  greenQrColor={greenQrColor}
+                  setGreenQrColor={setGreenQrColor}
+                  generateGreenQr={generateGreenQr}
+                />
+              )}
+              iconList={ICON_LIST}
+              addIconToCanvas={addIconToCanvas}
+              bgColor={bgColor}
+              applyBgColor={applyBgColor}
+              textures={textures}
+              addTexture={addTexture}
+              startResizePanel={startResizePanel}
+            />
+
+            <div className="design-canvas-container">
+              <div className="design-canvas-inner">
+                <canvas id="design-canvas" />
+              </div>
+            </div>
+            <div className="design-zoom-bar">
+              <button className="design-zoom-btn" onClick={() => setZoom((z) => Math.max(50, z - 10))}>−</button>
+              <Slider
+                min={50}
+                max={300}
+                value={zoom}
+                onChange={setZoom}
+                className="design-zoom-slider"
+                tooltip={{ formatter: (v) => `${v}%` }}
+              />
+              <button className="design-zoom-btn" onClick={() => setZoom((z) => Math.min(300, z + 10))}>+</button>
+              <span className="design-zoom-label">{zoom}%</span>
+            </div>
           </div>
         </main>
 
-        {/* ── Right sidebar — mặt trước / mặt sau ── */}
-        <aside className="design-right-bar">
-          <div
-            className={`design-side-thumb${side === 'front' ? ' active' : ''}`}
-            onClick={() => { saveAndSwitch(); setSide('front'); }}
-          >
-            <div className="design-side-thumb-img">
-              <img src={template.frontImageUrl} alt="Mặt trước" />
-            </div>
-            <span>Front</span>
+        {activeObjectInfo && floatingObjectMenuPos && (
+          <div className="object-mini-menu" style={{ left: floatingObjectMenuPos.x, top: floatingObjectMenuPos.y }}>
+            <Tooltip title="AI"><button type="button" onClick={() => setActiveTab('greenai')}><PiSparkle /></button></Tooltip>
+            <Tooltip title="Lock / Unlock"><button type="button" onClick={() => {
+              const obj = fabricRef.current?.getActiveObject();
+              if (!obj?.dataId) return;
+              toggleLayerLock(obj.dataId);
+            }}><LockOutlined /></button></Tooltip>
+            <Tooltip title="Duplicate"><button type="button" onClick={duplicateActiveObject}><CopyOutlined /></button></Tooltip>
+            <Tooltip title="Delete"><button type="button" onClick={deleteActiveObject}><DeleteOutlined /></button></Tooltip>
+            <Tooltip title="More"><button type="button" onClick={() => setShowLayerOverlay((v) => !v)}>...</button></Tooltip>
           </div>
-          <div
-            className={`design-side-thumb${side === 'back' ? ' active' : ''}`}
-            onClick={() => { saveAndSwitch(); setSide('back'); }}
-          >
-            <div className="design-side-thumb-img">
-              <img src={template.backImageUrl} alt="Mặt sau" />
+        )}
+
+        {showLayerOverlay && (
+          <div className="layer-overlay-panel" onClick={(e) => e.stopPropagation()}>
+            <div className="layer-overlay-head">
+              <span>Layers</span>
+              <button type="button" onClick={() => setShowLayerOverlay(false)}>✕</button>
             </div>
-            <span>Back</span>
+            {layers.length === 0 ? (
+              <p className="design-layer-empty">No object.</p>
+            ) : (
+              <div className="design-layer-list">
+                {layers.map((layer) => (
+                  <div
+                    key={layer.id}
+                    className={`design-layer-item draggable-layer${layer.isActive ? ' active' : ''}${dragLayerId === layer.id ? ' is-dragging' : ''}${dragOverLayerId === layer.id ? ' is-drag-over' : ''}`}
+                    onClick={() => selectLayer(layer.id)}
+                    draggable
+                    onDragStart={(e) => {
+                      e.dataTransfer.effectAllowed = 'move';
+                      e.dataTransfer.setData('text/plain', layer.id);
+                      setDragLayerId(layer.id);
+                    }}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      if (dragLayerId && dragLayerId !== layer.id) setDragOverLayerId(layer.id);
+                    }}
+                    onDragLeave={() => {
+                      if (dragOverLayerId === layer.id) setDragOverLayerId(null);
+                    }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      reorderLayerByDrag(dragLayerId, layer.id);
+                      setDragLayerId(null);
+                      setDragOverLayerId(null);
+                    }}
+                    onDragEnd={() => {
+                      setDragLayerId(null);
+                      setDragOverLayerId(null);
+                    }}
+                  >
+                    <div className="design-layer-title">
+                      <span>{getLayerLabel(layer)}</span>
+                    </div>
+                    <div className="design-layer-actions" onClick={(e) => e.stopPropagation()}>
+                      <button type="button" title="Top" onClick={() => moveLayer(layer.id, 'top')}><VerticalAlignTopOutlined /></button>
+                      <button type="button" title="Up" onClick={() => moveLayer(layer.id, 'up')}><ArrowUpOutlined /></button>
+                      <button type="button" title="Down" onClick={() => moveLayer(layer.id, 'down')}><ArrowDownOutlined /></button>
+                      <button type="button" title="Bottom" onClick={() => moveLayer(layer.id, 'bottom')}><VerticalAlignBottomOutlined /></button>
+                      <button type="button" title="Show/Hide" onClick={() => toggleLayerVisibility(layer.id)}>{layer.visible ? <EyeOutlined /> : <EyeInvisibleOutlined />}</button>
+                      <button type="button" title="Lock" onClick={() => toggleLayerLock(layer.id)}>{layer.locked ? <LockOutlined /> : <UnlockOutlined />}</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-        </aside>
+        )}
+
+        {contextMenu && (
+          <div
+            className="design-context-menu"
+            style={{ left: contextMenu.x, top: contextMenu.y }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button type="button" onClick={() => handleContextAction('select')}>Chọn layer</button>
+            <button type="button" onClick={() => handleContextAction('duplicate')}>Nhân đôi</button>
+            <button type="button" onClick={() => handleContextAction('align-center')}>Căn giữa ngang</button>
+            <button type="button" onClick={() => handleContextAction('align-middle')}>Căn giữa dọc</button>
+            <button type="button" className="danger" onClick={() => handleContextAction('delete')}>Xóa</button>
+          </div>
+        )}
       </div>
-    </div>
+    </ConfigProvider >
   );
 }
+

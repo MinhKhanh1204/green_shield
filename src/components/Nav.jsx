@@ -24,11 +24,11 @@ export default function Nav() {
   const observedActiveId = isHomePage ? useActiveSection('.section', { threshold: 0.55 }) : null
   const [activeId, setActiveId] = useState('home')
   const [open, setOpen] = useState(false)
-  const [isNarrow, setIsNarrow] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 900 : false))
+  const [isNarrow, setIsNarrow] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 1100 : false))
 
   useEffect(() => {
     if (typeof window === 'undefined') return
-    const onResize = () => setIsNarrow(window.innerWidth < 900)
+    const onResize = () => setIsNarrow(window.innerWidth < 1100)
     window.addEventListener('resize', onResize)
     return () => window.removeEventListener('resize', onResize)
   }, [])

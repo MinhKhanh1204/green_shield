@@ -17,6 +17,14 @@
   align-items: center;
   gap: 0.5rem;
   text-decoration: none;
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
+
+.custom-bag-logo img {
+  border: 0;
+  box-shadow: none;
 }
 
 .custom-bag-home {

@@ -1,0 +1,37 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Quần đảo Hoàng Sa"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [111.0, 16.0],
+          [113.5, 16.0],
+          [113.5, 17.5],
+          [111.0, 17.5],
+          [111.0, 16.0]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Quần đảo Trường Sa"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [111.5, 8.5],
+          [117.5, 8.5],
+          [117.5, 12.5],
+          [111.5, 12.5],
+          [111.5, 8.5]
+        ]]
+      }
+    }
+  ]
+}

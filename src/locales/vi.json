@@ -11,8 +11,16 @@
     "contact": "LIÊN HỆ"
   },
   "ticker": {
-    "about": ["GIẢI PHÁP", "TÁI TẠO", "BỀN VỮNG"],
-    "community": ["KẾT NỐI", "TÁC ĐỘNG", "XÃ HỘI"]
+    "about": [
+      "GIẢI PHÁP",
+      "TÁI TẠO",
+      "BỀN VỮNG"
+    ],
+    "community": [
+      "KẾT NỐI",
+      "TÁC ĐỘNG",
+      "XÃ HỘI"
+    ]
   },
   "home": {
     "key-title": "Lá chắn xanh",
@@ -195,6 +203,20 @@
     "smallFarmer": "Công suất nhỏ",
     "lowStock": "Tồn kho thấp",
     "mediumStock": "Tồn kho trung bình",
-    "highStock": "Tồn kho cao"
+    "highStock": "Tồn kho cao",
+    "insightHigh": "Tồn kho đang cao, ưu tiên giải phóng tại các điểm thu gom lớn.",
+    "insightMedium": "Nguồn cung ổn định, theo dõi chặt các điểm có tốc độ nạp kho cao.",
+    "insightLow": "Tồn kho khỏe mạnh, có thể mở rộng thu gom ở các vùng hoạt động.",
+    "comparedToLastWeek": "so với tuần trước",
+    "participationRate": "tỷ lệ tham gia",
+    "highStockAlert": "Cần theo dõi sát các điểm thu gom nóng",
+    "safeStockAlert": "Mức tồn kho đang ở vùng an toàn",
+    "ton": "tấn",
+    "tonPerYear": "tấn/năm",
+    "loading": "Dang tai ban do...",
+    "error": "Khong the tai ban do",
+    "mode2D": "2D",
+    "mode3D": "3D",
+    "modeLabel": "Che do hien thi ban do"
   }
 }

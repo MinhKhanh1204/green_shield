@@ -1,7 +1,14 @@
+@import "tailwindcss";
 @import './styles/_variables.css';
 @import './styles/base.css';
 @import './styles/layout.css';
+@import "tailwindcss/preflight";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/geist";
 
+@custom-variant dark (&:is(.dark *));
+@tailwind utilities;
 
 /* banner has its own styles; see detailed rule below */
 
@@ -104,6 +111,32 @@ html, body {
     transform: none !important;
     transition: none !important;
   }
+}
+
+/* ===== TITLE BLOCK ===== */
+.products-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+/* title */
+.section-title {
+  color: #fff !important;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+/* subtitle */
+.section-subtitle {
+  color: #fff !important;
+  opacity: 0.85;
+  font-weight: 400;
+}
+
+/* đảm bảo không bị Ant override */
+.section-title,
+.section-subtitle {
+  text-align: center;
 }
 
 .section#products {
@@ -373,7 +406,6 @@ html, body {
   color: var(--color-dark);
   font-weight: 600;
 }
-
 
 .footer-contact {
   border-left: 2px solid rgba(1, 50, 55, .15);
@@ -694,7 +726,7 @@ html, body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  z-index: 100;
+  z-index: 1820;
   gap: 1rem;
   background: #f5f5f5;
   padding: 0.75rem 1rem;
@@ -711,8 +743,8 @@ html, body {
   gap: 0.25rem;
 }
 
-/* Under 1200px: hide the long wordmark and language code/caret; keep only the flag */
-@media (max-width: 1199px) {
+/* Under 1300px: hide the long wordmark and language code/caret; keep only the flag */
+@media (max-width: 1299px) {
   .section#home {
     height: 130vh !important;
   }
@@ -726,8 +758,8 @@ html, body {
   }
 }
 
-/* Hide header lang on small screens (<900); it lives in the drawer */
-@media (max-width: 899px) {
+/* Hide header lang on small screens (<1100); it lives in the drawer */
+@media (max-width: 1099px) {
   .section#home {
     height: 120vh !important;
   }
@@ -770,7 +802,6 @@ html, body {
 .nav-link.active::after {
   width: 100%;
 }
-
 
 /* language toggle */
 .lang-toggle {
@@ -935,7 +966,7 @@ a.btn .material-symbols-rounded {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, .35);
-  z-index: 105;
+  z-index: 1800;
 }
 
 .nav-drawer {
@@ -946,7 +977,7 @@ a.btn .material-symbols-rounded {
   height: 100vh;
   background: #f5f5f5;
   box-shadow: -8px 0 24px rgba(1, 50, 55, .2);
-  z-index: 110;
+  z-index: 1810;
   display: flex;
   flex-direction: column;
   padding: 12px;
@@ -1020,8 +1051,11 @@ a.btn .material-symbols-rounded {
   width: 100%;
   overflow: hidden;
   padding: 0;
-  /* outer wrapper no padding */
-  line-height: 1;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  /* keep text/icon vertically centered inside bar */
+  line-height: 1.1;
   letter-spacing: .06em;
 }
 
@@ -1032,11 +1066,14 @@ a.btn .material-symbols-rounded {
 .mq-mask {
   width: 100%;
   overflow: hidden;
+  display: flex;
+  align-items: center;
 }
 
 /* Track now contains 5 duplicate strips for smoother continuity */
 .mq-track {
   display: flex;
+  align-items: center;
   width: max-content;
   animation: mq-scroll linear infinite;
   will-change: transform;
@@ -1044,8 +1081,8 @@ a.btn .material-symbols-rounded {
 
 .mq-strip {
   display: flex;
-  gap: 2.4rem;
-  padding: 0.75rem 2rem;
+  align-items: center;
+  gap: 1rem;
 }
 
 .mq-item {
@@ -1053,13 +1090,22 @@ a.btn .material-symbols-rounded {
   white-space: nowrap;
   display: inline-flex;
   align-items: center;
+  line-height: 1;
 }
 
 .mq-item .mq-sep {
   opacity: .55;
   font-weight: inherit;
-  padding: 0 1.2rem 0 1.4rem;
-  display: inline-block;
+  padding: 0 .95rem 0 1.15rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mq-item .mq-sep .material-symbols-rounded {
+  font-size: 1.05em;
+  line-height: 1;
+  font-variation-settings: 'FILL'1, 'wght'700, 'GRAD'0, 'opsz'24;
 }
 
 /* With 5 identical strips we shift width of two strips (=40%) for seamless loop start point */
@@ -1087,6 +1133,19 @@ a.btn .material-symbols-rounded {
 
 /* Adjust spacing on smaller screens */
 @media (max-width: 640px) {
+  .section-marquee {
+    min-height: 46px;
+  }
+
+  .mq-strip {
+    gap: 1.6rem;
+    padding: 0.55rem 1.2rem;
+  }
+
+  .mq-item .mq-sep {
+    padding: 0 .75rem 0 .9rem;
+  }
+
   .banner {
     top: 30vh;
     background-size: 200%;
@@ -1105,7 +1164,9 @@ a.btn .material-symbols-rounded {
 
 .stack-card {
   position: relative;
-  background: #ddd center/contain no-repeat;
+  background-image: var(--bg);
+  background-size: cover;
+  background-position: center;
   border-radius: 28px;
   overflow: hidden;
   cursor: pointer;
@@ -1114,7 +1175,6 @@ a.btn .material-symbols-rounded {
   align-items: flex-end;
   justify-content: flex-start;
 }
-
 
 .stack-card .stack-card__label {
   writing-mode: vertical-rl;
@@ -1177,16 +1237,19 @@ a.btn .material-symbols-rounded {
     box-shadow: none;
     filter: none;
   }
+
   .stack-gallery:hover .stack-card:hover,
   .stack-gallery:not(:hover) .stack-card.is-default {
     grid-column: auto !important;
     transform: none !important;
     box-shadow: none !important;
   }
+
   .stack-gallery:hover .stack-card:not(:hover) {
     opacity: 1 !important;
     filter: none !important;
   }
+
   /* Make overlay content always readable without hover */
   .stack-gallery .stack-card .stack-card__overlay {
     opacity: 1;
@@ -1315,7 +1378,8 @@ a.btn .material-symbols-rounded {
     width: 28px;
     height: 28px;
     left: 1rem;
-    top: 1rem;    /* move to top-left on mobile */
+    top: 1rem;
+    /* move to top-left on mobile */
     bottom: auto;
     font-size: 0.9rem;
   }
@@ -1650,3 +1714,127 @@ a.btn .material-symbols-rounded {
 }
 
 /* (moved above) Advantages video sizing handled to fit content height */
+
+@theme inline {
+  --font-heading: var(--font-sans);
+  --font-sans: 'Geist Variable', sans-serif;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}
