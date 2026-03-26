@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+﻿import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import './AudioPage.css';
 
@@ -18,6 +18,10 @@ const BARS = 40;
 
 export default function AudioPage() {
   const { code } = useParams();
+  const [themeMode, setThemeMode] = useState(() => {
+    if (typeof window === 'undefined') return 'dark';
+    return localStorage.getItem('greenshield-theme') || 'dark';
+  });
   const [audioUrl, setAudioUrl] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -28,6 +32,19 @@ export default function AudioPage() {
 
   const decodedText = useMemo(() => decodeBase64Url(code || ''), [code]);
   const title = decodedText || 'Green QR Sound';
+
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.add('theme-transition');
+    root.setAttribute('data-theme', themeMode);
+    localStorage.setItem('greenshield-theme', themeMode);
+    const timer = window.setTimeout(() => root.classList.remove('theme-transition'), 420);
+    return () => window.clearTimeout(timer);
+  }, [themeMode]);
+
+  const handleToggleTheme = () => {
+    setThemeMode((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  };
 
   useEffect(() => {
     return () => {
@@ -45,10 +62,13 @@ export default function AudioPage() {
       if (!res.ok) throw new Error('Không thể chuẩn bị âm thanh. Vui lòng thử lại.');
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
-      setAudioUrl((prev) => { if (prev) URL.revokeObjectURL(prev); return url; });
+      setAudioUrl((prev) => {
+        if (prev) URL.revokeObjectURL(prev);
+        return url;
+      });
       return url;
     } catch (e) {
-      setError(e.message || 'Có lỗi xảy ra khi phát âm thanh');
+      setError(e.message || 'Có lỗi xảy ra khi phát âm thanh.');
       return null;
     } finally {
       setLoading(false);
@@ -57,7 +77,10 @@ export default function AudioPage() {
 
   const handleTogglePlay = async () => {
     if (!audioRef.current || loading) return;
-    if (playing) { audioRef.current.pause(); return; }
+    if (playing) {
+      audioRef.current.pause();
+      return;
+    }
     const url = audioUrl || await prepareAudio();
     if (!url) return;
     audioRef.current.play();
@@ -94,41 +117,37 @@ export default function AudioPage() {
 
   return (
     <div className="ap-root">
-      {/* ambient blobs */}
-      <div className="ap-blob ap-blob--a" />
-      <div className="ap-blob ap-blob--b" />
-      <div className="ap-blob ap-blob--c" />
+      <div className="ap-blob ap-blob--a bg-ambient" />
+      <div className="ap-blob ap-blob--b bg-ambient" />
+      <div className="ap-blob ap-blob--c bg-ambient" />
 
-      {/* logo */}
       <Link to="/" className="ap-logo">
         <span className="ap-logo-dot" />
         GreenShield
       </Link>
+      <button
+        type="button"
+        className="ap-theme-toggle"
+        onClick={handleToggleTheme}
+        aria-label={themeMode === 'dark' ? 'Chuyển sang giao diện sáng' : 'Chuyển sang giao diện tối'}
+      >
+        {themeMode === 'dark' ? '☀️ Sáng' : '🌙 Tối'}
+      </button>
 
-      {/* card */}
-      <div className="ap-card">
-        {/* artwork / visualizer */}
+      <div className="ap-card glass-card">
         <div className="ap-artwork" aria-hidden="true">
           <div className="ap-artwork-ring ap-artwork-ring--outer" />
           <div className="ap-artwork-ring ap-artwork-ring--mid" />
 
-          {/* center button */}
           <button
             className={`ap-center-btn${playing ? ' playing' : ''}${loading ? ' loading' : ''}`}
             onClick={handleTogglePlay}
             disabled={loading}
             aria-label={loading ? 'Đang tải' : playing ? 'Tạm dừng' : 'Phát'}
           >
-            {loading ? (
-              <span className="ap-spinner" />
-            ) : playing ? (
-              <PauseIcon />
-            ) : (
-              <PlayIcon />
-            )}
+            {loading ? <span className="ap-spinner" /> : playing ? <PauseIcon /> : <PlayIcon />}
           </button>
 
-          {/* waveform bars */}
           <div className={`ap-bars${playing ? ' playing' : ''}`}>
             {[...Array(BARS)].map((_, i) => (
               <span key={i} style={{ '--i': i, '--n': BARS }} />
@@ -136,14 +155,12 @@ export default function AudioPage() {
           </div>
         </div>
 
-        {/* meta */}
         <div className="ap-meta">
           <p className="ap-label">Green QR • Sound Note</p>
           <h1 className="ap-title">{title}</h1>
           <p className="ap-sub">Một lời nhắn được gắn vào chiếc túi này. Nhấn phát để nghe.</p>
         </div>
 
-        {/* progress bar */}
         {audioUrl && !error && (
           <div className="ap-progress-wrap" onClick={handleSeek} role="slider" aria-label="Thanh tiến trình">
             <div className="ap-progress-track">
@@ -157,10 +174,9 @@ export default function AudioPage() {
           </div>
         )}
 
-        {/* controls */}
         <div className="ap-controls">
           <button
-            className={`ap-play-btn${playing ? ' playing' : ''}${loading ? ' loading' : ''}`}
+            className={`ap-play-btn btn-glow${playing ? ' playing' : ''}${loading ? ' loading' : ''}`}
             onClick={handleTogglePlay}
             disabled={loading}
           >
@@ -170,7 +186,7 @@ export default function AudioPage() {
           </button>
 
           <span className={`ap-status${playing ? ' active' : ''}`}>
-            {loading && 'Đang xử lý giọng đọc…'}
+            {loading && 'Đang xử lý giọng đọc...'}
             {!loading && !audioUrl && !error && 'Sẵn sàng'}
             {!loading && audioUrl && !playing && 'Đã sẵn sàng'}
             {!loading && audioUrl && playing && '● Đang phát'}
