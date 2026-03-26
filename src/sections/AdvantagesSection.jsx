@@ -29,7 +29,7 @@ export default function AdvantagesSection() {
       <div className="advantages-video" aria-label="Advantages intro video">
         <video
           ref={videoRef}
-          src="https://res.cloudinary.com/dnini39bp/video/upload/Intro-02_w2ktdr.mp4"
+          src="https://res.cloudinary.com/dnini39bp/video/upload/v1774527138/IntroGSM_gqsftr.mp4"
           muted
           playsInline
           loop
