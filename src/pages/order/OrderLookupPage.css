@@ -1,0 +1,432 @@
+/* ══════════════════════════════════
+   OrderLookupPage
+   ══════════════════════════════════ */
+
+.olp-page {
+  min-height: 100vh;
+  background: #f5f5f7;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Topbar */
+.olp-topbar {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  flex-shrink: 0;
+}
+.olp-topbar-left { display: flex; align-items: center; gap: 12px; }
+
+.olp-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #374151;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 10px;
+  border-radius: 7px;
+  transition: background 0.14s;
+  white-space: nowrap;
+}
+.olp-back-btn:hover { background: #f3f4f6; }
+
+.olp-logo { display: flex; align-items: center; gap: 6px; text-decoration: none; }
+.olp-logo-text { height: 22px; width: auto; }
+
+.olp-home-link {
+  font-size: 13px;
+  color: #4f46e5;
+  text-decoration: none;
+  font-weight: 500;
+}
+.olp-home-link:hover { text-decoration: underline; }
+
+/* Body */
+.olp-body {
+  flex: 1;
+  padding: 32px 24px 60px;
+  max-width: 960px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Search card */
+.olp-search-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 36px 32px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.olp-search-icon-wrap { font-size: 36px; margin-bottom: 12px; }
+
+.olp-search-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: #111827;
+  margin: 0 0 8px;
+}
+.olp-search-sub {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0 0 24px;
+}
+
+.olp-search-row {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  max-width: 480px;
+}
+
+.olp-input {
+  flex: 1;
+  height: 44px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 0 14px;
+  font-size: 15px;
+  color: #111827;
+  outline: none;
+  transition: border-color 0.14s, box-shadow 0.14s;
+}
+.olp-input:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79,70,229,0.12);
+}
+.olp-input::placeholder { color: #9ca3af; }
+/* hide number spinner */
+.olp-input::-webkit-outer-spin-button,
+.olp-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+.olp-search-btn {
+  height: 44px;
+  padding: 0 24px;
+  background: #4f46e5;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.14s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.olp-search-btn:hover:not(:disabled) { background: #4338ca; }
+.olp-search-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.olp-error {
+  margin: 12px 0 0;
+  font-size: 13.5px;
+  color: #ef4444;
+}
+
+/* Result section */
+.olp-result {
+  background: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Status banner */
+.olp-status-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1.5px solid #e5e7eb;
+}
+
+.olp-status-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.olp-order-num {
+  font-size: 18px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.olp-status-badge {
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 3px 12px;
+  border-radius: 20px;
+}
+
+.olp-status-date {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+/* Progress */
+.olp-progress-wrap {
+  display: flex;
+  align-items: center;
+  padding: 18px 28px;
+  border-bottom: 1px solid #f3f4f6;
+  overflow-x: auto;
+  gap: 0;
+}
+
+.olp-progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.olp-progress-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  color: #9ca3af;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.olp-progress-dot.done {
+  background: #4f46e5;
+  color: #fff;
+}
+
+.olp-progress-label {
+  font-size: 10.5px;
+  color: #9ca3af;
+  white-space: nowrap;
+  font-weight: 500;
+}
+.olp-progress-label.done { color: #4f46e5; font-weight: 700; }
+
+.olp-progress-line {
+  flex: 1;
+  height: 2px;
+  background: #e5e7eb;
+  min-width: 24px;
+  margin-bottom: 18px;
+  transition: background 0.2s;
+}
+.olp-progress-line.done { background: #4f46e5; }
+
+/* Main layout */
+.olp-main {
+  display: flex;
+  gap: 0;
+}
+
+.olp-preview-col {
+  width: 320px;
+  flex-shrink: 0;
+  padding: 20px 20px 24px;
+  border-right: 1px solid #f3f4f6;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.olp-info-col {
+  flex: 1;
+  padding: 20px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.olp-col-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0;
+}
+
+/* Canvas */
+.olp-canvas-box {
+  width: 280px;
+  height: 280px;
+  background: #f5f5f7;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e5e7eb;
+}
+.olp-canvas-box .preview-single-view,
+.olp-canvas-box .preview-canvas-wrap {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.olp-canvas-box .preview-canvas-wrap canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+.olp-canvas-loading {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.olp-preview-btn {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #fff;
+  color: #4f46e5;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.14s, border-color 0.14s;
+}
+.olp-preview-btn:hover {
+  background: #eef2ff;
+  border-color: #4f46e5;
+}
+
+/* Modal zoom */
+.olp-zoom-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.olp-zoom-canvas {
+  width: 100%;
+  max-width: 520px;
+  aspect-ratio: 1;
+  background: #f5f5f7;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e5e7eb;
+}
+.olp-zoom-canvas .preview-single-view,
+.olp-zoom-canvas .preview-canvas-wrap {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.olp-zoom-canvas .preview-canvas-wrap canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+.olp-zoom-sides { margin-top: 4px; }
+
+/* Side toggle */
+.olp-side-toggle {
+  display: flex;
+  gap: 8px;
+}
+
+.olp-side-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  border-radius: 10px;
+  border: 2px solid #e5e7eb;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.14s;
+  width: 70px;
+}
+.olp-side-thumb-img {
+  width: 54px;
+  height: 54px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #f5f5f7;
+}
+.olp-side-thumb-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.olp-side-btn span { font-size: 10.5px; font-weight: 500; color: #6b7280; }
+.olp-side-btn.active { border-color: #4f46e5; box-shadow: 0 0 0 2px rgba(79,70,229,0.18); }
+.olp-side-btn.active span { color: #4f46e5; font-weight: 700; }
+.olp-side-btn:hover { border-color: #9ca3af; }
+
+/* Info table */
+.olp-info-table {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #f3f4f6;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.olp-info-row {
+  display: flex;
+  align-items: baseline;
+  padding: 10px 14px;
+  border-bottom: 1px solid #f9fafb;
+}
+.olp-info-row:last-child { border-bottom: none; }
+.olp-info-label {
+  font-size: 12.5px;
+  color: #9ca3af;
+  font-weight: 600;
+  width: 120px;
+  flex-shrink: 0;
+}
+.olp-info-value {
+  font-size: 13.5px;
+  color: #111827;
+  font-weight: 500;
+  flex: 1;
+}
+
+/* Note */
+.olp-note {
+  display: flex;
+  gap: 10px;
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+.olp-note-icon { font-size: 18px; flex-shrink: 0; }
+.olp-note p {
+  font-size: 12.5px;
+  color: #92400e;
+  margin: 0;
+  line-height: 1.5;
+}

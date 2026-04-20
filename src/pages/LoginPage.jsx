@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Form, Input, Button, Spin, message } from 'antd';
+import { Form, Input, Button, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { login, checkAuth } from '../services/texture';
+import AppSkeleton from '../components/ui/AppSkeleton';
 import './LoginPage.css';
 
 export default function LoginPage() {
@@ -22,7 +23,7 @@ export default function LoginPage() {
   if (checking) {
     return (
       <div className="login-page">
-        <Spin size="large" />
+        <AppSkeleton variant="login" />
       </div>
     );
   }
@@ -33,7 +34,7 @@ export default function LoginPage() {
       await login(values.username, values.password);
       message.success('Đăng nhập thành công');
       navigate(from, { replace: true });
-    } catch (e) {
+    } catch {
       message.error('Sai tên đăng nhập hoặc mật khẩu');
     } finally {
       setLoading(false);

@@ -46,8 +46,9 @@ body::before {
   border-radius: 10px;
 }
 
-/* links */
-a, a:visited { color: var(--color-primary); }
+/* links (content scope only) */
+main a,
+main a:visited { color: var(--color-primary); }
 
 /* typography scale */
 h1, .ant-typography h1 { font-size: clamp(1.8rem, 2.5vw, 2.4rem); font-weight: 800; line-height: 1.2; margin: 0.25em 0; }

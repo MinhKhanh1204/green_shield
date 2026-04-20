@@ -7,11 +7,11 @@ import LubiSound from '../assets/Lubi-sound.m4a';
 import { getTopics, selectTopic, sendMessage } from '../services/chat';
 import { AnimatePresence, motion as Motion } from 'framer-motion';
 import ScrollToBottom from 'react-scroll-to-bottom';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 import '../styles/chat-widget.css';
 import { Select } from 'antd';
 import 'antd/dist/reset.css';
+
+const ChatMarkdown = React.lazy(() => import('./ChatMarkdown'));
 
 // Simple floating chat widget overlay
 export default function ChatWidget() {
@@ -33,6 +33,9 @@ export default function ChatWidget() {
   const [showTeaser, setShowTeaser] = useState(false);
   const lubiAudioRef = useRef(null);
   const [keyboardOpen, setKeyboardOpen] = useState(false);
+  const [isMobileViewport, setIsMobileViewport] = useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth <= 768 : false,
+  );
 
   // Friendly Vietnamese labels for known topic keys
   const TOPIC_LABELS = {
@@ -164,6 +167,29 @@ export default function ChatWidget() {
     return () => clearTimeout(tm);
   }, [showTeaser, open]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+
+    const syncViewport = () => setIsMobileViewport(window.innerWidth <= 768);
+    syncViewport();
+
+    window.addEventListener('resize', syncViewport);
+    return () => window.removeEventListener('resize', syncViewport);
+  }, []);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (!root) return undefined;
+
+    if (open) {
+      root.classList.add('chat-widget-open');
+    } else {
+      root.classList.remove('chat-widget-open');
+    }
+
+    return () => root.classList.remove('chat-widget-open');
+  }, [open]);
+
   async function handleSelectTopic(key) {
     try {
       setLoading(true);
@@ -252,9 +278,17 @@ export default function ChatWidget() {
   return (
     <>
       {/* Floating open button (hide when panel is open) */}
+      <AnimatePresence>
       {!open && showButton && (
-        <>
+        <Motion.div
+          key="launcher"
+          initial={{ opacity: 0, y: 24, scale: 0.88 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 16, scale: 0.92 }}
+          transition={{ type: 'spring', stiffness: 260, damping: 24, mass: 0.9 }}
+        >
           {/* Desktop / Tablet: large mascot visual with hotspot */}
+          {!isMobileViewport && (
           <div className="chat-widget-button cwb-desktop" aria-hidden={false}>
             {showTeaser && (
               <div className="chat-widget-teaser" aria-hidden>
@@ -308,8 +342,10 @@ export default function ChatWidget() {
               }}
             />
           </div>
+          )}
 
           {/* Mobile: small round button with logo-like image and back-to-top effects */}
+          {isMobileViewport && (
           <button
             type="button"
             aria-label="Open chat"
@@ -334,8 +370,10 @@ export default function ChatWidget() {
           >
             <img src={LogoFade} alt="Open chat" className="chat-mobile-icon" draggable={false} />
           </button>
-        </>
+          )}
+        </Motion.div>
       )}
+      </AnimatePresence>
 
       {/* Panel */}
       <AnimatePresence>
@@ -356,10 +394,10 @@ export default function ChatWidget() {
               role="dialog"
               aria-label="Chat widget"
               aria-modal="false"
-              initial={{ opacity: 0, x: -28, scale: 0.9 }}
-              animate={{ opacity: 1, x: 0, scale: 1 }}
-              exit={{ opacity: 0, x: -18, scale: 0.92 }}
-              transition={{ duration: 0.25, ease: 'easeOut' }}
+              initial={{ opacity: 0, y: 26, scale: 0.88 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 16, scale: 0.92 }}
+              transition={{ type: 'spring', stiffness: 280, damping: 26, mass: 0.9 }}
               style={{ transformOrigin: 'right bottom' }}
               ref={panelRef}
             >
@@ -445,9 +483,9 @@ export default function ChatWidget() {
                                     <span className="msg-ai-name">Lubot</span>
                                   </div>
                                   <div className="msg-bubble msg-ai-body">
-                                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                      {m.text}
-                                    </ReactMarkdown>
+                                    <React.Suspense fallback={<span>{m.text}</span>}>
+                                      <ChatMarkdown text={m.text} />
+                                    </React.Suspense>
                                   </div>
                                 </div>
                               </Motion.li>
@@ -464,9 +502,9 @@ export default function ChatWidget() {
                               transition={{ duration: 0.22, ease: 'easeOut' }}
                             >
                               <div className="msg-bubble">
-                                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                  {m.text}
-                                </ReactMarkdown>
+                                <React.Suspense fallback={<span>{m.text}</span>}>
+                                  <ChatMarkdown text={m.text} />
+                                </React.Suspense>
                               </div>
                             </Motion.li>
                           );

@@ -32,9 +32,9 @@ function FloatingFilter({
     () =>
       Object.values(MAP_STYLES).map((style) => ({
         value: style.id,
-        label: style.label
+        label: t(style.labelKey, { defaultValue: style.label })
       })),
-    []
+    [t]
   );
 
   const legendGroups = [

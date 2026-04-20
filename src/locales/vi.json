@@ -11,16 +11,8 @@
     "contact": "LIÊN HỆ"
   },
   "ticker": {
-    "about": [
-      "GIẢI PHÁP",
-      "TÁI TẠO",
-      "BỀN VỮNG"
-    ],
-    "community": [
-      "KẾT NỐI",
-      "TÁC ĐỘNG",
-      "XÃ HỘI"
-    ]
+    "about": ["GIẢI PHÁP", "TÁI TẠO", "BỀN VỮNG"],
+    "community": ["KẾT NỐI", "TÁC ĐỘNG", "XÃ HỘI"]
   },
   "home": {
     "key-title": "Lá chắn xanh",
@@ -103,8 +95,91 @@
       "desc": "Tương tự ECOKA, GreenShield Mekong hướng đến ESG: giảm phát thải, tạo việc làm xanh, và minh bạch chuỗi sản xuất – lan tỏa kinh tế tuần hoàn vùng ĐBSCL."
     }
   },
+  "problem": {
+    "eyebrow": "Thực trạng",
+    "title": "Ba áp lực đang định hình bài toán bao bì xanh ở Mekong",
+    "intro": "Từ ô nhiễm nhựa đến lục bình xâm lấn và yêu cầu minh bạch, GreenShield Mekong nhìn vấn đề như một chuỗi liên kết cần được kể lại bằng dữ liệu và chuyển động.",
+    "scene0": {
+      "eyebrow": "THỰC TRẠNG",
+      "title": "Một hệ sinh thái",
+      "titleHighlight": " mất cân bằng",
+      "subtitle": "Ô nhiễm nhựa tăng. Sinh khối bị lãng phí. Áp lực xanh ngày càng lớn.",
+      "description": "Ba vấn đề - một vòng lặp chưa được giải."
+    },
+    "scene1": {
+      "kicker": "MÔI TRƯỜNG",
+      "title": "Việt Nam",
+      "titleSub": "mỗi năm phát sinh",
+      "value": "3,1",
+      "valueUnit": "triệu tấn nhựa / năm",
+      "microPrefix": "≈",
+      "microSuffix": "tấn / ngày",
+      "description": "Phần lớn đến từ bao bì dùng một lần, tích tụ trong sông ngòi và gây áp lực trực tiếp lên hệ sinh thái Mekong."
+    },
+    "scene2": {
+      "kicker": "NGUYÊN LIỆU",
+      "title": "Lục bình: nguồn tài nguyên bị bỏ quên",
+      "value": "40",
+      "valueSuffix": "%+",
+      "sub": "diện tích mặt nước bị phủ tại nhiều khu vực",
+      "tickerPrefix": "+",
+      "tickerSuffix": "ha",
+      "imageAlt": "Lục bình",
+      "description": "Lục bình lan rộng gây tắc nghẽn dòng chảy, nhưng đồng thời là nguồn sinh khối tự nhiên có thể tái tạo và thay thế nhựa."
+    },
+    "scene3": {
+      "header": {
+        "eyebrow": "THỰC TRẠNG",
+        "title": "Ba áp lực đang định hình tương lai vật liệu xanh",
+        "subtitle": "Môi trường, thị trường và minh bạch chuỗi cung ứng đang cùng lúc tạo áp lực chuyển đổi."
+      },
+      "market": {
+        "kicker": "THỊ TRƯỜNG",
+        "title": "Chi phí vẫn là rào cản lớn",
+        "short": "Bao bì sinh học khó mở rộng do chi phí cao và chưa tối ưu sản xuất quy mô lớn.",
+        "full": "Bao bì sinh học vẫn gặp rào cản lớn về chi phí và khả năng mở rộng. Khoảng cách +30% so với nhựa truyền thống khiến nhiều doanh nghiệp chưa thể chuyển đổi.",
+        "statPrefix": "+",
+        "statSuffix": "%",
+        "statCaption": "so với nhựa truyền thống"
+      },
+      "transparency": {
+        "kicker": "MINH BẠCH",
+        "title": "Niềm tin chưa được xác lập",
+        "short": "Người dùng và doanh nghiệp khó xác minh nguồn gốc và độ bền vững của sản phẩm.",
+        "full": "Thiếu minh bạch dữ liệu khiến người dùng và doanh nghiệp khó đánh giá đúng giá trị bền vững. Hơn 70% người tiêu dùng vẫn chưa thực sự tin vào nhãn “eco”.",
+        "statPrefix": ">",
+        "statSuffix": "%",
+        "statCaption": "người tiêu dùng chưa tin nhãn eco"
+      },
+      "expandHint": "Nhấn để mở rộng",
+      "collapseHint": "Nhấn lại để thu gọn"
+    }
+  },
   "community": {
     "title": "Kết nối & tác động xã hội",
+    "kicker": "Cộng đồng",
+    "subtitle": "Môi trường - Xã hội - Quản trị",
+    "summary": "Chúng tôi biến ESG thành hành động cụ thể: làm sạch sông rạch, mở rộng sinh kế địa phương và xây dựng mô hình vận hành minh bạch để phát triển cùng đối tác.",
+    "handle": "@Greenmind_team",
+    "handleUrl": "https://www.instagram.com/greenmind_team/",
+    "cardsLabel": "Các trụ cột ESG của cộng đồng",
+    "cards": {
+      "environment": {
+        "title": "Môi trường",
+        "excerpt": "Lục bình được nhìn như nguồn sinh khối tái tạo thay vì gánh nặng trên sông rạch.",
+        "full": "Chúng tôi thu gom sinh khối xâm lấn và biến nó thành đầu vào cho bao bì xanh, từ đó giảm tắc nghẽn dòng chảy, giảm phụ thuộc vào nhựa và tận dụng tốt hơn tài nguyên bản địa."
+      },
+      "social": {
+        "title": "Xã hội",
+        "excerpt": "Thu gom và sơ chế tại chỗ giúp cộng đồng Mekong có thêm lớp sinh kế ổn định và tử tế hơn.",
+        "full": "Mô hình ưu tiên liên kết với hợp tác xã, phụ nữ nông thôn và lao động dễ bị tổn thương thông qua đào tạo thực hành, quy trình an toàn hơn và chuỗi giá trị do cộng đồng cùng tham gia."
+      },
+      "governance": {
+        "title": "Quản trị",
+        "excerpt": "Truy xuất, hợp tác ESG và kỷ luật chất lượng giúp sáng kiến địa phương đủ tin cậy để mở rộng.",
+        "full": "Chúng tôi kết nối minh bạch dữ liệu, cấu trúc hợp tác và tiêu chuẩn đo lường rõ ràng để dự án có thể xây dựng niềm tin với người mua, quỹ ESG và các tổ chức đồng hành."
+      }
+    },
     "pillars": {
       "coop": {
         "title": "Mô hình hợp tác",
@@ -180,14 +255,21 @@
     "inactive": "Ngừng",
     "planning": "Quy hoạch",
     "capacity": "Công suất",
+    "area": "Diện tích",
+    "status": "Trạng thái",
     "currentStock": "Tồn kho",
     "phone": "Điện thoại",
     "joinedDate": "Ngày tham gia",
     "manager": "Quản lý",
     "zone": "Vùng",
     "layers": "Lớp hiển thị",
+    "overviewMetrics": "Tổng quan chỉ số",
     "filter": "Lọc",
+    "filterCollapsed": "Bảng lọc đã thu gọn",
+    "filterAndLegend": "Bộ lọc và chú giải bản đồ",
+    "collapse": "Thu gọn",
     "selectZone": "Chọn vùng nguyên liệu",
+    "basemap": "Bản đồ nền",
     "viewAll": "Tất cả",
     "viewZones": "Vùng NL",
     "viewFarmers": "Hộ dân",
@@ -211,12 +293,28 @@
     "participationRate": "tỷ lệ tham gia",
     "highStockAlert": "Cần theo dõi sát các điểm thu gom nóng",
     "safeStockAlert": "Mức tồn kho đang ở vùng an toàn",
+    "operationalLevel": "Mức vận hành",
+    "efficiency": "Hiệu suất",
+    "outputUsage": "Mức sử dụng đầu ra",
+    "stability": "Độ ổn định",
+    "stockUsage": "Mức sử dụng tồn kho",
+    "activeRegion": "Vùng đang hoạt động",
+    "planningRegion": "Vùng quy hoạch",
+    "operationalStatus": "Trạng thái vận hành",
+    "pinPanel": "Ghim bảng chi tiết",
+    "unpinPanel": "Bỏ ghim bảng chi tiết",
+    "detailSheetHandle": "Kéo để mở rộng hoặc thu gọn bảng chi tiết",
+    "styles": {
+      "light": "Sáng (Gọn nhẹ)",
+      "dark": "Tối (Tương phản cao)",
+      "voyager": "Voyager (Cân bằng)"
+    },
     "ton": "tấn",
     "tonPerYear": "tấn/năm",
-    "loading": "Dang tai ban do...",
-    "error": "Khong the tai ban do",
+    "loading": "Đang tải bản đồ...",
+    "error": "Không thể tải bản đồ",
     "mode2D": "2D",
     "mode3D": "3D",
-    "modeLabel": "Che do hien thi ban do"
+    "modeLabel": "Chế độ hiển thị bản đồ"
   }
 }

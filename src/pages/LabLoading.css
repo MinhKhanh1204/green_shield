@@ -6,18 +6,30 @@
   align-items: center;
   justify-content: center;
   background: var(--dl-bg);
+  padding: 24px;
 }
 
 .lab-ripple {
   position: absolute;
-  width: 500px;
-  height: 500px;
+  width: clamp(280px, 46vw, 520px);
+  height: clamp(280px, 46vw, 520px);
 }
 
 .lab-logo {
   position: relative;
-  width: 80px;
-  height: 80px;
+  width: clamp(58px, 7.2vw, 86px);
+  height: clamp(58px, 7.2vw, 86px);
   object-fit: contain;
   z-index: 2;
+}
+
+@media (max-width: 1024px) {
+  .lab-loading {
+    padding: 20px;
+  }
+
+  .lab-ripple {
+    width: clamp(260px, 58vw, 460px);
+    height: clamp(260px, 58vw, 460px);
+  }
 }

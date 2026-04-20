@@ -40,7 +40,7 @@ function FloatingOverview({ stats }) {
   const capacityTrend = trendFromPercent(capacityPercent);
 
   return (
-    <section className="floating-card floating-overview" aria-label="Overview metrics">
+    <section className="floating-card floating-overview" aria-label={t('map.overviewMetrics')}>
       <div className="floating-overview-grid">
         <article className="overview-widget overview-widget-primary">
           <div className="widget-header">

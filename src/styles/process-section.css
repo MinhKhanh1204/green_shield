@@ -1,0 +1,475 @@
+.process-section {
+   --curve-distance: clamp(148px, 12vw, 190px);
+   --curve-drop: 20px;
+   --curve-rotate-y: 14deg;
+   --curve-rotate-z: 12deg;
+   --curve-scale-step: 0.13;
+
+   position: relative;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   min-height: auto;
+   height: 100vh;
+   padding: 0 !important;
+   background-color: #040a08;
+   background:
+      linear-gradient(
+         180deg,
+         rgba(9, 12, 9, 0.96) 0%,
+         rgba(9, 12, 9, 0.9) 35%,
+         rgba(9, 12, 9, 0.78) 52%,
+         rgba(9, 12, 9, 0.48) 75%,
+         var(--primary) 100%
+      ),
+      url('../assets/background-product.png');
+   background-position: center top, center center;
+   background-size: cover, cover;
+   background-repeat: no-repeat, no-repeat;
+   background-blend-mode: normal;
+   overflow: hidden;
+   contain: layout paint;
+}
+
+.process-shell {
+   position: relative;
+   z-index: 1;
+   width: min(1240px, 96vw);
+   margin: 0 auto;
+}
+
+.process-header {
+   text-align: center;
+   margin: 0 auto clamp(10px, 1.8vh, 16px);
+   width: min(940px, 92vw);
+}
+
+.process-header .section-title,
+.process-header .section-subtitle {
+   color: #f2f4f5 !important;
+}
+
+.process-header .section-title {
+   font-size: clamp(1.5rem, 1.95vw, 2.05rem);
+   line-height: 1.05;
+   margin: 0 0 5px;
+   text-transform: none;
+}
+
+.process-header .section-subtitle {
+   font-size: clamp(0.9rem, 1vw, 1.06rem);
+   margin: 0;
+   opacity: 0.9;
+}
+
+.products-header {
+   transform: translateY(24px);
+   filter: blur(7px);
+   transition: transform 560ms cubic-bezier(0.22, 1, 0.36, 1), filter 560ms ease;
+}
+
+.products-header.is-visible {
+   transform: translateY(0);
+   filter: blur(0);
+   transition-delay: 40ms;
+}
+
+.process-carousel {
+   position: relative;
+   opacity: 0;
+   transform: translateY(26px) scale(0.986);
+   transition: opacity 520ms ease, transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.process-carousel.is-visible {
+   opacity: 1;
+   transform: translateY(0) scale(1);
+   transition-delay: 140ms;
+}
+
+.process-prewarm {
+   height: clamp(300px, 50vh, 420px);
+}
+
+.process-curve-stage {
+   position: relative;
+   height: clamp(300px, 50vh, 420px);
+   display: flex;
+   justify-content: center;
+   align-items: flex-end;
+   padding-bottom: 30px;
+   perspective: 840px;
+   transform-style: preserve-3d;
+   margin: 0 auto;
+   opacity: 0;
+   transform: translateY(18px) scale(0.992);
+   transition: opacity 480ms ease, transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.process-curve-stage.is-visible {
+   opacity: 1;
+   transform: translateY(0) scale(1);
+   transition-delay: 180ms;
+}
+
+.process-card {
+   position: absolute;
+   width: clamp(170px, 16vw, 230px);
+   height: clamp(228px, 21.6vw, 306px);
+   transition:
+      transform 460ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 360ms ease,
+      filter 320ms ease;
+   transform-style: preserve-3d;
+   transform:
+      translateX(calc(var(--offset) * var(--curve-distance))) translateY(calc((var(--abs-offset) * var(--abs-offset) * var(--curve-drop)) + (var(--abs-offset) * 8px))) rotateZ(calc(var(--offset) * var(--curve-rotate-z))) scale(calc(1 - (var(--abs-offset) * var(--curve-scale-step))));
+   opacity: calc(1 - (var(--abs-offset) * 0.24));
+   filter: brightness(calc(1 - (var(--abs-offset) * 0.2))) saturate(calc(1 - (var(--abs-offset) * 0.22)));
+   z-index: calc(20 - var(--abs-offset));
+   cursor: pointer;
+   will-change: transform, opacity;
+   contain: layout paint;
+}
+
+.process-card.is-active {
+   z-index: 30;
+}
+
+.process-card.is-hidden {
+   opacity: 0;
+   pointer-events: none;
+}
+
+.process-card__shell {
+   width: 100%;
+   height: 100%;
+   background: #000;
+   border-radius: 18px;
+   overflow: hidden;
+   position: relative;
+   isolation: isolate;
+   box-shadow: none;
+   contain: layout paint;
+}
+
+.process-card__media-wrap {
+   position: absolute;
+   inset: -2px;
+   background: #131417;
+   contain: layout paint;
+}
+
+.process-card__media {
+   width: calc(100% + 4px);
+   height: calc(100% + 4px);
+   margin: -2px;
+   object-fit: cover;
+   transform: scale(1.02);
+   backface-visibility: hidden;
+   transition: transform 440ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.process-card.is-active .process-card__media {
+   transform: scale(1.05);
+}
+
+.process-card__veil {
+   display: none;
+}
+
+.process-nav {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   gap: clamp(14px, 1.8vw, 22px);
+   margin-top: 2px;
+   opacity: 0;
+   transform: translateY(14px);
+   transition: opacity 420ms ease, transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.process-nav.is-visible {
+   opacity: 1;
+   transform: translateY(0);
+   transition-delay: 260ms;
+}
+
+.process-nav__btn {
+   width: 30px;
+   height: 30px;
+   border: none;
+   border-radius: 50%;
+   display: grid;
+   place-items: center;
+   font-size: 0.9rem;
+   color: #0e1112;
+   background: #f3f5f6;
+   box-shadow: none;
+   cursor: pointer;
+   transition: transform 180ms ease, background-color 180ms ease;
+}
+
+.process-nav__btn:hover {
+   transform: translateY(-2px);
+   background: #ffffff;
+}
+
+.process-nav__dots {
+   display: flex;
+   align-items: center;
+   gap: 6px;
+}
+
+.process-nav__dot {
+   width: 6px;
+   height: 6px;
+   border-radius: 50%;
+   border: none;
+   padding: 0;
+   background: rgba(255, 255, 255, 0.36);
+   cursor: pointer;
+   transition: transform 180ms ease, background-color 180ms ease;
+}
+
+.process-nav__dot.is-active {
+   background: #ffffff;
+   transform: scale(1.28);
+}
+
+.process-caption {
+   width: min(760px, 92vw);
+   margin: 6px auto 0;
+   text-align: center;
+   opacity: 0;
+   transform: translateY(12px);
+   transition: opacity 420ms ease, transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.process-caption.is-visible {
+   opacity: 1;
+   transform: translateY(0);
+   transition-delay: 320ms;
+}
+
+.process-caption__step {
+   margin: 0 0 5px;
+   color: rgba(237, 242, 243, 0.72);
+   letter-spacing: 0.15em;
+   font-size: 0.7rem;
+   text-transform: uppercase;
+   font-weight: 700;
+}
+
+.process-caption__title {
+   margin: 0;
+   color: #f4f7f8;
+   font-size: clamp(1.06rem, 1.45vw, 1.34rem);
+   line-height: 1.1;
+   font-weight: 700;
+}
+
+.process-caption__desc {
+   margin: 6px auto 0;
+   color: rgba(232, 238, 239, 0.82);
+   font-size: clamp(0.82rem, 0.96vw, 0.92rem);
+   line-height: 1.5;
+   max-width: 66ch;
+}
+
+.process-mobile-scroll {
+   display: flex;
+   gap: 12px;
+   overflow-x: auto;
+   overflow-y: hidden;
+   scroll-snap-type: x mandatory;
+   padding: 0 4vw 6px;
+   margin: 0 -4vw;
+   -webkit-overflow-scrolling: touch;
+   opacity: 0;
+   transform: translateY(14px);
+   transition: opacity 420ms ease, transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.process-mobile-scroll.is-visible {
+   opacity: 1;
+   transform: translateY(0);
+   transition-delay: 220ms;
+}
+
+.process-mobile-scroll::-webkit-scrollbar {
+   height: 4px;
+}
+
+.process-mobile-scroll::-webkit-scrollbar-thumb {
+   background: rgba(227, 237, 233, 0.36);
+   border-radius: 999px;
+}
+
+.process-mobile-card {
+   flex: 0 0 min(82vw, 360px);
+   scroll-snap-align: start;
+   border-radius: 16px;
+   overflow: hidden;
+   background: transparent;
+   border: 1px solid rgba(190, 216, 203, 0.2);
+}
+
+.process-mobile-card__media-wrap {
+   position: relative;
+   aspect-ratio: 4 / 3;
+   overflow: hidden;
+}
+
+.process-mobile-card__media {
+   width: 100%;
+   height: 100%;
+   display: block;
+   object-fit: cover;
+}
+
+.process-mobile-card__veil {
+   position: absolute;
+   inset: 0;
+   display: flex;
+   align-items: flex-end;
+   background: transparent;
+}
+
+.process-mobile-card__content {
+   width: 100%;
+   padding: 12px 13px 14px;
+   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.42);
+}
+
+.process-mobile-card__step {
+   margin: 0 0 6px;
+   color: rgba(221, 236, 228, 0.72);
+   letter-spacing: 0.1em;
+   text-transform: uppercase;
+   font-size: 0.68rem;
+   font-weight: 700;
+}
+
+.process-mobile-card__title {
+   margin: 0;
+   color: #f0f5f2;
+   font-size: 1rem;
+   line-height: 1.28;
+   font-weight: 700;
+}
+
+.process-mobile-card__desc {
+   margin: 6px 0 0;
+   color: rgba(220, 233, 227, 0.86);
+   font-size: 0.84rem;
+   line-height: 1.45;
+}
+
+@media (max-width: 1180px) {
+   .process-card {
+      --curve-distance: clamp(126px, 14vw, 164px);
+   }
+}
+
+@media (max-width: 900px) {
+   .process-section {
+      --curve-distance: clamp(94px, 26vw, 132px);
+      --curve-drop: 14px;
+      --curve-rotate-y: 10deg;
+      --curve-rotate-z: 8deg;
+      --curve-scale-step: 0.14;
+      display: block;
+      align-items: initial;
+      justify-content: initial;
+      height: auto;
+      min-height: 100svh;
+      padding: clamp(72px, 8.4svh, 94px) 0 clamp(10px, 2.4svh, 16px) !important;
+   }
+
+   .process-header {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      position: relative;
+      z-index: 3;
+   }
+
+   .process-header .section-title,
+   .process-header .section-subtitle {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+   }
+
+   .process-shell {
+      width: 100%;
+      min-height: auto;
+      display: block;
+   }
+
+   .process-header {
+      width: 100%;
+      padding: 0 4vw;
+      margin-bottom: 6px;
+   }
+
+   .process-carousel {
+      margin-top: 0;
+   }
+}
+
+@media (max-width: 800px) {
+   .process-section {
+      padding: clamp(78px, 9svh, 98px) 0 clamp(10px, 2.4svh, 16px) !important;
+   }
+}
+
+@media (max-width: 620px) {
+   .process-nav {
+      gap: 14px;
+   }
+
+   .process-nav__btn {
+      width: 28px;
+      height: 28px;
+      font-size: 0.82rem;
+   }
+
+   .process-caption {
+      margin-top: 12px;
+      padding: 0 4vw;
+   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+   .products-header,
+   .products-header.is-visible,
+   .process-carousel,
+   .process-carousel.is-visible,
+   .process-mobile-scroll,
+   .process-mobile-scroll.is-visible,
+   .process-curve-stage,
+   .process-curve-stage.is-visible,
+   .process-nav,
+   .process-nav.is-visible,
+   .process-caption,
+   .process-caption.is-visible,
+   .process-card,
+   .process-card__media,
+   .process-nav__btn,
+   .process-nav__dot {
+      transition: none;
+   }
+
+   .products-header,
+   .process-carousel,
+   .process-mobile-scroll,
+   .process-curve-stage,
+   .process-nav,
+   .process-caption {
+      opacity: 1;
+      transform: none;
+      filter: none;
+   }
+}

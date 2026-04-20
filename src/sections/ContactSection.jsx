@@ -1,17 +1,16 @@
-import React from 'react'
+import React, { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import logo from '../assets/logo.png'
 import logolg from '../assets/logo-lg.png'
 import SocialLinks from '../components/SocialLinks'
 
-export default function ContactSection() {
+function ContactSection() {
   const { t } = useTranslation()
   const onSubscribe = (e) => {
     e.preventDefault()
     const data = new FormData(e.currentTarget)
     const email = data.get('email')
     if (!email) return
-    console.log('newsletter subscribe:', email)
     alert('Đăng ký thành công!')
     e.currentTarget.reset()
   }
@@ -92,3 +91,5 @@ export default function ContactSection() {
     </section>
   )
 }
+
+export default memo(ContactSection)

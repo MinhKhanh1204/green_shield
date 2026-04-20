@@ -14,15 +14,6 @@ async function authFetch(url, options = {}) {
   return res;
 }
 
-async function json(url, options = {}) {
-  const res = await authFetch(url, {
-    ...options,
-    headers: { 'Content-Type': 'application/json', ...options.headers },
-  });
-  const text = await res.text();
-  return text ? JSON.parse(text) : null;
-}
-
 /** Public: get all textures with optional search */
 export async function getTextures(search = '') {
   const params = search ? `?search=${encodeURIComponent(search)}` : '';

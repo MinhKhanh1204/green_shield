@@ -70,6 +70,29 @@
   },
   "community": {
     "title": "Connection & social impact",
+    "kicker": "Community",
+    "subtitle": "Environment - Society - Governance",
+    "summary": "We shape ESG into tangible action: cleaner waterways, fairer local livelihoods, and a transparent operating model that can scale with partners.",
+    "handle": "@Greenmind_team",
+    "handleUrl": "https://www.instagram.com/greenmind_team/",
+    "cardsLabel": "ESG community highlights",
+    "cards": {
+      "environment": {
+        "title": "Environment",
+        "excerpt": "Water hyacinth is treated as a regenerative material source instead of a river burden.",
+        "full": "We collect invasive biomass and reframe it as a circular input for greener packaging, helping reduce river congestion, plastic dependence, and wasted local resources."
+      },
+      "social": {
+        "title": "Social",
+        "excerpt": "Local collection and pre-processing create a steadier, more dignified income layer for the Mekong community.",
+        "full": "The model prioritizes collaboration with cooperatives, rural women, and vulnerable workers through practical training, safer production routines, and a community-led value chain."
+      },
+      "governance": {
+        "title": "Governance",
+        "excerpt": "Traceability, ESG partnerships, and quality discipline turn a local initiative into something export-ready.",
+        "full": "We connect data transparency, partnership governance, and measurable standards so the project can earn trust from buyers, funds, and institutions without overclaiming impact."
+      }
+    },
     "pillars": {
       "coop": {
         "title": "Co-op collaboration",
@@ -128,6 +151,66 @@
       "desc": "Like ECOKA, GreenShield Mekong embeds ESG — reducing CO₂, empowering rural women and promoting circular economy in the Mekong Delta."
     }
   },
+  "problem": {
+    "eyebrow": "Problem",
+    "title": "Three pressures shaping the green packaging challenge in Mekong",
+    "intro": "From plastic pollution to invasive hyacinth and rising transparency demands, GreenShield Mekong treats the problem as one connected story told through data and motion.",
+    "scene0": {
+      "eyebrow": "Problem",
+      "title": "An ecosystem out of balance",
+      "titleHighlight": "out of balance",
+      "subtitle": "Plastic pollution rises. Biomass is wasted. Green pressure is increasing.",
+      "description": "Three problems — one unresolved loop."
+    },
+    "scene1": {
+      "kicker": "ENVIRONMENT",
+      "title": "Vietnam",
+      "titleSub": "generates annually",
+      "value": "3.1",
+      "valueUnit": "million tons of plastic / year",
+      "microPrefix": "~",
+      "microSuffix": "tons / day",
+      "description": "Most comes from single-use packaging, accumulating in waterways and putting direct pressure on the Mekong ecosystem."
+    },
+    "scene2": {
+      "kicker": "MATERIAL",
+      "title": "Water hyacinth: an overlooked resource",
+      "value": "40",
+      "valueSuffix": "%+",
+      "sub": "water surface coverage in many regions",
+      "tickerPrefix": "+",
+      "tickerSuffix": "ha",
+      "imageAlt": "Water hyacinth",
+      "description": "Water hyacinth spreads rapidly, clogging waterways — yet it is a renewable biomass that can replace plastic."
+    },
+    "scene3": {
+      "header": {
+        "eyebrow": "CONTEXT",
+        "title": "Three pressures are shaping the future of green materials",
+        "subtitle": "Environment, market forces, and supply-chain transparency are simultaneously driving the transition."
+      },
+      "market": {
+        "kicker": "MARKET",
+        "title": "Cost remains a major barrier",
+        "short": "Bio-based packaging struggles to scale due to high costs and limited production optimization.",
+        "full": "Bio-based packaging still faces significant cost and scalability barriers. A +30% gap compared to traditional plastic continues to slow down adoption.",
+        "statPrefix": "+",
+        "statSuffix": "%",
+        "statCaption": "compared to traditional plastic"
+      },
+      "transparency": {
+        "kicker": "TRANSPARENCY",
+        "title": "Trust is not yet established",
+        "short": "Consumers and businesses struggle to verify origin and sustainability claims.",
+        "full": "Lack of transparent data makes it difficult to verify sustainability claims. More than 70% of consumers still do not fully trust eco labels.",
+        "statPrefix": ">",
+        "statSuffix": "%",
+        "statCaption": "of consumers do not trust eco labels"
+      },
+      "expandHint": "Click to expand",
+      "collapseHint": "Click again to collapse"
+    }
+  },
   "footer": {
     "tagline": "Green shield for Mekong fruits",
     "services": {
@@ -177,14 +260,21 @@
     "inactive": "Inactive",
     "planning": "Planning",
     "capacity": "Capacity",
+    "area": "Area",
+    "status": "Status",
     "currentStock": "Current Stock",
     "phone": "Phone",
     "joinedDate": "Join Date",
     "manager": "Manager",
     "zone": "Zone",
     "layers": "Layers",
+    "overviewMetrics": "Overview metrics",
     "filter": "Filter",
+    "filterCollapsed": "Map filters collapsed",
+    "filterAndLegend": "Map filters and legend",
+    "collapse": "Collapse",
     "selectZone": "Select material zone",
+    "basemap": "Basemap",
     "viewAll": "All",
     "viewZones": "Zones",
     "viewFarmers": "Farmers",
@@ -208,6 +298,22 @@
     "participationRate": "participation rate",
     "highStockAlert": "High-pressure collection points need close monitoring",
     "safeStockAlert": "Stock level is in a safe zone",
+    "operationalLevel": "Operational level",
+    "efficiency": "Efficiency",
+    "outputUsage": "Output usage",
+    "stability": "Stability",
+    "stockUsage": "Stock usage",
+    "activeRegion": "Active region",
+    "planningRegion": "Planning region",
+    "operationalStatus": "Operational status",
+    "pinPanel": "Pin detail panel",
+    "unpinPanel": "Unpin detail panel",
+    "detailSheetHandle": "Drag to expand or collapse detail panel",
+    "styles": {
+      "light": "Light (Clean)",
+      "dark": "Dark (Pro)",
+      "voyager": "Voyager (Balanced)"
+    },
     "ton": "tons",
     "tonPerYear": "tons/year"
   }

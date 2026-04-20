@@ -1,42 +1,39 @@
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { Dropdown, Button, Space } from 'antd';
-import { DownOutlined } from '@ant-design/icons';
-import ReactCountryFlag from 'react-country-flag';
+import React, { memo, useCallback, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
+import { Dropdown, Button, Space } from 'antd'
+import { DownOutlined } from '@ant-design/icons'
+import ReactCountryFlag from 'react-country-flag'
 
-export default function LanguageToggle() {
-  const { i18n } = useTranslation();
+function LanguageToggle() {
+  const { i18n } = useTranslation()
 
-  const change = (lng) => {
-    // guard: tránh gọi changeLanguage nếu đã cùng ngôn ngữ
-    if (!i18n || i18n.language === lng) return;
-    i18n.changeLanguage(lng);
-  };
+  const change = useCallback((lng) => {
+    if (!i18n || i18n.language === lng) return
+    i18n.changeLanguage(lng)
+  }, [i18n])
 
-  // cấu trúc item cho antd (dễ mở rộng nếu thêm ngôn ngữ)
-  const items = [
+  const items = useMemo(() => [
     {
       key: 'vi',
       label: (
-        <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <ReactCountryFlag countryCode="VN" svg style={{ width: 20, height: 14 }} aria-label="Vietnam flag" />
-          <span style={{ fontWeight: 600 }}>VI</span>
+        <span className="lang-option">
+          <ReactCountryFlag countryCode="VN" svg className="lang-flag" aria-label="Vietnam flag" />
+          <span className="lang-label">VI</span>
         </span>
       ),
     },
     {
       key: 'en',
       label: (
-        <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          {/* Dùng "GB" thay "US" nếu muốn cờ Anh; tuỳ chiến lược ngôn ngữ */}
-          <ReactCountryFlag countryCode="GB" svg style={{ width: 20, height: 14 }} aria-label="United Kingdom flag" />
-          <span style={{ fontWeight: 600 }}>EN</span>
+        <span className="lang-option">
+          <ReactCountryFlag countryCode="GB" svg className="lang-flag" aria-label="United Kingdom flag" />
+          <span className="lang-label">EN</span>
         </span>
       ),
     },
-  ];
+  ], [])
 
-  const currentIsVi = Boolean(i18n?.language && i18n.language.startsWith('vi'));
+  const currentIsVi = Boolean(i18n?.language && i18n.language.startsWith('vi'))
 
   return (
     <Dropdown
@@ -46,19 +43,19 @@ export default function LanguageToggle() {
       }}
       trigger={['click']}
       placement="bottomRight"
+      overlayClassName="lang-dropdown"
     >
       <Button
         type="text"
         aria-haspopup="true"
         aria-label="Language switcher"
         className="lang-toggle-btn"
-        style={{ padding: '6px 10px', fontWeight: 600, display: 'inline-flex', alignItems: 'center' }}
       >
         <Space size="small" align="center">
           <ReactCountryFlag
             countryCode={currentIsVi ? 'VN' : 'GB'}
             svg
-            style={{ width: 20, height: 14 }}
+            className="lang-flag"
             title={currentIsVi ? 'Vietnam' : 'United Kingdom'}
             aria-hidden={false}
             aria-label={currentIsVi ? 'Vietnam flag' : 'United Kingdom flag'}
@@ -68,5 +65,7 @@ export default function LanguageToggle() {
         </Space>
       </Button>
     </Dropdown>
-  );
+  )
 }
+
+export default memo(LanguageToggle)

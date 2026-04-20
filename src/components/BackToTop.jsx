@@ -1,19 +1,22 @@
-import React, { useEffect, useState } from 'react'
+import React, { memo, useEffect, useState } from 'react'
 
-export default function BackToTop() {
+function BackToTop() {
   const [show, setShow] = useState(false)
 
   useEffect(() => {
     const container = document.querySelector('.app-scroll')
+    let rafId = 0
+
     const getY = () => {
-      const c = document.querySelector('.app-scroll')
-      const cy = c ? c.scrollTop : 0
+      const cy = container ? container.scrollTop : 0
       const wy = window.scrollY || window.pageYOffset || 0
       return Math.max(cy, wy)
     }
-  const onScroll = () => setShow(getY() > 60)
+    const onScroll = () => {
+      cancelAnimationFrame(rafId)
+      rafId = requestAnimationFrame(() => setShow(getY() > 60))
+    }
 
-    // Listen on both to be safe across browsers/devices
     const listeners = []
     if (container) {
       container.addEventListener('scroll', onScroll, { passive: true })
@@ -24,6 +27,7 @@ export default function BackToTop() {
 
     onScroll()
     return () => {
+      cancelAnimationFrame(rafId)
       listeners.forEach(({ target, handler }) => target.removeEventListener('scroll', handler))
     }
   }, [])
@@ -69,3 +73,5 @@ export default function BackToTop() {
     </a>
   )
 }
+
+export default memo(BackToTop)

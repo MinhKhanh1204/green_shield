@@ -1,8 +1,0 @@
-.bag-template-management { padding: 0; }
-.bag-template-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-.bag-template-header h1 { margin: 0; font-size: 1.5rem; color: var(--color-dark); }
-.bag-template-management .ant-btn-primary { background: var(--color-primary); border-color: var(--color-primary); }
-.bag-template-management .ant-btn-primary:hover { background: #3d8f5e; border-color: #3d8f5e; }
-
-.bag-template-steps { margin-bottom: 0; }
-.bag-template-steps .ant-steps-item-title { font-size: 13px; }

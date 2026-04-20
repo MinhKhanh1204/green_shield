@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Rnd } from 'react-rnd';
 import './ImageAreaSelector.css';
 
@@ -33,7 +33,7 @@ export default function ImageAreaSelector({ imageUrl, value, onChange }) {
     onChange({ ...area, x: Math.round(newX * 10) / 10, y: Math.round(newY * 10) / 10 });
   };
 
-  const handleResizeStop = (e, direction, ref, delta, position) => {
+  const handleResizeStop = (e, direction, ref) => {
     if (!onChange) return;
     const w = (parseFloat(ref.style.width) / PREVIEW_SIZE) * 100;
     const h = (parseFloat(ref.style.height) / PREVIEW_SIZE) * 100;

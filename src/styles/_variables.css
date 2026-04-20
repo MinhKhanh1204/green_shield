@@ -82,6 +82,14 @@
   --dl-radius-sm: 6px;
   --dl-radius-md: 10px;
   --dl-radius-lg: 12px;
+
+  /* shared gradients for sections */
+  --gs-grad-overlay-soft: linear-gradient(180deg, rgba(4, 24, 27, 0.06) 0%, rgba(6, 57, 62, 0.16) 45%, rgba(4, 24, 27, 0.54) 100%);
+  --gs-grad-overlay-strong: linear-gradient(180deg, rgba(18, 72, 67, 0.08) 0%, rgba(18, 72, 67, 0.26) 46%, rgba(8, 38, 35, 0.68) 100%);
+  --gs-grad-process-bg-invert: linear-gradient(180deg,
+      rgba(76, 167, 113, 0.62) 0%,
+      rgba(18, 113, 117, 0.62) 44%,
+      rgba(1, 50, 55, 0.94) 100%);
 }
 
 [data-theme="dark"] {

@@ -1,7 +1,15 @@
-﻿import React from 'react';
-import { Link } from 'react-router-dom';
+import React from 'react'
+import {
+  PiArrowClockwise,
+  PiArrowCounterClockwise,
+  PiArrowLeft,
+  PiEye,
+  PiMoon,
+  PiShoppingBag,
+  PiSun,
+} from 'react-icons/pi'
 
-export function Topbar({
+function Topbar({
   templateName,
   canUndo,
   canRedo,
@@ -10,63 +18,66 @@ export function Topbar({
   onPreview,
   onOrder,
   onBack,
-  themeMode,
+  themeMode = 'light',
   onToggleTheme,
 }) {
   return (
     <header className="design-topbar">
       <div className="topbar-left">
-        <button className="topbar-back-btn" onClick={onBack} aria-label="Quay lại">
-          <span className="material-symbols-rounded">arrow_back</span>
+        <button type="button" className="topbar-back-btn" onClick={onBack} aria-label="Go back">
+          <PiArrowLeft size={18} />
         </button>
+
         <div className="design-meta">
-          <div className="design-name">{templateName || 'Túi tote'}</div>
+          <div className="design-name">{templateName || 'Design editor'}</div>
           <div className="design-status">
             <span className="dot" />
-            Đã lưu
+            <span>Live workspace</span>
           </div>
         </div>
       </div>
 
       <div className="topbar-center">
-        <div className="design-badge">
-          <span className="material-symbols-rounded">auto_awesome</span>
-          <span>Phòng thiết kế</span>
-        </div>
+        <div className="design-badge">Premium canvas</div>
       </div>
 
       <div className="topbar-right">
         <button
-          className={`icon-btn design-theme-btn theme-toggle${themeMode === 'dark' ? ' is-dark' : ''}`}
-          onClick={onToggleTheme}
-          aria-label={themeMode === 'dark' ? 'Chuyển sang giao diện sáng' : 'Chuyển sang giao diện tối'}
-          title={themeMode === 'dark' ? 'Chuyển sang sáng' : 'Chuyển sang tối'}
+          type="button"
+          className="icon-btn"
+          onClick={onUndo}
+          aria-label="Undo"
+          disabled={!canUndo}
         >
-          <span className="theme-toggle-track">
-            <span className="theme-toggle-thumb" />
-            <span className="material-symbols-rounded theme-toggle-icon theme-toggle-icon--sun">light_mode</span>
-            <span className="material-symbols-rounded theme-toggle-icon theme-toggle-icon--moon">dark_mode</span>
-          </span>
+          <PiArrowCounterClockwise size={18} />
         </button>
-        <button className="icon-btn" disabled={!canUndo} onClick={onUndo} aria-label="Hoàn tác">
-          <span className="material-symbols-rounded">undo</span>
+        <button
+          type="button"
+          className="icon-btn"
+          onClick={onRedo}
+          aria-label="Redo"
+          disabled={!canRedo}
+        >
+          <PiArrowClockwise size={18} />
         </button>
-        <button className="icon-btn" disabled={!canRedo} onClick={onRedo} aria-label="Làm lại">
-          <span className="material-symbols-rounded">redo</span>
+        <button type="button" className="icon-btn" onClick={onPreview} aria-label="Preview">
+          <PiEye size={18} />
         </button>
-
-        <button className="btn-ghost" onClick={onPreview}>
-          <span className="material-symbols-rounded">visibility</span>
-          Xem trước
+        <button type="button" className="btn-primary" onClick={onOrder}>
+          <PiShoppingBag size={16} />
+          <span>Order</span>
         </button>
-
-        <button className="btn-primary glow" onClick={onOrder}>
-          Đặt hàng
-          <span className="material-symbols-rounded">arrow_forward</span>
+        <button
+          type="button"
+          className="icon-btn theme-toggle"
+          onClick={onToggleTheme}
+          aria-label="Toggle theme"
+        >
+          {themeMode === 'dark' ? <PiSun size={18} /> : <PiMoon size={18} />}
         </button>
       </div>
     </header>
-  );
+  )
 }
 
-export default Topbar;
+export default Topbar

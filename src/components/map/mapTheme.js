@@ -2,18 +2,21 @@ export const MAP_STYLES = {
   light: {
     id: "light",
     label: "Light (Clean)",
+    labelKey: "map.styles.light",
     style: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
   },
 
   dark: {
     id: "dark",
     label: "Dark (Pro)",
+    labelKey: "map.styles.dark",
     style: "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
   },
 
   voyager: {
     id: "voyager",
     label: "Voyager (Best)",
+    labelKey: "map.styles.voyager",
     style: "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
   },
 }

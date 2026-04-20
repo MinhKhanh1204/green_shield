@@ -107,7 +107,7 @@ export default function TextureManagementPage() {
       await deleteTexture(id);
       message.success('Đã xóa');
       loadTextures();
-    } catch (e) {
+    } catch {
       message.error('Không thể xóa');
     }
   };

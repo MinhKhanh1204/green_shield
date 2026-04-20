@@ -1,12 +1,14 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Result, Spin } from "antd";
+import React, { Suspense, lazy, useCallback, useEffect, useMemo, useState } from "react";
+import { Result } from "antd";
 import { useTranslation } from "react-i18next";
 import "./MapPage.css";
 import { useMaterialData } from "../context/MaterialDataContext";
-import MapGL from "../components/map/MapGL";
+import AppSkeleton from "../components/ui/AppSkeleton";
 import FloatingOverview from "../components/map/FloatingOverview";
 import FloatingFilter from "../components/map/FloatingFilter";
 import FloatingDetail from "../components/map/FloatingDetail";
+
+const MapGL = lazy(() => import("../components/map/MapGL"));
 
 const EMPTY_STATS = {
   totalZones: 0,
@@ -48,7 +50,13 @@ export default function MapPage() {
   const { zones = [], farmers = [], points = [], loading, error } = useMaterialData();
 
   const [mapStyle, setMapStyle] = useState("light");
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth <= 960 : false
+  );
   const [filterCollapsed, setFilterCollapsed] = useState(false);
+  const [activePanel, setActivePanel] = useState("none");
+  const [detailPinned, setDetailPinned] = useState(false);
+  const [sheetState, setSheetState] = useState("collapsed");
   const [selectedZoneId, setSelectedZoneId] = useState("");
   const [selectedItem, setSelectedItem] = useState(null);
   const [visibility, setVisibility] = useState({
@@ -61,8 +69,14 @@ export default function MapPage() {
     if (typeof window === "undefined") return;
 
     const syncFilterByViewport = () => {
-      if (window.innerWidth < 1025) {
+      const mobile = window.innerWidth <= 960;
+      setIsMobile(mobile);
+      if (mobile) {
         setFilterCollapsed(true);
+        setActivePanel("none");
+      } else {
+        setFilterCollapsed(false);
+        setActivePanel("both");
       }
     };
 
@@ -115,12 +129,50 @@ export default function MapPage() {
     const nextZoneId = zoneId || "";
     setSelectedZoneId(nextZoneId);
     setSelectedItem(nextZoneId ? { type: "region", id: nextZoneId } : null);
-  }, []);
+    if (isMobile && nextZoneId) {
+      setActivePanel("detail");
+      setSheetState("half");
+    }
+  }, [isMobile]);
+
+  const handleFilterToggle = useCallback(() => {
+    if (!isMobile) {
+      setFilterCollapsed((prev) => !prev);
+      return;
+    }
+
+    setActivePanel((prev) => {
+      if (prev === "filter") return "none";
+      setSheetState("collapsed");
+      return "filter";
+    });
+    setFilterCollapsed((prev) => !prev);
+  }, [isMobile]);
 
   const handleSelectFromMap = useCallback((item) => {
     if (!item) return;
     setSelectedItem(item);
-  }, []);
+    if (isMobile) {
+      setActivePanel("detail");
+      setSheetState("collapsed");
+      setFilterCollapsed(true);
+    }
+  }, [isMobile]);
+
+  const handleMapTap = useCallback(() => {
+    if (!isMobile) return;
+    if (detailPinned) return;
+    setActivePanel("none");
+    setSheetState("collapsed");
+  }, [detailPinned, isMobile]);
+
+  const closeDetail = useCallback(() => {
+    setSelectedItem(null);
+    if (isMobile) {
+      setActivePanel("none");
+      setSheetState("collapsed");
+    }
+  }, [isMobile]);
 
   const handleVisibilityChange = useCallback((key, value) => {
     setVisibility((prev) => ({ ...prev, [key]: value }));
@@ -129,7 +181,7 @@ export default function MapPage() {
   if (loading) {
     return (
       <section className="map-page map-loading-state">
-        <Spin size="large" fullscreen tip={t("map.loading", { defaultValue: "Loading map..." })} />
+        <AppSkeleton variant="map" />
       </section>
     );
   }
@@ -146,13 +198,18 @@ export default function MapPage() {
     );
   }
 
+  const showFilter = !isMobile || activePanel === "filter" || !filterCollapsed;
+  const showDetail = !!selectedDetailItem;
+  const detailVisible = !!selectedDetailItem && (!isMobile || activePanel === "detail");
+  const showOverview = !isMobile || activePanel !== "detail";
+
   return (
-    <section className="map-page">
-      <FloatingOverview stats={stats || EMPTY_STATS} />
+    <section className={`map-page ${isMobile ? "mobile-mode" : "desktop-mode"}`}>
+      {showOverview ? <FloatingOverview stats={stats || EMPTY_STATS} /> : null}
 
       <FloatingFilter
-        collapsed={filterCollapsed}
-        onToggle={() => setFilterCollapsed((prev) => !prev)}
+        collapsed={!showFilter}
+        onToggle={handleFilterToggle}
         zones={safeZones}
         selectedZoneId={selectedZoneId}
         onSelectZone={handleSelectZone}
@@ -162,27 +219,38 @@ export default function MapPage() {
         onVisibilityChange={handleVisibilityChange}
       />
 
-      <FloatingDetail
-        item={selectedDetailItem}
-        type={selectedItem?.type}
-        onClose={() => setSelectedItem(null)}
-      />
+      {showDetail ? (
+        <FloatingDetail
+          item={selectedDetailItem}
+          type={selectedItem?.type}
+          onClose={closeDetail}
+          isMobile={isMobile}
+          visible={detailVisible}
+          sheetState={sheetState}
+          onSheetStateChange={setSheetState}
+          pinned={detailPinned}
+          onPinnedChange={setDetailPinned}
+        />
+      ) : null}
 
       <div className="map-shell">
-        <MapGL
-          regions={selectedZone ? [selectedZone] : safeZones}
-          farmers={scopedFarmers}
-          points={scopedPoints}
-          mapStyle={mapStyle}
-          selectedRegionId={selectedZoneId}
-          visibility={visibility}
-          localeText={{
-            mode2D: t("map.mode2D", { defaultValue: "2D" }),
-            mode3D: t("map.mode3D", { defaultValue: "3D" }),
-            modeLabel: t("map.modeLabel", { defaultValue: "Map display mode" })
-          }}
-          onSelect={handleSelectFromMap}
-        />
+        <Suspense fallback={<AppSkeleton variant="map" />}>
+          <MapGL
+            regions={selectedZone ? [selectedZone] : safeZones}
+            farmers={scopedFarmers}
+            points={scopedPoints}
+            mapStyle={mapStyle}
+            selectedRegionId={selectedZoneId}
+            visibility={visibility}
+            localeText={{
+              mode2D: t("map.mode2D", { defaultValue: "2D" }),
+              mode3D: t("map.mode3D", { defaultValue: "3D" }),
+              modeLabel: t("map.modeLabel", { defaultValue: "Map display mode" })
+            }}
+            onSelect={handleSelectFromMap}
+            onMapTap={handleMapTap}
+          />
+        </Suspense>
       </div>
     </section>
   );

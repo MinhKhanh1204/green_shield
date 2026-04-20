@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { Modal } from 'antd';
 import { getOrderById } from '../services/order';
@@ -31,12 +31,7 @@ export default function OrderLookupPage() {
   const [previewSide, setPreviewSide] = useState('front');
   const [previewModalOpen, setPreviewModalOpen] = useState(false);
 
-  // Auto-lookup if prefilled
-  useEffect(() => {
-    if (state?.prefillId) handleLookup(state.prefillId);
-  }, []);
-
-  const handleLookup = async (id) => {
+  const handleLookup = useCallback(async (id) => {
     const lookupId = id ?? inputId;
     if (!lookupId) return;
     setLoading(true);
@@ -56,7 +51,12 @@ export default function OrderLookupPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [inputId]);
+
+  // Auto-lookup if prefilled
+  useEffect(() => {
+    if (state?.prefillId) handleLookup(state.prefillId);
+  }, [handleLookup, state?.prefillId]);
 
   const statusInfo = order ? (STATUS_MAP[order.status] || { label: order.status, color: '#6b7280', bg: '#f3f4f6' }) : null;
   const stepIdx = order ? STEPS.indexOf(order.status) : -1;

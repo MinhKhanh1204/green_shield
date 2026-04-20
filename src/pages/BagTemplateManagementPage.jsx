@@ -46,27 +46,29 @@ export default function BagTemplateManagementPage() {
 
   const frontFileList = Form.useWatch('frontImage', form);
   const backFileList = Form.useWatch('backImage', form);
+  const frontOriginFile = frontFileList?.[0]?.originFileObj;
+  const backOriginFile = backFileList?.[0]?.originFileObj;
 
   const [frontBlobUrl, setFrontBlobUrl] = useState(null);
   const [backBlobUrl, setBackBlobUrl] = useState(null);
 
   useEffect(() => {
-    if (frontFileList?.[0]?.originFileObj) {
-      const url = URL.createObjectURL(frontFileList[0].originFileObj);
+    if (frontOriginFile) {
+      const url = URL.createObjectURL(frontOriginFile);
       setFrontBlobUrl(url);
       return () => URL.revokeObjectURL(url);
     }
     setFrontBlobUrl(null);
-  }, [frontFileList?.[0]?.originFileObj]);
+  }, [frontOriginFile]);
 
   useEffect(() => {
-    if (backFileList?.[0]?.originFileObj) {
-      const url = URL.createObjectURL(backFileList[0].originFileObj);
+    if (backOriginFile) {
+      const url = URL.createObjectURL(backOriginFile);
       setBackBlobUrl(url);
       return () => URL.revokeObjectURL(url);
     }
     setBackBlobUrl(null);
-  }, [backFileList?.[0]?.originFileObj]);
+  }, [backOriginFile]);
 
   const frontImageUrl = frontBlobUrl || editingRecord?.frontImageUrl;
   const backImageUrl = backBlobUrl || editingRecord?.backImageUrl;
@@ -166,7 +168,7 @@ export default function BagTemplateManagementPage() {
       await adminDeleteBagTemplate(id);
       message.success('Đã xóa');
       loadTemplates();
-    } catch (e) {
+    } catch {
       message.error('Không thể xóa');
     }
   };
@@ -315,7 +317,7 @@ export default function BagTemplateManagementPage() {
         ].filter(Boolean)}
       >
         <Steps current={currentStep} className="bag-template-steps" size="small">
-          {STEPS.map((s, i) => (
+          {STEPS.map((s) => (
             <Steps.Step key={s.key} title={s.title} icon={s.icon} />
           ))}
         </Steps>

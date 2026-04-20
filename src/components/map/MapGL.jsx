@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+import maplibregl from "maplibre-gl";
 import { MAP_STYLES } from "./mapTheme";
 import islandsGeoJSONRaw from "../../data/vietnam-islands.geojson?raw";
 import "./MapGL.css";
 
 const DEFAULT_STYLE = "https://tiles.stadiamaps.com/styles/alidade_smooth.json";
+const FALLBACK_STYLE_URL = "https://demotiles.maplibre.org/style.json";
 const DEFAULT_CENTER = [105.75, 10.03];
 const BASE_COLOR = "#4CA771";
 const islandsGeoJSON = JSON.parse(islandsGeoJSONRaw);
@@ -108,6 +109,7 @@ export default function MapGL({
     modeLabel: "Map mode"
   },
   onSelect,
+  onMapTap,
   visibility = { region: true, farmers: true, points: true }
 }) {
   const mapRef = useRef(null);
@@ -116,6 +118,7 @@ export default function MapGL({
   const hoveredFarmerIdRef = useRef(null);
   const hoveredPointIdRef = useRef(null);
   const selectedRegionIdRef = useRef(null);
+  const fallbackStyleAppliedRef = useRef(false);
   const regionMetaRef = useRef(new Map());
   const styleKeyRef = useRef(resolveStyle(mapStyle));
   const introPlayedRef = useRef(false);
@@ -602,6 +605,13 @@ export default function MapGL({
       onSelect?.({ type: "point", id: feature.properties.id });
     };
 
+    const onMapClick = (event) => {
+      const features = map.queryRenderedFeatures(event.point, {
+        layers: ["region-fill", "farmer-circle", "point-circle"]
+      });
+      if (!features?.length) onMapTap?.();
+    };
+
     map.off("mousemove", "region-fill", onMoveRegion);
     map.off("mouseleave", "region-fill", onLeaveRegion);
     map.off("click", "region-fill", onClickRegion);
@@ -611,6 +621,7 @@ export default function MapGL({
     map.off("mousemove", "point-circle", onMovePoint);
     map.off("mouseleave", "point-circle", onLeavePoint);
     map.off("click", "point-circle", onClickPoint);
+    map.off("click", onMapClick);
 
     map.on("mousemove", "region-fill", onMoveRegion);
     map.on("mouseleave", "region-fill", onLeaveRegion);
@@ -621,42 +632,70 @@ export default function MapGL({
     map.on("mousemove", "point-circle", onMovePoint);
     map.on("mouseleave", "point-circle", onLeavePoint);
     map.on("click", "point-circle", onClickPoint);
-  }, [onSelect, setFeatureState]);
+    map.on("click", onMapClick);
+  }, [onMapTap, onSelect, setFeatureState]);
 
   useEffect(() => {
-    const styleUrl = resolveStyle(mapStyle);
-    styleKeyRef.current = styleUrl;
+    let disposed = false;
+    let map;
 
-    const map = new maplibregl.Map({
-      container: mapRef.current,
-      style: styleUrl,
-      center: DEFAULT_CENTER,
-      zoom: 9.8,
-      pitch: 0
-    });
+    const initMap = () => {
+      if (!mapRef.current) return;
+      if (disposed) return;
 
-    mapInstanceRef.current = map;
-    map.addControl(new maplibregl.NavigationControl(), "bottom-right");
+      const styleUrl = resolveStyle(mapStyle);
+      styleKeyRef.current = styleUrl;
 
-    const onLoadStyle = () => {
-      addOrUpdateSourcesAndLayers();
-      bindMapInteractions();
-      if (!introPlayedRef.current) {
-        map.flyTo({
-          center: DEFAULT_CENTER,
-          zoom: 11.5,
-          pitch: 40,
-          bearing: -12,
-          duration: 1800
-        });
-        introPlayedRef.current = true;
-      }
+      map = new maplibregl.Map({
+        container: mapRef.current,
+        style: styleUrl,
+        center: DEFAULT_CENTER,
+        zoom: 9.8,
+        pitch: 0
+      });
+
+      mapInstanceRef.current = map;
+      map.addControl(new maplibregl.NavigationControl(), "bottom-right");
+
+      map.on("error", (event) => {
+        const message = String(event?.error?.message || "").toLowerCase();
+        if (fallbackStyleAppliedRef.current) return;
+        if (
+          !message.includes("unexpected token")
+          && !message.includes("parse")
+          && !message.includes("projection")
+          && !message.includes("cannot read properties of undefined")
+        ) {
+          return;
+        }
+        fallbackStyleAppliedRef.current = true;
+        styleKeyRef.current = FALLBACK_STYLE_URL;
+        map.setStyle(FALLBACK_STYLE_URL);
+      });
+
+      const onLoadStyle = () => {
+        addOrUpdateSourcesAndLayers();
+        bindMapInteractions();
+        if (!introPlayedRef.current) {
+          map.flyTo({
+            center: DEFAULT_CENTER,
+            zoom: 11.5,
+            pitch: 40,
+            bearing: -12,
+            duration: 1800
+          });
+          introPlayedRef.current = true;
+        }
+      };
+
+      map.on("style.load", onLoadStyle);
     };
 
-    map.on("style.load", onLoadStyle);
+    initMap();
 
     return () => {
-      map.remove();
+      disposed = true;
+      map?.remove();
       mapInstanceRef.current = null;
     };
   }, [addOrUpdateSourcesAndLayers, bindMapInteractions, mapStyle]);
@@ -666,6 +705,7 @@ export default function MapGL({
     if (!map) return;
     const nextStyle = resolveStyle(mapStyle);
     if (styleKeyRef.current === nextStyle) return;
+    fallbackStyleAppliedRef.current = false;
     styleKeyRef.current = nextStyle;
     map.setStyle(nextStyle);
   }, [mapStyle]);

@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef } from 'react'
+import { useInView, useMotionValue, useMotionValueEvent, useReducedMotion, useSpring } from 'framer-motion'
 
 /**
  * NumberTicker: counts from 'from' to 'to' when visible.
@@ -11,54 +12,46 @@ import React, { useEffect, useRef, useState } from 'react'
  */
 export default function NumberTicker({ value, from = 0, duration = 1200, decimals = 0, className = '' }) {
 	const ref = useRef(null)
-	const [started, setStarted] = useState(false)
-	const [display, setDisplay] = useState(from)
+	const reducedMotion = useReducedMotion()
+	const isInView = useInView(ref, { amount: 0.35, once: true })
+
+	const fromValue = useMemo(() => Number(from) || 0, [from])
+	const toValue = useMemo(() => Number(value) || 0, [value])
+
+	const motionValue = useMotionValue(fromValue)
+	const spring = useSpring(motionValue, {
+		stiffness: 100,
+		damping: 24,
+		mass: 1,
+		duration: duration / 1000,
+	})
+
+	const formatNumber = useCallback((num) =>
+		Number(num).toLocaleString(undefined, {
+			minimumFractionDigits: decimals,
+			maximumFractionDigits: decimals,
+		}), [decimals])
 
 	useEffect(() => {
-		if (typeof window === 'undefined') return
-		// Reduced motion: skip animation
-		const media = window.matchMedia('(prefers-reduced-motion: reduce)')
-		if (media.matches) {
-			setDisplay(value)
+		if (!ref.current) return
+		ref.current.textContent = formatNumber(fromValue)
+	}, [fromValue, formatNumber])
+
+	useEffect(() => {
+		if (!isInView) return
+		if (reducedMotion) {
+			motionValue.set(toValue)
 			return
 		}
 
-		const root = document.querySelector('.app-scroll') || null
-		const obs = new IntersectionObserver((entries) => {
-			entries.forEach(entry => {
-				if (entry.isIntersecting && !started) {
-					setStarted(true)
-				}
-			})
-		}, { root, threshold: 0.4 })
+		motionValue.set(toValue)
+	}, [isInView, reducedMotion, motionValue, toValue])
 
-		if (ref.current) obs.observe(ref.current)
-		return () => obs.disconnect()
-	}, [started, value])
-
-	useEffect(() => {
-		if (!started) return
-		let frameId
-		const startTs = performance.now()
-		const fromVal = Number(from) || 0
-		const toVal = Number(value) || 0
-		const run = (ts) => {
-			const t = Math.min(1, (ts - startTs) / duration)
-			// easeOutCubic
-			const eased = 1 - Math.pow(1 - t, 3)
-			const v = fromVal + (toVal - fromVal) * eased
-			setDisplay(v)
-			if (t < 1) frameId = requestAnimationFrame(run)
-		}
-		frameId = requestAnimationFrame(run)
-		return () => cancelAnimationFrame(frameId)
-	}, [started, value, from, duration])
-
-	const formatted = Number(display).toLocaleString(undefined, {
-		minimumFractionDigits: decimals,
-		maximumFractionDigits: decimals,
+	useMotionValueEvent(spring, 'change', (latest) => {
+		if (!ref.current) return
+		ref.current.textContent = formatNumber(latest)
 	})
 
-	return <span ref={ref} className={className}>{formatted}</span>
+	return <span ref={ref} className={className} />
 }
 

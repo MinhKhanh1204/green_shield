@@ -3,10 +3,10 @@
 
 .chat-widget-button {
   position: fixed;
-  right: -2rem;
-  bottom: 2rem;
-  width: 350px;
-  height: 350px;
+  right: clamp(-64px, -2.6vw, -28px);
+  bottom: clamp(14px, 2.4vh, 28px);
+  width: clamp(240px, 22vw, 350px);
+  height: clamp(240px, 22vw, 350px);
   display: grid;
   place-items: center;
   background: none;
@@ -20,20 +20,38 @@
   pointer-events: none;
   touch-action: pan-y;
 }
+
 /* Visibility helpers for desktop vs mobile variants */
-.cwb-desktop { display: block; }
-.cwb-mobile { display: none; }
+.cwb-desktop {
+  display: block;
+}
+
+.cwb-mobile {
+  display: none;
+}
+
+@media (min-width: 769px) {
+  .cwb-mobile {
+    display: none !important;
+  }
+}
 
 @media (max-width: 640px) {
-  .cwb-desktop { display: none; }
-  .cwb-mobile { display: inline-grid; }
+  .cwb-desktop {
+    display: none;
+  }
+
+  .cwb-mobile {
+    display: inline-grid;
+  }
 }
 
 /* Mobile small chat button styled like Back-to-Top */
 .chat-mobile-button {
   position: fixed;
   right: 18px;
-  bottom: calc(18px + 44px + 14px); /* sit above Back-to-Top button */
+  bottom: calc(18px + 44px + 14px);
+  /* sit above Back-to-Top button */
   width: 44px;
   height: 44px;
   border-radius: 50%;
@@ -42,7 +60,8 @@
   background: var(--color-primary);
   color: #fff;
   box-shadow: var(--card-shadow);
-  z-index: 210; /* above back-to-top (z-index: 200) */
+  z-index: 210;
+  /* above back-to-top (z-index: 200) */
   border: none;
   cursor: pointer;
   transition: opacity 180ms ease, transform 180ms ease, box-shadow 180ms ease;
@@ -77,8 +96,8 @@
 
 @media (max-width: 900px) {
   .chat-widget-button {
-    width: 280px;
-    height: 280px;
+    width: 260px;
+    height: 260px;
     right: -3rem;
     bottom: 1.5rem;
   }
@@ -97,498 +116,574 @@
   }
 }
 
-  /* Teaser speech bubble above the button */
-  .chat-widget-teaser {
-    position: absolute;
-    bottom: 50%;
-    right: 50%;
-    background: #ffffff;
-    color: var(--color-dark);
-    padding: 10px 12px;
-    border-radius: 12px;
-    box-shadow: 0 10px 22px rgba(1, 50, 55, 0.18);
-    font-weight: 700;
-    font-size: 14px;
-    line-height: 1.25;
-    max-width: 120px;
-    text-align: left;
-    pointer-events: none;
-    /* allow clicks to pass to the button */
-    animation: cwt-in 380ms cubic-bezier(.22, 1, .36, 1) both;
+/* Teaser speech bubble above the button */
+.chat-widget-teaser {
+  position: absolute;
+  bottom: 50%;
+  right: 50%;
+  background: #ffffff;
+  color: var(--color-dark);
+  padding: 10px 12px;
+  border-radius: 12px;
+  box-shadow: 0 10px 22px rgba(1, 50, 55, 0.18);
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1.25;
+  max-width: 120px;
+  text-align: left;
+  pointer-events: none;
+  /* allow clicks to pass to the button */
+  animation: cwt-in 380ms cubic-bezier(.22, 1, .36, 1) both;
+}
+
+.chat-widget-teaser::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  right: 26px;
+  border: 8px solid transparent;
+  border-top-color: #ffffff;
+  filter: drop-shadow(0 2px 2px rgba(1, 50, 55, 0.18));
+}
+
+@keyframes cwt-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(.98);
   }
 
-  .chat-widget-teaser::after {
-    content: "";
-    position: absolute;
-    top: 100%;
-    right: 26px;
-    border: 8px solid transparent;
-    border-top-color: #ffffff;
-    filter: drop-shadow(0 2px 2px rgba(1, 50, 55, 0.18));
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
+}
 
-  @keyframes cwt-in {
-    from {
-      opacity: 0;
-      transform: translateY(8px) scale(.98);
-    }
+/* Image icon for chat button */
+.chat-widget-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+}
 
-    to {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-  }
+/* Smaller clickable hotspot inside the large visual to avoid blocking scroll */
+.chat-widget-hotspot {
+  position: absolute;
+  right: 14%;
+  bottom: 14%;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  z-index: 101;
+  /* above image */
+  pointer-events: auto;
+  /* re-enable events only for the hotspot */
+  touch-action: manipulation;
+}
 
-  /* Image icon for chat button */
-  .chat-widget-icon {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    display: block;
-    pointer-events: none;
-  }
-
-  /* Smaller clickable hotspot inside the large visual to avoid blocking scroll */
+@media (max-width: 1024px) {
   .chat-widget-hotspot {
-    position: absolute;
-    right: 14%;
-    bottom: 14%;
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    z-index: 101; /* above image */
-    pointer-events: auto; /* re-enable events only for the hotspot */
-    touch-action: manipulation;
+    width: 140px;
+    height: 140px;
+    right: 12%;
+    bottom: 12%;
   }
+}
 
-  @media (max-width: 1024px) {
-    .chat-widget-hotspot {
-      width: 140px;
-      height: 140px;
-      right: 12%;
-      bottom: 12%;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .chat-widget-hotspot {
-      width: 130px;
-      height: 130px;
-      right: 10%;
-      bottom: 10%;
-    }
-  }
-
-  @media (max-width: 640px) {
-    .chat-widget-hotspot {
-      width: 120px;
-      height: 120px;
-      right: 10%;
-      bottom: 10%;
-    }
-  }
-
-  .chat-widget-panel {
-    position: fixed;
-    right: 20px;
-    bottom: 100px;
-    width: 370px;
-    height: 520px;
-    display: block;
-    border-radius: 20px;
-    background: transparent;
-    /* inner will carry the background */
-    backdrop-filter: blur(16px);
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
-    overflow: visible;
-    /* allow mascot to overflow panel */
-    z-index: 100;
-  }
-
-  /* Inner wrapper keeps rounded corners and clips content */
-  .cwp-inner {
-    height: 100%;
-    display: grid;
-    grid-template-rows: auto auto 1fr auto;
-    background: #fff;
-    border-radius: 20px;
-    overflow: hidden;
-    /* ensure the mascot can layer above this inner content */
-    position: relative;
-    z-index: 1;
-  }
-
-  /* Decorative mascot image floating above the panel */
-  .cwp-mascot {
-    position: absolute;
-    top: -45%;
+@media (max-width: 768px) {
+  .chat-widget-hotspot {
+    width: 130px;
+    height: 130px;
     right: 10%;
-    width: 300px;
-    height: auto;
-    object-fit: contain;
-    pointer-events: none;
-    user-select: none;
-    filter: drop-shadow(0 10px 22px rgba(1, 50, 55, 0.22));
-    /* lift above .cwp-inner content to overlay correctly */
-    z-index: 3;
+    bottom: 10%;
+  }
+}
+
+@media (max-width: 640px) {
+  .chat-widget-hotspot {
+    width: 120px;
+    height: 120px;
+    right: 10%;
+    bottom: 10%;
+  }
+}
+
+.chat-widget-panel {
+  position: fixed;
+  right: clamp(10px, 1.4vw, 20px);
+  bottom: clamp(84px, 9vh, 100px);
+  width: clamp(320px, 26vw, 370px);
+  height: min(520px, calc(100vh - 170px));
+  max-height: calc(100vh - 150px);
+  --cwp-mascot-size: clamp(220px, 20vw, 480px);
+  --cwp-mascot-lift: -77%;
+  --cwp-mascot-shift-x: 0px;
+  display: block;
+  border-radius: 20px;
+  background: transparent;
+  /* inner will carry the background */
+  backdrop-filter: blur(16px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+  overflow: visible;
+  /* allow mascot to overflow panel */
+  z-index: 100;
+}
+
+/* Inner wrapper keeps rounded corners and clips content */
+.cwp-inner {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  background: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+  /* ensure the mascot can layer above this inner content */
+  position: relative;
+  z-index: 1;
+}
+
+/* Decorative mascot image floating above the panel */
+.cwp-mascot {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  right: auto;
+  width: var(--cwp-mascot-size);
+  height: auto;
+  transform: translate(calc(-50% + var(--cwp-mascot-shift-x)), var(--cwp-mascot-lift));
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  filter: drop-shadow(0 10px 22px rgba(1, 50, 55, 0.22));
+  /* lift above .cwp-inner content to overlay correctly */
+  z-index: 3;
+}
+
+/* Full-screen transparent overlay to capture outside clicks */
+.cwp-overlay {
+  position: fixed;
+  inset: 0;
+  background: transparent;
+  /* keep clean look */
+  z-index: 99;
+  /* just under the panel */
+  /* Allow page to remain scrollable under overlay */
+  pointer-events: none;
+}
+
+.cwp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  color: #666;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.cwp-title {
+  display: flex;
+  align-items: center;
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.cwp-x {
+  background: transparent;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.cwp-topics {
+  padding: 0.5rem 1rem;
+}
+
+.cwp-select {
+  width: 100%;
+}
+
+/* Tweak Antd Select look to match app */
+.cwp-select .ant-select-selector {
+  height: auto !important;
+  border-radius: 10px !important;
+  border: none !important;
+  padding: 0 10px !important;
+  box-shadow: var(--card-shadow);
+}
+
+.cwp-select .ant-select-selection-item,
+.cwp-select .ant-select-selection-placeholder {
+  line-height: 38px !important;
+}
+
+.cwp-select .ant-select-arrow {
+  color: #01624a;
+}
+
+.cwp-opt {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cwp-opt-ic {
+  font-size: 16px;
+  color: #01624a;
+}
+
+.cwp-topic-list {
+  display: grid;
+  gap: 8px;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.cwp-topic {
+  display: grid;
+  gap: 2px;
+  text-align: left;
+  border-radius: 12px;
+  padding: 8px 10px;
+  background: #f7f9f8;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.cwp-topic:hover {
+  background: #eefbf5;
+}
+
+.cwp-topic.is-active {
+  background: #e6f8f0;
+  border-color: var(--color-primary);
+}
+
+.cwp-topic-key {
+  font-weight: 700;
+  color: #014f39;
+}
+
+.cwp-topic-desc {
+  font-size: 12px;
+  color: var(--color-muted);
+}
+
+.cwp-body {
+  padding: 12px 14px;
+  overflow: auto;
+  background: #fff;
+}
+
+/* Hide scrollbar UI but keep scrollability */
+.cwp-body,
+.cwp-scroll {
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE/Edge */
+}
+
+.cwp-body::-webkit-scrollbar,
+.cwp-scroll::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.cwp-messages {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+/* Centered notice for system messages (outside bubbles) */
+.cwp-notice {
+  display: flex;
+  justify-content: center;
+}
+
+.cwp-notice>span {
+  max-width: 88%;
+  text-align: center;
+  color: #4b5563;
+  /* gray-600 */
+  background: #f3f4f6;
+  /* gray-100 */
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+.msg {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.msg--user {
+  justify-content: flex-end;
+}
+
+.msg--ai {
+  justify-content: flex-start;
+}
+
+.msg-bubble {
+  max-width: 80%;
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  line-height: 1.45;
+  font-size: 14px;
+  word-break: break-word;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.msg--user .msg-bubble {
+  background: var(--color-bg);
+  border-bottom-right-radius: 4px;
+}
+
+.msg--ai .msg-bubble {
+  background: #fff;
+  border-bottom-left-radius: 4px;
+}
+
+.msg--system .msg-bubble {
+  background: var(--color-light);
+  color: #666;
+  font-size: 13px;
+  text-align: center;
+}
+
+/* Typing animation */
+.typing {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.typing span {
+  width: 6px;
+  height: 6px;
+  background: #aaa;
+  border-radius: 50%;
+  animation: blink 1.4s infinite ease-in-out;
+}
+
+.typing span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes blink {
+  0%, 80%, 100% {
+    opacity: 0.2;
+    transform: translateY(0);
   }
 
-  /* Full-screen transparent overlay to capture outside clicks */
-  .cwp-overlay {
-    position: fixed;
-    inset: 0;
-    background: transparent;
-    /* keep clean look */
-    z-index: 99;
-    /* just under the panel */
-    /* Allow page to remain scrollable under overlay */
-    pointer-events: none;
+  40% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+
+/* Input section */
+.cwp-input {
+  display: flex;
+  gap: 8px;
+  padding: 10px;
+  background: #fff;
+}
+
+.cwp-input input {
+  flex: 1;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: #f5f5f5;
+  padding: 0 14px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.cwp-input input:focus {
+  border: 1px solid var(--color-primary);
+}
+
+.cwp-input button {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, var(--color-primary), #00b37d);
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.cwp-input button:hover {
+  transform: scale(1.05);
+}
+
+/* Center send icon perfectly */
+.cwp-input button {
+  display: grid;
+  place-items: center;
+}
+
+.cwp-input button .material-symbols-rounded {
+  font-size: 22px;
+  line-height: 1;
+  display: block;
+}
+
+/* Backdrop to close on outside click */
+.cwp-backdrop {
+  position: fixed;
+  inset: 0;
+  background: transparent;
+  /* keep clean, only for click-capture */
+  z-index: -1;
+  /* stay behind panel but above page */
+}
+
+@media (max-width: 480px) {
+  .chat-widget-panel {
+    right: 10px;
+    left: 10px;
+    width: auto;
+    height: 65vh;
+    bottom: 100px;
+  }
+}
+
+@media (max-width: 1366px) and (min-width: 769px) {
+  .chat-widget-panel {
+    width: clamp(312px, 28vw, 350px);
+    height: min(485px, calc(100vh - 178px));
+    bottom: clamp(70px, 8vh, 90px);
   }
 
-  .cwp-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
-    color: #666;
-    font-weight: 600;
-    letter-spacing: 0.3px;
+  .cwp-mascot {
+    top: 0;
   }
 
-  .cwp-title {
-    display: flex;
-    align-items: center;
-    font-size: 1.2rem;
-    font-weight: 800;
+  .chat-widget-teaser {
+    max-width: 108px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 1100px) and (min-width: 769px) {
+  .chat-widget-button {
+    width: 220px;
+    height: 220px;
+    right: -52px;
+    bottom: 14px;
   }
 
-  .cwp-x {
-    background: transparent;
-    border: none;
-    color: #666;
-    cursor: pointer;
-    font-size: 20px;
+  .chat-widget-hotspot {
+    width: 112px;
+    height: 112px;
+    right: 10%;
+    bottom: 10%;
+  }
+}
+
+/* Low-height desktops/laptops: compress panel and remove mascot overflow */
+@media (max-height: 800px) and (min-width: 769px) {
+  .chat-widget-panel {
+    bottom: 18px;
+    height: min(430px, calc(100vh - 140px));
+    max-height: calc(100vh - 126px);
+  }
+}
+
+@media (max-height: 720px) and (min-width: 769px) {
+  .chat-widget-panel {
+    height: min(390px, calc(100vh - 132px));
+    max-height: calc(100vh - 118px);
   }
 
   .cwp-topics {
-    padding: 0.5rem 1rem;
+    padding: 0.35rem 0.75rem;
   }
 
-  .cwp-select {
-    width: 100%;
+  .cwp-input {
+    padding: 8px;
+  }
+}
+
+/* Mobile: prevent iOS Safari zoom-on-focus and lighten GPU effects */
+@media (max-width: 768px) {
+  .cwp-input input {
+    font-size: 16px;
+    /* >=16px prevents viewport zoom on focus */
+    line-height: 1.4;
   }
 
-  /* Tweak Antd Select look to match app */
-  .cwp-select .ant-select-selector {
-    height: auto !important;
-    border-radius: 10px !important;
-    border: none !important;
-    padding: 0 10px !important;
-    box-shadow: var(--card-shadow);
-  }
-
+  .cwp-select .ant-select-selector,
   .cwp-select .ant-select-selection-item,
   .cwp-select .ant-select-selection-placeholder {
-    line-height: 38px !important;
-  }
-
-  .cwp-select .ant-select-arrow {
-    color: #01624a;
-  }
-
-  .cwp-opt {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .cwp-opt-ic {
     font-size: 16px;
-    color: #01624a;
+    line-height: 38px;
   }
 
-  .cwp-topic-list {
-    display: grid;
-    gap: 8px;
-    max-height: 120px;
-    overflow-y: auto;
+  .chat-widget-panel {
+    backdrop-filter: none;
+    /* drop heavy blur on mobile for perf */
   }
+}
 
-  .cwp-topic {
-    display: grid;
-    gap: 2px;
-    text-align: left;
-    border-radius: 12px;
-    padding: 8px 10px;
-    background: #f7f9f8;
-    transition: all 0.2s ease;
-    border: 1px solid transparent;
+/* When keyboard is open (detected via focus in React), lower the panel a bit on mobile */
+@media (max-width: 768px) {
+  .chat-widget-panel.is-keyboard {
+    bottom: max(12px, env(safe-area-inset-bottom));
+    height: 55vh;
   }
+}
 
-  .cwp-topic:hover {
-    background: #eefbf5;
+/* AI message: header row + body bubble */
+.msg-ai {
+  max-width: 86%;
+}
+
+.msg-ai-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: #374151;
+  /* gray-700 */
+  margin-bottom: 6px;
+}
+
+.msg-ai-logo {
+  color: var(--color-primary);
+  font-size: 18px;
+}
+
+.msg-ai-name {
+  font-size: 14px;
+}
+
+.msg-ai-body {
+  background: #fff;
+}
+
+/* Keep Back-to-Top accessible when chat panel is open on desktop */
+@media (min-width: 769px) {
+  .chat-widget-open .back-to-top {
+    right: clamp(390px, 31vw, 460px);
   }
-
-  .cwp-topic.is-active {
-    background: #e6f8f0;
-    border-color: var(--color-primary);
-  }
-
-  .cwp-topic-key {
-    font-weight: 700;
-    color: #014f39;
-  }
-
-  .cwp-topic-desc {
-    font-size: 12px;
-    color: var(--color-muted);
-  }
-
-  .cwp-body {
-    padding: 12px 14px;
-    overflow: auto;
-    background: #fff;
-  }
-
-  /* Hide scrollbar UI but keep scrollability */
-  .cwp-body,
-  .cwp-scroll {
-    scrollbar-width: none;
-    /* Firefox */
-    -ms-overflow-style: none;
-    /* IE/Edge */
-  }
-
-  .cwp-body::-webkit-scrollbar,
-  .cwp-scroll::-webkit-scrollbar {
-    width: 0;
-    height: 0;
-  }
-
-  .cwp-messages {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: 10px;
-  }
-
-  /* Centered notice for system messages (outside bubbles) */
-  .cwp-notice {
-    display: flex;
-    justify-content: center;
-  }
-
-  .cwp-notice>span {
-    max-width: 88%;
-    text-align: center;
-    color: #4b5563;
-    /* gray-600 */
-    background: #f3f4f6;
-    /* gray-100 */
-    padding: 8px 12px;
-    border-radius: 10px;
-    font-size: 13px;
-  }
-
-  .msg {
-    display: flex;
-    align-items: flex-end;
-    gap: 6px;
-  }
-
-  .msg--user {
-    justify-content: flex-end;
-  }
-
-  .msg--ai {
-    justify-content: flex-start;
-  }
-
-  .msg-bubble {
-    max-width: 80%;
-    padding: 0.5rem 1rem;
-    border-radius: var(--border-radius);
-    line-height: 1.45;
-    font-size: 14px;
-    word-break: break-word;
-    transition: transform 0.2s ease, opacity 0.2s ease;
-  }
-
-  .msg--user .msg-bubble {
-    background: var(--color-bg);
-    border-bottom-right-radius: 4px;
-  }
-
-  .msg--ai .msg-bubble {
-    background: #fff;
-    border-bottom-left-radius: 4px;
-  }
-
-  .msg--system .msg-bubble {
-    background: var(--color-light);
-    color: #666;
-    font-size: 13px;
-    text-align: center;
-  }
-
-  /* Typing animation */
-  .typing {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .typing span {
-    width: 6px;
-    height: 6px;
-    background: #aaa;
-    border-radius: 50%;
-    animation: blink 1.4s infinite ease-in-out;
-  }
-
-  .typing span:nth-child(2) {
-    animation-delay: 0.2s;
-  }
-
-  .typing span:nth-child(3) {
-    animation-delay: 0.4s;
-  }
-
-  @keyframes blink {
-    0%, 80%, 100% {
-      opacity: 0.2;
-      transform: translateY(0);
-    }
-
-    40% {
-      opacity: 1;
-      transform: translateY(-2px);
-    }
-  }
-
-  /* Input section */
-  .cwp-input {
-    display: flex;
-    gap: 8px;
-    padding: 10px;
-    background: #fff;
-  }
-
-  .cwp-input input {
-    flex: 1;
-    border-radius: 999px;
-    border: 1px solid transparent;
-    background: #f5f5f5;
-    padding: 0 14px;
-    font-size: 14px;
-    outline: none;
-    transition: border-color 0.2s ease;
-  }
-
-  .cwp-input input:focus {
-    border: 1px solid var(--color-primary);
-  }
-
-  .cwp-input button {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    border: none;
-    background: linear-gradient(135deg, var(--color-primary), #00b37d);
-    color: #fff;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-  }
-
-  .cwp-input button:hover {
-    transform: scale(1.05);
-  }
-
-  /* Center send icon perfectly */
-  .cwp-input button {
-    display: grid;
-    place-items: center;
-  }
-
-  .cwp-input button .material-symbols-rounded {
-    font-size: 22px;
-    line-height: 1;
-    display: block;
-  }
-
-  /* Backdrop to close on outside click */
-  .cwp-backdrop {
-    position: fixed;
-    inset: 0;
-    background: transparent;
-    /* keep clean, only for click-capture */
-    z-index: -1;
-    /* stay behind panel but above page */
-  }
-
-  @media (max-width: 480px) {
-    .chat-widget-panel {
-      right: 10px;
-      left: 10px;
-      width: auto;
-      height: 65vh;
-      bottom: 100px;
-    }
-  }
-
-  /* Mobile: prevent iOS Safari zoom-on-focus and lighten GPU effects */
-  @media (max-width: 768px) {
-    .cwp-input input {
-      font-size: 16px; /* >=16px prevents viewport zoom on focus */
-      line-height: 1.4;
-    }
-    .cwp-select .ant-select-selector,
-    .cwp-select .ant-select-selection-item,
-    .cwp-select .ant-select-selection-placeholder {
-      font-size: 16px;
-      line-height: 38px;
-    }
-    .chat-widget-panel {
-      backdrop-filter: none; /* drop heavy blur on mobile for perf */
-    }
-  }
-
-  /* When keyboard is open (detected via focus in React), lower the panel a bit on mobile */
-  @media (max-width: 768px) {
-    .chat-widget-panel.is-keyboard {
-      bottom: max(12px, env(safe-area-inset-bottom));
-      height: 55vh;
-    }
-  }
-
-  /* AI message: header row + body bubble */
-  .msg-ai {
-    max-width: 86%;
-  }
-
-  .msg-ai-head {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-weight: 600;
-    color: #374151;
-    /* gray-700 */
-    margin-bottom: 6px;
-  }
-
-  .msg-ai-logo {
-    color: var(--color-primary);
-    font-size: 18px;
-  }
-
-  .msg-ai-name {
-    font-size: 14px;
-  }
-
-  .msg-ai-body {
-    background: #fff;
-  }
+}

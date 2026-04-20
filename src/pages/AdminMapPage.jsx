@@ -9,15 +9,13 @@ import {
   PlusOutlined, EditOutlined, DeleteOutlined, 
   EnvironmentOutlined, TeamOutlined, InboxOutlined
 } from '@ant-design/icons'
-import { useTranslation } from 'react-i18next'
 import { useMaterialData } from '../context/MaterialDataContext'
-import { vietnamProvinces, mekongProvinces, getCoordinates } from '../data/vietnamLocations'
+import { mekongProvinces, getCoordinates } from '../data/vietnamLocations'
 
 const { Title, Text } = Typography
 const { Option } = Select
 
 export default function AdminMapPage() {
-  const { t } = useTranslation()
   const { zones, farmers, points, addZone, updateZone, deleteZone, addFarmer, updateFarmer, deleteFarmer, addPoint, updatePoint, deletePoint } = useMaterialData()
   const [activeTab, setActiveTab] = useState('zones')
   

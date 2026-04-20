@@ -10,7 +10,7 @@ export default function LabLoading() {
         <Ripple />
       </div>
 
-      <img src={logo} className="lab-logo" />
+      <img src={logo} className="lab-logo" alt="GreenShield loading" />
 
     </div>
   );

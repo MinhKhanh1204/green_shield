@@ -1,16 +1,16 @@
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useEffect, useMemo, useRef } from 'react';
-import * as THREE from 'three';
+import { Vector2 } from 'three';
 
 function ShaderPlane({ themeMode = 'dark', reducedMotion = false }) {
   const materialRef = useRef(null);
   const pointerRef = useRef({ x: 0.5, y: 0.5 });
-  const smoothedPointerRef = useRef(new THREE.Vector2(0.5, 0.5));
-  const pointerVectorRef = useRef(new THREE.Vector2(0.5, 0.5));
+  const smoothedPointerRef = useRef(new Vector2(0.5, 0.5));
+  const pointerVectorRef = useRef(new Vector2(0.5, 0.5));
   const isDark = themeMode === 'dark';
   const uniforms = useMemo(() => ({
     uTime: { value: 0 },
-    uMouse: { value: new THREE.Vector2(0.5, 0.5) },
+    uMouse: { value: new Vector2(0.5, 0.5) },
     uTheme: { value: isDark ? 1 : 0 },
   }), [isDark]);
 

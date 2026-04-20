@@ -595,7 +595,7 @@ export const districtCoordinates = {
   
   // Bến Tre
   'Thành phố Bến Tre': { lat: 10.2434, lng: 106.3756 },
-  'Huyện Châu Thành': { lat: 10.2667, lng: 106.3500 },
+  'Huyện Châu Thành (Bến Tre)': { lat: 10.2667, lng: 106.3500 },
   
   // Trà Vinh
   'Thành phố Trà Vinh': { lat: 9.8127, lng: 106.2994 },
@@ -604,6 +604,15 @@ export const districtCoordinates = {
 
 // Hàm lấy tọa độ theo tỉnh và huyện
 export const getCoordinates = (province, district) => {
+  const provinceDistrictCoordinates = {
+    'Bến Tre::Huyện Châu Thành': districtCoordinates['Huyện Châu Thành (Bến Tre)'],
+  };
+
+  const provinceDistrictKey = `${province || ''}::${district || ''}`;
+  if (provinceDistrictCoordinates[provinceDistrictKey]) {
+    return provinceDistrictCoordinates[provinceDistrictKey];
+  }
+
   // Ưu tiên tọa độ huyện nếu có
   if (district && districtCoordinates[district]) {
     return districtCoordinates[district];
