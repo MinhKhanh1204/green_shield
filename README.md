@@ -1,14 +1,22 @@
-﻿# Water-hyacinth
+﻿# Pages Structure Convention
 
-Frontend powered by React + Vite. This codebase includes a minimal Vite setup with HMR and ESLint, plus project-specific components and sections for GreenShield Mekong.
+## Domain Folders
+- `admin/`: admin, dashboard, and management pages.
+- `custom-bag/`: user bag customization flow pages.
+- `order/`: order success and lookup pages.
+- `media/`: audio and media playback pages.
+- `map/`: map experience pages.
+- `shared/`: shared page-level UI states (loading, empty states, etc.).
 
-Tech highlights:
-- React + Vite
-- i18next for vi/en translations
-- Ant Design (light usage)
-- Reusable components: Nav (with mobile drawer), Ticker, SocialLinks, BackToTop
+## Barrel Exports
+Each domain folder should have an `index.js` file that exports page components.
+Use these barrels in route modules to keep imports concise and maintainable.
 
-Getting started (local):
-1. Install dependencies: npm install
-2. Run dev server: npm run dev
-3. Build for prod: npm run build
+## Naming Rule (from now on)
+- New page components: `FeatureNamePage.jsx`
+- New page styles: `FeatureNamePage.css`
+- Keep one page component per file.
+
+## Practical Rule
+- Prefer moving files into the right domain folder instead of creating a flat `pages/` list.
+- If a page is reused in multiple route branches, place it under `shared/`.

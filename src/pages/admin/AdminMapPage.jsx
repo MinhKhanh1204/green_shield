@@ -1,4 +1,4 @@
-// src/pages/admin/AdminMapPage.jsx
+// src/pages/AdminMapPage.jsx
 import React, { useState } from 'react'
 import { 
   Card, Table, Button, Tag, Space, Typography, Row, Col, 
@@ -9,8 +9,8 @@ import {
   PlusOutlined, EditOutlined, DeleteOutlined, 
   EnvironmentOutlined, TeamOutlined, InboxOutlined
 } from '@ant-design/icons'
-import { useMaterialData } from '../../context/MaterialDataContext'
-import { mekongProvinces, getCoordinates } from '../../data/vietnamLocations'
+import { useMaterialData } from '../context/MaterialDataContext'
+import { mekongProvinces, getCoordinates } from '../data/vietnamLocations'
 
 const { Title, Text } = Typography
 const { Option } = Select
