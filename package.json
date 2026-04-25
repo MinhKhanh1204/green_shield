@@ -22,7 +22,7 @@
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
     "embla-carousel-react": "^8.6.0",
-    "fabric": "^5.5.2",
+    "fabric": "^7.3.1",
     "framer-motion": "^12.23.24",
     "globe.gl": "^2.45.3",
     "gsap": "^3.15.0",
@@ -58,7 +58,7 @@
     "vaul": "^1.1.2"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.33.0",
+    "@cloudflare/vite-plugin": "^1.33.2",
     "@eslint/js": "^9.35.0",
     "@tailwindcss/postcss": "^4.2.2",
     "@tailwindcss/vite": "^4.2.2",

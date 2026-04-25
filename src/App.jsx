@@ -242,41 +242,41 @@ function CustomBagRoute() {
 function App() {
   return (
     <BrowserRouter>
-      <ThemeRouteScope />
-      <Suspense fallback={<RouteFallback />}>
-        <Routes>
-          <Route path="/" element={<MainSite />} />
-          <Route path="/custom-bag" element={<CustomBagRoute />} />
-          <Route path="/custom-bag/:templateId/design" element={<CustomBagLayout><DesignPage /></CustomBagLayout>} />
-          <Route path="/custom-bag/:templateId/preview" element={<CustomBagLayout><PreviewPage /></CustomBagLayout>} />
-          <Route path="/custom-bag/:templateId/checkout" element={<CustomBagLayout><CheckoutPage /></CustomBagLayout>} />
-          <Route path="/order-success" element={<OrderSuccessPage />} />
-          <Route path="/order-lookup" element={<OrderLookupPage />} />
-          <Route path="/audio/:code" element={<AudioPage />} />
-          <Route path="/tts/:code" element={<AudioPage />} />
-          <Route path="/audio-file/:id" element={<AudioFilePage />} />
-          <Route path="/admin" element={<LoginPage />} />
-          <Route path="/map" element={withMaterialDataProvider(<MainLayout><MapPage /></MainLayout>)} />
-          <Route
-            path="/admin/dashboard"
-            element={
-              <ProtectedRoute>
-                <AdminLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<Navigate to="/admin/dashboard/overview" replace />} />
-            <Route path="overview" element={<DashboardOverview />} />
-            <Route path="bag-templates" element={<BagTemplateManagementPage />} />
-            <Route path="textures" element={<TextureManagementPage />} />
-            <Route path="orders" element={<OrderManagementPage />} />
-            <Route path="map" element={withMaterialDataProvider(<AdminMapPage />)} />
-            <Route path="settings" element={<DashboardSettings />} />
-          </Route>
-          <Route path="/admin/textures" element={<Navigate to="/admin/dashboard/textures" replace />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </Suspense>
+    <ThemeRouteScope />
+    <MaterialDataProvider>
+      <Routes>
+        <Route path="/" element={<MainSite />} />
+        <Route path="/custom-bag" element={<CustomBagRoute />} />
+        <Route path="/custom-bag/:templateId/design" element={<CustomBagLayout><DesignPage /></CustomBagLayout>} />
+        <Route path="/custom-bag/:templateId/preview" element={<CustomBagLayout><PreviewPage /></CustomBagLayout>} />
+        <Route path="/custom-bag/:templateId/checkout" element={<CustomBagLayout><CheckoutPage /></CustomBagLayout>} />
+        <Route path="/order-success" element={<OrderSuccessPage />} />
+        <Route path="/order-lookup" element={<OrderLookupPage />} />
+        <Route path="/audio/:code" element={<AudioPage />} />
+        <Route path="/tts/:code" element={<AudioPage />} />
+        <Route path="/audio-file/:id" element={<AudioFilePage />} />
+        <Route path="/admin" element={<LoginPage />} />
+                  <Route path="/map" element={<MainLayout><MapPage /></MainLayout>} />
+        <Route
+          path="/admin/dashboard"
+          element={
+            <ProtectedRoute>
+              <AdminLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="/admin/dashboard/overview" replace />} />
+          <Route path="overview" element={<DashboardOverview />} />
+          <Route path="bag-templates" element={<BagTemplateManagementPage />} />
+          <Route path="textures" element={<TextureManagementPage />} />
+          <Route path="orders" element={<OrderManagementPage />} />
+                      <Route path="map" element={<AdminMapPage />} />
+          <Route path="settings" element={<DashboardSettings />} />
+        </Route>
+        <Route path="/admin/textures" element={<Navigate to="/admin/dashboard/textures" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+      </MaterialDataProvider>
     </BrowserRouter>
   )
 }

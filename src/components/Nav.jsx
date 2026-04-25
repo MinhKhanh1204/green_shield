@@ -15,6 +15,7 @@ const links = [
   { id: 'contact', labelKey: 'nav.contact' },
   { id: 'custom', labelKey: 'nav.custom', href: '/custom-bag' },
   { id: 'material', labelKey: 'nav.material', href: '/map' },
+  { id: 'plant-disease', labelKey: 'nav.plantDisease', href: '/plant-disease' }
 ]
 
 function Nav() {

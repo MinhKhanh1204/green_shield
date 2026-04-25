@@ -1,0 +1,344 @@
+/* GLOBAL */
+
+.app-container{
+  background:#020617;
+  min-height:100vh;
+  color:white;
+  font-family:Inter, sans-serif;
+}
+
+
+/* HEADER */
+
+.app-header{
+  background:#1a8f5c;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  padding:18px;
+  font-size:22px;
+  font-weight:600;
+  letter-spacing:0.5px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.4);
+}
+
+
+/* MAIN GRID */
+
+.main-content{
+  display:grid;
+  grid-template-columns: 1.3fr 0.7fr;
+  gap:24px;
+  padding:30px;
+  max-width:1400px;
+  margin:auto;
+}
+
+
+/* PANELS */
+
+.left-panel,
+.right-panel{
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+}
+
+
+/* GLASS PANEL */
+
+.glass-panel{
+  background:rgba(15,23,42,0.85);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:20px;
+  padding:26px;
+  backdrop-filter:blur(10px);
+  box-shadow:0 8px 30px rgba(0,0,0,0.35);
+}
+
+
+/* PANEL HEADER */
+
+.panel-header{
+  font-size:18px;
+  font-weight:600;
+  margin-bottom:18px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+
+/* TABS */
+
+.tabs{
+  display:flex;
+  gap:10px;
+  margin-bottom:20px;
+}
+
+.tab{
+  padding:7px 16px;
+  border-radius:20px;
+  border:1px solid rgba(255,255,255,0.08);
+  background:#0f172a;
+  color:#cbd5e1;
+  font-size:13px;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.tab:hover{
+  background:#1e293b;
+}
+
+.tab.active{
+  background:#10b981;
+  color:white;
+  border:none;
+}
+
+
+/* UPLOAD AREA */
+
+.upload-area{
+  border:2px dashed #34d399;
+  padding:60px;
+  text-align:center;
+  border-radius:16px;
+  cursor:pointer;
+  transition:0.2s;
+  background:rgba(255,255,255,0.02);
+}
+
+.upload-area:hover{
+  background:rgba(16,185,129,0.05);
+  border-color:#4ade80;
+}
+
+.upload-area p{
+  font-size:15px;
+  margin-bottom:6px;
+  color:#e2e8f0;
+}
+
+.upload-area span{
+  font-size:13px;
+  color:#94a3b8;
+}
+
+
+/* MEDIA PREVIEW */
+
+.media-preview-container{
+  margin-top:20px;
+  border-radius:14px;
+  overflow:hidden;
+}
+
+.media-preview-container img,
+.media-preview-container video{
+  width:100%;
+  max-height:360px;
+  object-fit:contain;
+  overflow: hidden;
+  position: relative;
+  background: #000;
+  aspect-ratio: 16/9;
+}
+
+
+/* ACTION BUTTONS */
+
+.action-buttons{
+  display:flex;
+  gap:10px;
+  margin-top:20px;
+}
+
+.btn{
+  padding:10px 18px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:14px;
+  font-weight:500;
+}
+
+.btn-primary{
+  background:#22c55e;
+  color:white;
+}
+
+.btn-primary:hover{
+  background:#16a34a;
+}
+
+.btn-danger{
+  background:#ef4444;
+  color:white;
+}
+
+.btn-danger:hover{
+  background:#dc2626;
+}
+
+
+/* ANALYSIS COUNT BOX */
+
+.stats-box{
+  background:#0f172a;
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:18px;
+  padding:30px;
+  text-align:center;
+}
+
+.stats-number{
+  font-size:42px;
+  font-weight:700;
+  color:#38bdf8;
+}
+
+.stats-label{
+  color:#94a3b8;
+  font-size:14px;
+  margin-top:4px;
+}
+
+
+/* RESULT CARD */
+
+.disease-card{
+  background:#1e293b;
+  padding:22px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,0.06);
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.disease-card-title{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+
+/* TAG */
+
+.tag{
+  padding:4px 10px;
+  border-radius:6px;
+  font-size:12px;
+  font-weight:600;
+}
+
+.tag-success{
+  background:#22c55e;
+}
+
+.tag-danger{
+  background:#ef4444;
+}
+
+.tag-warning{
+  background:#f59e0b;
+}
+
+
+/* INFO ROW */
+
+.info-row{
+  display:flex;
+  justify-content:space-between;
+  font-size:14px;
+}
+
+.info-label{
+  color:#94a3b8;
+}
+
+.info-value{
+  color:white;
+}
+
+
+/* SECTION BOX */
+
+.section-box{
+  margin-top:10px;
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:10px;
+  padding:12px;
+}
+
+.section-box-title{
+  font-weight:600;
+  margin-bottom:8px;
+  font-size:14px;
+}
+
+
+/* TABLE */
+
+.data-table{
+  width:100%;
+  font-size:14px;
+}
+
+.data-table td{
+  padding:4px 0;
+  color:#cbd5e1;
+}
+
+
+/* SYMPTOMS */
+
+.symptoms-list{
+  margin-top:6px;
+  padding-left:18px;
+  font-size:14px;
+  color:#cbd5e1;
+}
+
+
+/* PROGNOSIS */
+
+.prognosis-box{
+  margin-top:12px;
+  border-top:1px solid rgba(255,255,255,0.06);
+  padding-top:10px;
+}
+
+.prognosis-title{
+  font-weight:600;
+  margin-bottom:6px;
+}
+
+.summary-box{
+  margin-top:8px;
+  font-size:14px;
+}
+
+
+/* EMPTY RESULT */
+
+.empty-result{
+  text-align:center;
+  color:#94a3b8;
+  padding:80px 20px;
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width:900px){
+
+  .main-content{
+    grid-template-columns:1fr;
+  }
+
+}
