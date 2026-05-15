@@ -1,8 +1,8 @@
 import React, { memo, useEffect, useRef } from 'react'
 
-const ADVANTAGES_VIDEO_URL = 'https://res.cloudinary.com/dnini39bp/video/upload/v1774527138/IntroGSM_gqsftr.mp4'
-const ADVANTAGES_VIDEO_URL_MEDIUM = 'https://res.cloudinary.com/dnini39bp/video/upload/f_auto,q_auto:good,w_1280,vc_auto,br_1400k/v1774527138/IntroGSM_gqsftr.mp4'
-const ADVANTAGES_VIDEO_URL_LITE = 'https://res.cloudinary.com/dnini39bp/video/upload/f_auto,q_auto:eco,w_960,vc_auto,br_900k/v1774527138/IntroGSM_gqsftr.mp4'
+const ADVANTAGES_VIDEO_URL = 'https://res.cloudinary.com/duxmcd2a7/video/upload/v1778855031/IntroGSM_m0nlnz.mp4'
+const ADVANTAGES_VIDEO_URL_MEDIUM = 'https://res.cloudinary.com/duxmcd2a7/video/upload/f_auto,q_auto:good,w_1280,vc_auto,br_1400k/v1778855031/IntroGSM_m0nlnz.mp4'
+const ADVANTAGES_VIDEO_URL_LITE = 'https://res.cloudinary.com/duxmcd2a7/video/upload/f_auto,q_auto:eco,w_960,vc_auto,br_900k/v1778855031/IntroGSM_m0nlnz.mp4'
 const PLAYBACK_VISIBILITY_THRESHOLD = 0.45
 
 function AdvantagesSection() {

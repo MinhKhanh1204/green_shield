@@ -4,23 +4,23 @@ import '../styles/process-section.css'
 
 const STEP_IMAGES = [
 	{
-		src: 'https://res.cloudinary.com/dnini39bp/image/upload/v1774525576/thu_gom_i88yio.jpg',
+		src: 'https://res.cloudinary.com/duxmcd2a7/image/upload/v1778600219/thu_gom_mzwl7z.jpg',
 		position: 'center center',
 	},
 	{
-		src: 'https://res.cloudinary.com/dnini39bp/image/upload/v1774525576/ph%C6%A1i_kh%C3%B4_apdkfb.jpg',
+		src: 'https://res.cloudinary.com/duxmcd2a7/image/upload/v1778600220/x%E1%BB%AD_l%C3%AD_vbo537.jpg',
 		position: 'center center',
 	},
 	{
-		src: 'https://res.cloudinary.com/dnini39bp/image/upload/v1774525576/x%E1%BB%AD_l%C3%AD_yympqv.jpg',
+		src: 'https://res.cloudinary.com/duxmcd2a7/image/upload/v1778600248/ph%C6%A1i_kh%C3%B4_tvloe3.jpg',
 		position: 'center center',
 	},
 	{
-		src: 'https://res.cloudinary.com/dnini39bp/image/upload/v1774525631/%C3%89p_khu%C3%B4n_dcrnms.jpg',
+		src: 'https://res.cloudinary.com/duxmcd2a7/image/upload/v1778600276/%C3%89p_khu%C3%B4n_m0bxgw.jpg',
 		position: 'center center',
 	},
 	{
-		src: 'https://res.cloudinary.com/dnini39bp/image/upload/v1774525577/%C4%91%C3%B3ng_g%C3%B3i_rdiy7q.jpg',
+		src: 'https://res.cloudinary.com/duxmcd2a7/image/upload/v1778600265/%C4%91%C3%B3ng_g%C3%B3i_yhnklr.jpg',
 		position: '50% 48%',
 	},
 ]
