@@ -27,6 +27,7 @@ const DashboardOverview = lazyNamed(() => import('./pages/admin'), 'DashboardOve
 const DashboardSettings = lazyNamed(() => import('./pages/admin'), 'DashboardSettings')
 const MapPage = lazyNamed(() => import('./pages/map'), 'MapPage')
 const AdminMapPage = lazyNamed(() => import('./pages/admin'), 'AdminMapPage')
+const PlantDiseasePage = lazyNamed(() => import('./pages/plant-disease'), 'PlantDiseasePage')
 const MainLayout = lazy(() => import('./layouts/MainLayout'))
 const ProtectedRoute = lazy(() => import('./components/ProtectedRoute'))
 const MaterialDataProvider = lazy(() =>
@@ -255,6 +256,14 @@ function App() {
         <Route path="/audio/:code" element={<AudioPage />} />
         <Route path="/tts/:code" element={<AudioPage />} />
         <Route path="/audio-file/:id" element={<AudioFilePage />} />
+        <Route
+          path="/plant-disease"
+          element={(
+            <Suspense fallback={<RouteFallback />}>
+              <PlantDiseasePage />
+            </Suspense>
+          )}
+        />
         <Route path="/admin" element={<LoginPage />} />
                   <Route path="/map" element={<MainLayout><MapPage /></MainLayout>} />
         <Route
