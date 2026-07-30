@@ -1,0 +1,1 @@
+export { PlantDiseasePage } from './PlantDiseasePage'
