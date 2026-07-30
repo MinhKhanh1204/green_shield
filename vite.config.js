@@ -20,16 +20,21 @@ export default defineConfig(({ mode }) => {
         '@': path.resolve(__dirname, './src'),
       },
     },
-    server: apiBase
-      ? {
-          proxy: {
-            '/api': {
-              target: apiBase,
-              changeOrigin: true,
+    server: {
+      host: 'localhost',
+      port: 5173,
+      strictPort: true,
+      ...(apiBase
+        ? {
+            proxy: {
+              '/api': {
+                target: apiBase,
+                changeOrigin: true,
+              },
             },
-          },
-        }
-      : undefined,
+          }
+        : {}),
+    },
     build: {
       chunkSizeWarningLimit: 1450,
       rollupOptions: {
