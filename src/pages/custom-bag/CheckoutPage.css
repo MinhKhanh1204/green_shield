@@ -58,6 +58,15 @@
   justify-content: flex-end;
 }
 
+.co-topbar .lang-toggle-btn {
+  min-width: 76px;
+  color: var(--co-text) !important;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.co-topbar .lang-toggle-btn .lang-code,
+.co-topbar .lang-toggle-btn .lang-caret { color: var(--co-text); }
+
 .co-back-btn,
 .co-tabnav,
 .co-home-link {

@@ -5,3 +5,4 @@ export { default as TextureManagementPage } from './TextureManagementPage';
 export { default as BagTemplateManagementPage } from './BagTemplateManagementPage';
 export { default as OrderManagementPage } from './OrderManagementPage';
 export { default as AdminMapPage } from './AdminMapPage';
+export { default as ProductManagementPage } from './ProductManagementPage';

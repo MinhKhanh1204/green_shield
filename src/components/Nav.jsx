@@ -6,13 +6,9 @@ import { useTranslation } from 'react-i18next'
 import useActiveSection from '../hooks/useActiveSection'
 
 const links = [
-  { id: 'home', labelKey: 'nav.home' },
   { id: 'about', labelKey: 'nav.about' },
   { id: 'mission', labelKey: 'nav.mission' },
-  { id: 'products', labelKey: 'nav.products' },
-  { id: 'advantages', labelKey: 'nav.advantages' },
-  { id: 'community', labelKey: 'nav.community' },
-  { id: 'contact', labelKey: 'nav.contact' },
+  { id: 'products', labelKey: 'nav.products', href: '/products' },
   { id: 'custom', labelKey: 'nav.custom', href: '/custom-bag' },
   { id: 'material', labelKey: 'nav.material', href: '/map' },
   { id: 'plant-disease', labelKey: 'nav.plantDisease', href: '/plant-disease' }
@@ -22,13 +18,13 @@ function Nav() {
   const { t } = useTranslation()
   const location = useLocation()
   const isHomePage = location.pathname === '/'
-  const homeSectionSelector = '#home, #about, #mission, #products, #advantages, #community, #contact'
+  const homeSectionSelector = '#about, #mission, #products'
   const activeThreshold = useMemo(() => [0, 0.2, 0.4, 0.6, 0.8, 1], [])
   const observedActiveId = useActiveSection(homeSectionSelector, {
     threshold: activeThreshold,
     disabled: !isHomePage,
   })
-  const [activeId, setActiveId] = useState('home')
+  const [activeId, setActiveId] = useState('about')
   const [open, setOpen] = useState(false)
   const [isNarrow, setIsNarrow] = useState(() =>
     typeof window !== 'undefined' ? window.innerWidth < 1100 : false,

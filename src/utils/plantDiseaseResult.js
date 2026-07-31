@@ -18,7 +18,7 @@ const toConfidence = (value) => {
 export function normalizeSuggestedProduct(data = {}) {
   return {
     id: toText(data.MaSanPham ?? data.id ?? data.code),
-    name: toText(data.TenSanPham ?? data.name, 'Suggested product'),
+    name: toText(data.TenSanPham ?? data.name),
     description: toText(data.MoTa ?? data.description),
     instructions: toText(data.HuongDan ?? data.instructions),
     price: data.Gia ?? data.price ?? data.actual_price ?? null,
@@ -32,7 +32,7 @@ export function normalizeAnalysisResult(data = {}) {
 
   return {
     id: toText(data.id, `${Date.now()}`),
-    plantName: toText(data.plantName ?? data.plant_name, 'Unknown plant'),
+    plantName: toText(data.plantName ?? data.plant_name),
     status: toText(data.status, 'UNKNOWN').toUpperCase(),
     analyzedAt: data.analyzedAt ?? data.analyzed_at ?? new Date().toISOString(),
     confidence: toConfidence(data.confidence),

@@ -1,6 +1,7 @@
 ﻿import React, { useEffect, useRef, useState, useCallback, createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { message, Slider, Tooltip, ConfigProvider, theme } from 'antd';
 import {
   PiHeart, PiStar, PiFlower, PiSun, PiLeaf, PiCheck, PiPlus, PiGift,
@@ -238,6 +239,13 @@ const isEditableCanvasObject = (obj) => {
 };
 
 export default function DesignPage() {
+  const { t } = useTranslation();
+  const localizedTextPresets = TEXT_PRESETS.map((preset) => ({
+    ...preset,
+    title: t(`customBag.editor.presets.${preset.id}.title`),
+    caption: t(`customBag.editor.presets.${preset.id}.caption`),
+    text: t(`customBag.editor.presets.${preset.id}.text`),
+  }));
   const LEFT_TAB_BAR_WIDTH = 76;
   const LEFT_MIN_WIDTH = 280;
   const LEFT_MAX_WIDTH = 420;
@@ -277,7 +285,6 @@ export default function DesignPage() {
     dragOverLayerId,
     setDragOverLayerId,
   } = useEditorState();
-  const [bgColor, setBgColorState] = useState('#ffffff');
   const [textProps, setTextProps] = useState(null); // { fontFamily, fontSize, fill, fontWeight, fontStyle, charSpacing } khi chọn chữ
   const selectedTextRef = useRef(null);
   const [activeObjectInfo, setActiveObjectInfo] = useState(null);
@@ -589,9 +596,9 @@ export default function DesignPage() {
         setTemplate(t);
         setTextures(tex);
       })
-      .catch(() => message.error('Không thể tải dữ liệu'))
+      .catch(() => message.error(t('customBag.preview.loadFailed')))
       .finally(() => setLoading(false));
-  }, [templateId]);
+  }, [templateId, t]);
 
   useEffect(() => {
     if (!template) return;
@@ -693,7 +700,7 @@ export default function DesignPage() {
 
     selectedTextRef.current = obj;
     setTextProps({
-      fontFamily: obj.fontFamily || 'Arial',
+      fontFamily: obj.fontFamily || 'Inter',
       fontSize: obj.fontSize || 24,
       fill: obj.fill || '#000000',
       fontWeight: obj.fontWeight || 'normal',
@@ -950,7 +957,7 @@ export default function DesignPage() {
         evented: false,
       });
 
-      // Store clip bounds for external use (applyBgColor, AI patch)
+      // Store clip bounds for external use by AI patch placement.
       clipBoundsRef.current = { clipX, clipY, clipW, clipH };
       clipSideRef.current = side;
       if (!disposed) setCanvasSideReady(side);
@@ -1137,7 +1144,7 @@ export default function DesignPage() {
             const y = currentRect.top + currentRect.height / 2;
             const avgGap = Math.round((leftGap + rightGap) / 2);
             spacingGuide = {
-              hint: `Khoảng cách đều • ${avgGap}px`,
+              hint: t('customBag.editor.status.evenSpacing', { pixels: avgGap }),
               guides: [
                 { axis: 'y', from: leftRects[0].left + leftRects[0].width, to: currentRect.left, value: y, kind: 'spacing', label: `${avgGap}px` },
                 { axis: 'y', from: currentRect.left + currentRect.width, to: rightRects[0].left, value: y, kind: 'spacing', label: `${avgGap}px` },
@@ -1152,7 +1159,7 @@ export default function DesignPage() {
             const x = currentRect.left + currentRect.width / 2;
             const avgGap = Math.round((topGap + bottomGap) / 2);
             spacingGuide = {
-              hint: `Khoảng cách đều • ${avgGap}px`,
+              hint: t('customBag.editor.status.evenSpacing', { pixels: avgGap }),
               guides: [
                 { axis: 'x', from: topRects[0].top + topRects[0].height, to: currentRect.top, value: x, kind: 'spacing', label: `${avgGap}px` },
                 { axis: 'x', from: currentRect.top + currentRect.height, to: bottomRects[0].top, value: x, kind: 'spacing', label: `${avgGap}px` },
@@ -1168,13 +1175,13 @@ export default function DesignPage() {
         }
 
         if (!snapResult.snapX && nearCenterX) {
-          setAutoAlignHint('💡 Căn giữa: đối tượng đang gần tâm ngang.');
+          setAutoAlignHint(`💡 ${t('customBag.editor.status.centerHorizontal')}`);
         } else if (!snapResult.snapY && nearCenterY) {
-          setAutoAlignHint('💡 Căn giữa: đối tượng đang gần tâm dọc.');
+          setAutoAlignHint(`💡 ${t('customBag.editor.status.centerVertical')}`);
         } else if (snapResult.snapX?.target?.kind === 'center' || snapResult.snapY?.target?.kind === 'center') {
-          setAutoAlignHint('💡 Căn giữa');
+          setAutoAlignHint(`💡 ${t('customBag.editor.status.center')}`);
         } else if (snapResult.snapX || snapResult.snapY) {
-          setAutoAlignHint('💡 Căn theo cạnh');
+          setAutoAlignHint(`💡 ${t('customBag.editor.status.alignEdge')}`);
         } else {
           setAutoAlignHint('');
         }
@@ -1533,31 +1540,6 @@ export default function DesignPage() {
     exportCanvasJson,
   });
 
-  const hexToRgba = (hex, alpha = 0.28) => {
-    if (!hex || typeof hex !== 'string') return `rgba(0,0,0,${alpha})`;
-    const clean = hex.replace('#', '');
-    const normalized = clean.length === 3
-      ? clean.split('').map((c) => `${c}${c}`).join('')
-      : clean;
-    const n = Number.parseInt(normalized, 16);
-    if (!Number.isFinite(n)) return `rgba(0,0,0,${alpha})`;
-    const r = (n >> 16) & 255;
-    const g = (n >> 8) & 255;
-    const b = n & 255;
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-  };
-
-  const applyBgColor = (color) => {
-    setBgColorState(color);
-    if (!fabricRef.current || !bgRectRef.current) return;
-    if (!color || color === 'none' || color === 'transparent') {
-      bgRectRef.current.set({ fill: 'rgba(0,0,0,0)' });
-    } else {
-      bgRectRef.current.set({ fill: hexToRgba(color, 0.28) });
-    }
-    fabricRef.current.requestRenderAll();
-  };
-
   const addTexture = (tex) => {
     if (!fabricRef.current) return;
     fabric.Image.fromURL(tex.imageUrl, (img) => {
@@ -1585,7 +1567,7 @@ export default function DesignPage() {
 
   const addText = () => {
     if (!fabricRef.current) return;
-    const text = new fabric.IText('Nhập văn bản', { left: 150, top: 150, fontFamily: 'Arial' });
+    const text = new fabric.IText(t('customBag.editor.textPlaceholder'), { left: 150, top: 150, fontFamily: 'Inter' });
     fabricRef.current.add(text);
     fabricRef.current.setActiveObject(text);
     fabricRef.current.renderAll();
@@ -1593,7 +1575,7 @@ export default function DesignPage() {
 
   const addTextPreset = useCallback((preset) => {
     if (!fabricRef.current || !preset) return;
-    const text = new fabric.IText(preset.text || preset.title || 'Nhập văn bản', {
+    const text = new fabric.IText(preset.text || preset.title || t('customBag.editor.textPlaceholder'), {
       left: 150,
       top: 150,
       originX: 'left',
@@ -1603,7 +1585,7 @@ export default function DesignPage() {
     fabricRef.current.add(text);
     fabricRef.current.setActiveObject(text);
     fabricRef.current.requestRenderAll();
-  }, []);
+  }, [t]);
 
   const updateTextProp = useCallback((key, value) => {
     const obj = selectedTextRef.current;
@@ -1840,13 +1822,13 @@ export default function DesignPage() {
   }, [isEditableObject, pushHistory, syncLayers, syncSelectionState]);
 
   const getLayerLabel = useCallback((layer) => {
-    const t = String(layer?.type || '').toLowerCase();
-    if (t === 'i-text' || t === 'text') return 'Văn bản';
-    if (t === 'image') return 'Hình ảnh';
-    if (t === 'group') return 'Biểu tượng';
-    if (t === 'path') return 'Hình dạng';
-    return 'Đối tượng';
-  }, []);
+    const type = String(layer?.type || '').toLowerCase();
+    if (type === 'i-text' || type === 'text') return t('customBag.editor.layers.text');
+    if (type === 'image') return t('customBag.editor.layers.image');
+    if (type === 'group') return t('customBag.editor.layers.icon');
+    if (type === 'path') return t('customBag.editor.layers.shape');
+    return t('customBag.editor.layers.object');
+  }, [t]);
 
   const toggleLayerLock = useCallback((id) => {
     const canvas = fabricRef.current;
@@ -2183,7 +2165,7 @@ export default function DesignPage() {
     : null;
 
   if (loading || !template) {
-    return <div className="design-loading">Đang tải studio...</div>;
+    return <div className="design-loading">{t('customBag.editor.status.loadingTemplate')}</div>;
   }
 
   return (
@@ -2300,7 +2282,7 @@ export default function DesignPage() {
               setActiveTab={setActiveTab}
               addText={addText}
               addTextPreset={addTextPreset}
-              textPresets={TEXT_PRESETS}
+              textPresets={localizedTextPresets}
               addImage={addImage}
               greenAiPanel={(
                 <GreenAiPanelPremium
@@ -2353,10 +2335,10 @@ export default function DesignPage() {
             <aside className="design-product-panel">
               <div className="design-product-panel__head">
                 <div>
-                  <span className="design-product-panel__eyebrow">Template</span>
+                  <span className="design-product-panel__eyebrow">{t('customBag.editor.product.template')}</span>
                   <strong>{template.name}</strong>
                 </div>
-                <span className="design-product-panel__badge">{side === 'front' ? 'Mặt trước' : 'Mặt sau'}</span>
+                <span className="design-product-panel__badge">{t(side === 'front' ? 'customBag.editor.product.front' : 'customBag.editor.product.back')}</span>
               </div>
 
               <div className="design-product-panel__grid">
@@ -2366,9 +2348,9 @@ export default function DesignPage() {
                   onClick={() => switchSide('front')}
                 >
                   <div className="design-product-panel__thumb">
-                    <img src={template.frontImageUrl} alt={`${template.name} mặt trước`} />
+                    <img src={template.frontImageUrl} alt={t('customBag.editor.product.frontAlt', { name: template.name })} />
                   </div>
-                  <span>Mặt trước</span>
+                  <span>{t('customBag.editor.product.front')}</span>
                 </button>
 
                 <button
@@ -2377,9 +2359,9 @@ export default function DesignPage() {
                   onClick={() => switchSide('back')}
                 >
                   <div className="design-product-panel__thumb">
-                    <img src={template.backImageUrl || template.frontImageUrl} alt={`${template.name} mặt sau`} />
+                    <img src={template.backImageUrl || template.frontImageUrl} alt={t('customBag.editor.product.backAlt', { name: template.name })} />
                   </div>
-                  <span>Mặt sau</span>
+                  <span>{t('customBag.editor.product.back')}</span>
                 </button>
               </div>
             </aside>
@@ -2421,26 +2403,26 @@ export default function DesignPage() {
             magnification={1.3}
             distance={110}
           >
-            <Tooltip title="AI"><DockItem enableScale={false}><button className="dock-item-btn" type="button" onClick={() => setActiveTab('greenai')}><span className="material-symbols-rounded">auto_awesome</span></button></DockItem></Tooltip>
-            <Tooltip title="Khóa / Mở khóa"><DockItem enableScale={false}><button className="dock-item-btn" type="button" onClick={() => {
+            <Tooltip title={t('customBag.editor.context.ai')}><DockItem enableScale={false}><button className="dock-item-btn" type="button" onClick={() => setActiveTab('greenai')}><span className="material-symbols-rounded">auto_awesome</span></button></DockItem></Tooltip>
+            <Tooltip title={t('customBag.editor.context.lockToggle')}><DockItem enableScale={false}><button className="dock-item-btn" type="button" onClick={() => {
               const obj = fabricRef.current?.getActiveObject();
               if (!obj?.dataId) return;
               toggleLayerLock(obj.dataId);
             }}><span className="material-symbols-rounded">lock</span></button></DockItem></Tooltip>
-            <Tooltip title="Nhân đôi"><DockItem enableScale={false}><button className="dock-item-btn" type="button" onClick={duplicateActiveObject}><span className="material-symbols-rounded">content_copy</span></button></DockItem></Tooltip>
-            <Tooltip title="Xóa"><DockItem enableScale={false}><button className="dock-item-btn" type="button" onClick={deleteActiveObject}><span className="material-symbols-rounded">delete</span></button></DockItem></Tooltip>
-            <Tooltip title="Thêm tùy chọn"><DockItem enableScale={false}><button className="dock-item-btn" type="button" onClick={() => setShowLayerOverlay((v) => !v)}>...</button></DockItem></Tooltip>
+            <Tooltip title={t('customBag.editor.toolbar.duplicate')}><DockItem enableScale={false}><button className="dock-item-btn" type="button" onClick={duplicateActiveObject}><span className="material-symbols-rounded">content_copy</span></button></DockItem></Tooltip>
+            <Tooltip title={t('customBag.editor.toolbar.delete')}><DockItem enableScale={false}><button className="dock-item-btn" type="button" onClick={deleteActiveObject}><span className="material-symbols-rounded">delete</span></button></DockItem></Tooltip>
+            <Tooltip title={t('customBag.editor.context.more')}><DockItem enableScale={false}><button className="dock-item-btn" type="button" onClick={() => setShowLayerOverlay((v) => !v)}>...</button></DockItem></Tooltip>
           </Dock>
         )}
 
         {showLayerOverlay && (
           <div className="layer-overlay-panel" onClick={(e) => e.stopPropagation()}>
             <div className="layer-overlay-head">
-              <span>Lớp</span>
+              <span>{t('customBag.editor.layers.title')}</span>
               <button type="button" onClick={() => setShowLayerOverlay(false)}>✕</button>
             </div>
             {layers.length === 0 ? (
-              <p className="design-layer-empty">Chưa có đối tượng.</p>
+              <p className="design-layer-empty">{t('customBag.editor.layers.empty')}</p>
             ) : (
               <div className="design-layer-list">
                 {layers.map((layer) => (
@@ -2476,12 +2458,12 @@ export default function DesignPage() {
                       <span>{getLayerLabel(layer)}</span>
                     </div>
                     <div className="design-layer-actions" onClick={(e) => e.stopPropagation()}>
-                      <button type="button" title="Đưa lên trên cùng" onClick={() => moveLayer(layer.id, 'top')}><span className="material-symbols-rounded">vertical_align_top</span></button>
-                      <button type="button" title="Đưa lên" onClick={() => moveLayer(layer.id, 'up')}><span className="material-symbols-rounded">keyboard_arrow_up</span></button>
-                      <button type="button" title="Đưa xuống" onClick={() => moveLayer(layer.id, 'down')}><span className="material-symbols-rounded">keyboard_arrow_down</span></button>
-                      <button type="button" title="Đưa xuống dưới cùng" onClick={() => moveLayer(layer.id, 'bottom')}><span className="material-symbols-rounded">vertical_align_bottom</span></button>
-                      <button type="button" title="Hiện/ẩn" onClick={() => toggleLayerVisibility(layer.id)}>{layer.visible ? <span className="material-symbols-rounded">visibility</span> : <span className="material-symbols-rounded">visibility_off</span>}</button>
-                      <button type="button" title="Khóa" onClick={() => toggleLayerLock(layer.id)}>{layer.locked ? <span className="material-symbols-rounded">lock</span> : <span className="material-symbols-rounded">lock_open</span>}</button>
+                      <button type="button" title={t('customBag.editor.layers.bringToFront')} onClick={() => moveLayer(layer.id, 'top')}><span className="material-symbols-rounded">vertical_align_top</span></button>
+                      <button type="button" title={t('customBag.editor.layers.bringForward')} onClick={() => moveLayer(layer.id, 'up')}><span className="material-symbols-rounded">keyboard_arrow_up</span></button>
+                      <button type="button" title={t('customBag.editor.layers.sendBackward')} onClick={() => moveLayer(layer.id, 'down')}><span className="material-symbols-rounded">keyboard_arrow_down</span></button>
+                      <button type="button" title={t('customBag.editor.layers.sendToBack')} onClick={() => moveLayer(layer.id, 'bottom')}><span className="material-symbols-rounded">vertical_align_bottom</span></button>
+                      <button type="button" title={t('customBag.editor.layers.toggleVisibility')} onClick={() => toggleLayerVisibility(layer.id)}>{layer.visible ? <span className="material-symbols-rounded">visibility</span> : <span className="material-symbols-rounded">visibility_off</span>}</button>
+                      <button type="button" title={t(layer.locked ? 'customBag.editor.layers.unlock' : 'customBag.editor.layers.lock')} onClick={() => toggleLayerLock(layer.id)}>{layer.locked ? <span className="material-symbols-rounded">lock</span> : <span className="material-symbols-rounded">lock_open</span>}</button>
                     </div>
                   </div>
                 ))}
@@ -2496,14 +2478,14 @@ export default function DesignPage() {
             style={{ left: contextMenu.x, top: contextMenu.y }}
             onClick={(e) => e.stopPropagation()}
           >
-            <button type="button" onClick={() => handleContextAction('select')}>Chọn lớp</button>
-            <button type="button" onClick={() => handleContextAction('duplicate')}>Nhân đôi</button>
-            <button type="button" onClick={() => handleContextAction('align-center')}>Căn giữa ngang</button>
-            <button type="button" onClick={() => handleContextAction('align-middle')}>Căn giữa dọc</button>
-            <button type="button" onClick={() => handleContextAction('align-selection-left')}>Canh trái nhóm</button>
-            <button type="button" onClick={() => handleContextAction('align-selection-center')}>Canh giữa nhóm</button>
-            <button type="button" onClick={() => handleContextAction('distribute-x')}>Giãn đều ngang</button>
-            <button type="button" className="danger" onClick={() => handleContextAction('delete')}>Xóa</button>
+            <button type="button" onClick={() => handleContextAction('select')}>{t('customBag.editor.context.selectLayer')}</button>
+            <button type="button" onClick={() => handleContextAction('duplicate')}>{t('customBag.editor.toolbar.duplicate')}</button>
+            <button type="button" onClick={() => handleContextAction('align-center')}>{t('customBag.editor.context.alignCenter')}</button>
+            <button type="button" onClick={() => handleContextAction('align-middle')}>{t('customBag.editor.context.alignMiddle')}</button>
+            <button type="button" onClick={() => handleContextAction('align-selection-left')}>{t('customBag.editor.context.alignLeftGroup')}</button>
+            <button type="button" onClick={() => handleContextAction('align-selection-center')}>{t('customBag.editor.context.alignCenterGroup')}</button>
+            <button type="button" onClick={() => handleContextAction('distribute-x')}>{t('customBag.editor.context.distributeHorizontal')}</button>
+            <button type="button" className="danger" onClick={() => handleContextAction('delete')}>{t('customBag.editor.toolbar.delete')}</button>
           </div>
         )}
       </div>

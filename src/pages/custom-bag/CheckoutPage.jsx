@@ -1,14 +1,17 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Form, Input, InputNumber, message } from 'antd';
 import { createOrder } from '../../services/order';
 import { getBagTemplate } from '../../services/bagTemplate';
 import logo from '../../assets/logo.png';
 import logolg from '../../assets/logo-lg.png';
 import DesignPreviewCanvas from '../../components/DesignPreviewCanvas';
+import LanguageToggle from '../../components/LanguageToggle';
 import './CheckoutPage.css';
 
 export default function CheckoutPage() {
+  const { t, i18n } = useTranslation();
   const { templateId } = useParams();
   const { state } = useLocation();
   const navigate = useNavigate();
@@ -22,12 +25,12 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     if (!designSnapshot) {
-      message.error('Thiếu thông tin thiết kế');
+      message.error(t('customBag.checkout.missingDesign'));
       navigate(`/custom-bag/${templateId}/design`);
       return;
     }
-    getBagTemplate(templateId).then(setTemplate).catch(() => message.error('Không thể tải mẫu'));
-  }, [templateId, designSnapshot, navigate]);
+    getBagTemplate(templateId).then(setTemplate).catch(() => message.error(t('customBag.checkout.loadFailed')));
+  }, [templateId, designSnapshot, navigate, t]);
 
   const onFinish = async (values) => {
     setSubmitting(true);
@@ -43,7 +46,7 @@ export default function CheckoutPage() {
       });
       navigate('/order-success', { state: { order } });
     } catch {
-      message.error('Đặt hàng thất bại. Vui lòng thử lại.');
+      message.error(t('customBag.checkout.orderFailed'));
     } finally {
       setSubmitting(false);
     }
@@ -56,7 +59,7 @@ export default function CheckoutPage() {
   if (!template) {
     return (
       <div className="co-page">
-        <div className="co-loading">Đang tải...</div>
+        <div className="co-loading">{t('customBag.checkout.loading')}</div>
       </div>
     );
   }
@@ -73,7 +76,7 @@ export default function CheckoutPage() {
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
               <path d="M10 3L5 8l5 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            Back
+            {t('customBag.checkout.back')}
           </button>
           <Link to="/" className="co-logo">
             <img src={logo} alt="logo" width="22" />
@@ -81,17 +84,18 @@ export default function CheckoutPage() {
           </Link>
           <span className="co-topbar-saved">
             <span className="co-saved-dot" />
-            Đã lưu
+            {t('customBag.checkout.saved')}
           </span>
         </div>
 
         <div className="co-topbar-center">
-          <button className="co-tabnav" onClick={goBackToDesign}>Design</button>
-          <button className="co-tabnav active">Order</button>
+          <button className="co-tabnav" onClick={goBackToDesign}>{t('customBag.checkout.design')}</button>
+          <button className="co-tabnav active">{t('customBag.checkout.order')}</button>
         </div>
 
         <div className="co-topbar-right">
-          <Link to="/" className="co-home-link">Về trang chủ</Link>
+          <LanguageToggle />
+          <Link to="/" className="co-home-link">{t('customBag.checkout.home')}</Link>
         </div>
       </header>
 
@@ -111,16 +115,16 @@ export default function CheckoutPage() {
               className={`co-thumb-card${activeSide === 'front' ? ' active' : ''}`}
               onClick={() => setActiveSide('front')}
             >
-              <img src={template.frontImageUrl} alt="Mặt trước" />
-              <span>Front</span>
+              <img src={template.frontImageUrl} alt={t('customBag.checkout.front')} />
+              <span>{t('customBag.checkout.front')}</span>
             </div>
             {template.backImageUrl && (
               <div
                 className={`co-thumb-card${activeSide === 'back' ? ' active' : ''}`}
                 onClick={() => setActiveSide('back')}
               >
-                <img src={template.backImageUrl} alt="Mặt sau" />
-                <span>Back</span>
+                <img src={template.backImageUrl} alt={t('customBag.checkout.backSide')} />
+                <span>{t('customBag.checkout.backSide')}</span>
               </div>
             )}
           </div>
@@ -129,30 +133,30 @@ export default function CheckoutPage() {
         {/* Right – order form */}
         <div className="co-right">
           <div className="co-panel">
-            <h2 className="co-heading">Kiểm tra trước khi đặt hàng</h2>
-            <p className="co-subheading">Xem lại thiết kế của bạn trước khi tiếp tục.</p>
+            <h2 className="co-heading">{t('customBag.checkout.reviewTitle')}</h2>
+            <p className="co-subheading">{t('customBag.checkout.reviewSubtitle')}</p>
 
             {/* Checklist */}
             <div className="co-checklist">
               <p className="co-checklist-title">
-                <span className="co-check-icon">✓</span> Lưu ý kiểm tra:
+                <span className="co-check-icon">✓</span> {t('customBag.checkout.checklistTitle')}
               </p>
               <ul>
-                <li>Kiểm tra tên, ngày, địa chỉ chính xác</li>
-                <li>Đảm bảo các thành phần hiển thị rõ ràng</li>
-                <li>Tất cả nội dung cá nhân hoá đã được điền</li>
-                <li>Kiểm tra cả mặt trước và mặt sau</li>
+                <li>{t('customBag.checkout.checkName')}</li>
+                <li>{t('customBag.checkout.checkVisibility')}</li>
+                <li>{t('customBag.checkout.checkPersonalized')}</li>
+                <li>{t('customBag.checkout.checkSides')}</li>
               </ul>
             </div>
 
             {/* Selected options */}
             <div className="co-options-box">
               <p className="co-options-title">
-                <span className="co-bag-icon">🛍</span> Sản phẩm đã chọn:
+                <span className="co-bag-icon">🛍</span> {t('customBag.checkout.selectedProduct')}
               </p>
               <ul>
-                <li>Tên: <strong>{template.name}</strong></li>
-                <li>Giá: <strong>{unitPrice.toLocaleString('vi-VN')} ₫ / túi</strong></li>
+                <li>{t('customBag.checkout.name')}: <strong>{template.name}</strong></li>
+                <li>{t('customBag.checkout.price')}: <strong>{unitPrice.toLocaleString(i18n.language.startsWith('en') ? 'en-US' : 'vi-VN')} ₫ {t('customBag.checkout.perBag')}</strong></li>
               </ul>
             </div>
 
@@ -161,32 +165,32 @@ export default function CheckoutPage() {
             {/* Form */}
             <Form form={form} layout="vertical" onFinish={onFinish} className="co-form">
               <div className="co-form-row">
-                <Form.Item name="name" label="Họ tên" rules={[{ required: true, message: 'Vui lòng nhập họ tên' }]}>
-                  <Input placeholder="Nguyễn Văn A" />
+                <Form.Item name="name" label={t('customBag.checkout.fullName')} rules={[{ required: true, message: t('customBag.checkout.requiredName') }]}>
+                  <Input placeholder={t('customBag.checkout.namePlaceholder')} />
                 </Form.Item>
-                <Form.Item name="phone" label="Số điện thoại" rules={[{ required: true, message: 'Vui lòng nhập số điện thoại' }]}>
-                  <Input placeholder="0901234567" />
+                <Form.Item name="phone" label={t('customBag.checkout.phone')} rules={[{ required: true, message: t('customBag.checkout.requiredPhone') }]}>
+                  <Input placeholder={t('customBag.checkout.phonePlaceholder')} />
                 </Form.Item>
               </div>
 
-              <Form.Item name="address" label="Địa chỉ giao hàng" rules={[{ required: true, message: 'Vui lòng nhập địa chỉ' }]}>
-                <Input.TextArea rows={2} placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành" />
+              <Form.Item name="address" label={t('customBag.checkout.address')} rules={[{ required: true, message: t('customBag.checkout.requiredAddress') }]}>
+                <Input.TextArea rows={2} placeholder={t('customBag.checkout.addressPlaceholder')} />
               </Form.Item>
 
-              <Form.Item name="email" label="Email (tùy chọn)">
-                <Input type="email" placeholder="email@example.com" />
+              <Form.Item name="email" label={t('customBag.checkout.email')}>
+                <Input type="email" placeholder={t('customBag.checkout.emailPlaceholder')} />
               </Form.Item>
 
               <div className="co-divider" />
 
               {/* Subtotal row */}
               <div className="co-subtotal-row">
-                <span className="co-subtotal-label">Subtotal:</span>
-                <span className="co-subtotal-price">{subtotal.toLocaleString('vi-VN')} ₫</span>
+                <span className="co-subtotal-label">{t('customBag.checkout.subtotal')}</span>
+                <span className="co-subtotal-price">{subtotal.toLocaleString(i18n.language.startsWith('en') ? 'en-US' : 'vi-VN')} ₫</span>
               </div>
 
               <div className="co-qty-row">
-                <span className="co-qty-label">Qty:</span>
+                <span className="co-qty-label">{t('customBag.checkout.quantity')}</span>
                 <Form.Item name="quantity" initialValue={1} noStyle>
                   <InputNumber
                     min={1}
@@ -204,10 +208,10 @@ export default function CheckoutPage() {
                 disabled={submitting}
                 onClick={() => form.submit()}
               >
-                {submitting ? 'Đang xử lý…' : 'Xác nhận đặt hàng'}
+                {submitting ? t('customBag.checkout.processing') : t('customBag.checkout.confirm')}
               </button>
 
-              <p className="co-guarantee">100% Đảm bảo hài lòng</p>
+              <p className="co-guarantee">{t('customBag.checkout.guarantee')}</p>
             </Form>
           </div>
         </div>

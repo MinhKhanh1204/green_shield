@@ -58,17 +58,28 @@ function circlePolygon(centerLatLng, radiusMeters, steps = 32) {
   return ring;
 }
 
-function fitCircleBounds(map, centerLatLng, radiusMeters) {
+function fitCircleBounds(map, centerLatLng, radiusMeters, duration = 850) {
   const [lat, lng] = centerLatLng;
   const latDelta = radiusMeters / 111320;
   const lngDelta = radiusMeters / (111320 * Math.max(0.2, Math.cos((lat * Math.PI) / 180)));
+  const viewportWidth = map.getCanvas()?.clientWidth || 1200;
+  const padding = Math.max(48, Math.min(96, Math.round(viewportWidth * 0.07)));
   map.fitBounds(
     [
       [lng - lngDelta, lat - latDelta],
       [lng + lngDelta, lat + latDelta]
     ],
-    { padding: 80, duration: 850 }
+    { padding, duration, maxZoom: 13.5 }
   );
+}
+
+function focusPoint(map, coordinates, zoom = 13.5) {
+  if (!Array.isArray(coordinates) || coordinates.length !== 2) return;
+  map.easeTo({
+    center: coordinates,
+    zoom: Math.max(map.getZoom(), zoom),
+    duration: 720
+  });
 }
 
 function farmerTier(capacity) {
@@ -103,6 +114,8 @@ export default function MapGL({
   farmers = [],
   points = [],
   mapStyle,
+  selectedRegionId,
+  detailPanelVisible = false,
   localeText = {
     mode2D: "2D",
     mode3D: "3D",
@@ -122,6 +135,7 @@ export default function MapGL({
   const regionMetaRef = useRef(new Map());
   const styleKeyRef = useRef(resolveStyle(mapStyle));
   const introPlayedRef = useRef(false);
+  const pendingRegionFocusRef = useRef(selectedRegionId ? String(selectedRegionId) : null);
   const [is3D, setIs3D] = useState(false);
 
   const regionFeatures = useMemo(() => {
@@ -152,7 +166,7 @@ export default function MapGL({
       const center = centroid(basePoints);
       const radius = Math.max(800, ...basePoints.map((pt) => haversineMeters(center, pt)));
 
-      nextMeta.set(String(id), { center, radius, region });
+      nextMeta.set(String(id), { center, radius, region, featureId: id });
       nextFeatures.push({
         id,
         type: "Feature",
@@ -240,6 +254,20 @@ export default function MapGL({
     if (!map?.getSource(source) || featureId === null || featureId === undefined) return;
     map.setFeatureState({ source, id: featureId }, { [key]: value });
   }, []);
+
+  const focusRegionById = useCallback((regionId, duration = 850) => {
+    const map = mapInstanceRef.current;
+    const meta = regionMetaRef.current.get(String(regionId));
+    if (!map || !meta) return false;
+
+    if (selectedRegionIdRef.current !== null && selectedRegionIdRef.current !== meta.featureId) {
+      setFeatureState("region-areas", selectedRegionIdRef.current, "selected", false);
+    }
+    selectedRegionIdRef.current = meta.featureId;
+    setFeatureState("region-areas", meta.featureId, "selected", true);
+    fitCircleBounds(map, meta.center, meta.radius, duration);
+    return true;
+  }, [setFeatureState]);
 
   const addOrUpdateSourcesAndLayers = useCallback(() => {
     const map = mapInstanceRef.current;
@@ -548,10 +576,8 @@ export default function MapGL({
       }
       selectedRegionIdRef.current = feature.id;
       setFeatureState("region-areas", feature.id, "selected", true);
-      const meta = regionMetaRef.current.get(String(feature.id));
-      if (meta) {
-        fitCircleBounds(map, meta.center, meta.radius);
-      }
+      pendingRegionFocusRef.current = String(feature.id);
+      focusRegionById(feature.id);
       onSelect?.({ type: "region", id: feature.id });
     };
 
@@ -577,6 +603,7 @@ export default function MapGL({
     const onClickFarmer = (event) => {
       const feature = event?.features?.[0];
       if (!feature) return;
+      focusPoint(map, feature.geometry?.coordinates, 13.8);
       onSelect?.({ type: "farmer", id: feature.properties.id });
     };
 
@@ -602,6 +629,7 @@ export default function MapGL({
     const onClickPoint = (event) => {
       const feature = event?.features?.[0];
       if (!feature) return;
+      focusPoint(map, feature.geometry?.coordinates, 14.2);
       onSelect?.({ type: "point", id: feature.properties.id });
     };
 
@@ -633,7 +661,7 @@ export default function MapGL({
     map.on("mouseleave", "point-circle", onLeavePoint);
     map.on("click", "point-circle", onClickPoint);
     map.on("click", onMapClick);
-  }, [onMapTap, onSelect, setFeatureState]);
+  }, [focusRegionById, onMapTap, onSelect, setFeatureState]);
 
   useEffect(() => {
     let disposed = false;
@@ -676,7 +704,11 @@ export default function MapGL({
       const onLoadStyle = () => {
         addOrUpdateSourcesAndLayers();
         bindMapInteractions();
-        if (!introPlayedRef.current) {
+        const pendingRegionId = pendingRegionFocusRef.current;
+        const focusedSelection = pendingRegionId
+          ? focusRegionById(pendingRegionId, 0)
+          : false;
+        if (!focusedSelection && !introPlayedRef.current) {
           map.flyTo({
             center: DEFAULT_CENTER,
             zoom: 11.5,
@@ -698,7 +730,7 @@ export default function MapGL({
       map?.remove();
       mapInstanceRef.current = null;
     };
-  }, [addOrUpdateSourcesAndLayers, bindMapInteractions, mapStyle]);
+  }, [addOrUpdateSourcesAndLayers, bindMapInteractions, focusRegionById, mapStyle]);
 
   useEffect(() => {
     const map = mapInstanceRef.current;
@@ -715,6 +747,23 @@ export default function MapGL({
     if (!map?.isStyleLoaded()) return;
     addOrUpdateSourcesAndLayers();
   }, [addOrUpdateSourcesAndLayers]);
+
+  useEffect(() => {
+    const nextRegionId = selectedRegionId ? String(selectedRegionId) : null;
+    pendingRegionFocusRef.current = nextRegionId;
+
+    if (!nextRegionId) {
+      if (selectedRegionIdRef.current !== null) {
+        setFeatureState("region-areas", selectedRegionIdRef.current, "selected", false);
+        selectedRegionIdRef.current = null;
+      }
+      return;
+    }
+
+    const map = mapInstanceRef.current;
+    if (!map?.isStyleLoaded()) return;
+    focusRegionById(nextRegionId);
+  }, [focusRegionById, regionAreaGeoJSON, selectedRegionId, setFeatureState]);
 
   useEffect(() => {
     const map = mapInstanceRef.current;
@@ -734,7 +783,7 @@ export default function MapGL({
   }, [is3D, visibility?.region]);
 
   return (
-    <div className="mapgl-wrapper">
+    <div className={`mapgl-wrapper${detailPanelVisible ? " has-detail-panel" : ""}`}>
       <div ref={mapRef} className="mapgl-canvas" />
 
       <div className="map-mode-toggle" role="group" aria-label={localeText.modeLabel}>

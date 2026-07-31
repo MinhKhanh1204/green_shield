@@ -1,5 +1,6 @@
 ﻿import React, { useEffect, useState } from 'react';
 import { Select, Tooltip } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { Dock, DockItem } from '@/components/ui/dock';
 
 export default function FloatingToolbar({
@@ -22,6 +23,7 @@ export default function FloatingToolbar({
   toolbarPosition,
   onOpenDesignTab,
 }) {
+  const { t } = useTranslation();
   const [activeControl, setActiveControl] = useState(null);
 
   useEffect(() => {
@@ -84,7 +86,7 @@ export default function FloatingToolbar({
               />
             </DockItem>
 
-            <Tooltip title="Màu chữ">
+            <Tooltip title={t('customBag.editor.toolbar.textColor')}>
               <DockItem enableScale={false}>
                 <button className="dock-item-btn dock-color-trigger" onClick={() => onOpenDesignTab?.('color-fill')}>
                   <span className="material-symbols-rounded">format_color_text</span>
@@ -92,17 +94,17 @@ export default function FloatingToolbar({
                 </button>
               </DockItem>
             </Tooltip>
-            <Tooltip title="In đậm"><DockItem enableScale={false} active={textProps?.fontWeight === 'bold'}><button className={`dock-item-btn${textProps?.fontWeight === 'bold' ? ' active' : ''}`} onClick={() => updateTextProp('fontWeight', textProps?.fontWeight === 'bold' ? 'normal' : 'bold')}>B</button></DockItem></Tooltip>
-            <Tooltip title="In nghiêng"><DockItem enableScale={false} active={textProps?.fontStyle === 'italic'}><button className={`dock-item-btn${textProps?.fontStyle === 'italic' ? ' active' : ''}`} onClick={() => updateTextProp('fontStyle', textProps?.fontStyle === 'italic' ? 'normal' : 'italic')}>I</button></DockItem></Tooltip>
-            <Tooltip title="Gạch chân"><DockItem enableScale={false} active={textProps?.underline}><button className={`dock-item-btn${textProps?.underline ? ' active' : ''}`} onClick={() => updateTextProp('underline', !textProps?.underline)}>U</button></DockItem></Tooltip>
-            <Tooltip title="Kiểu chữ hoa/thường"><DockItem enableScale={false}><button className="dock-item-btn" onClick={cycleTextCase}>aA</button></DockItem></Tooltip>
-            <Tooltip title="Căn lề"><DockItem enableScale={false}><button className="dock-item-btn" onClick={cycleTextAlign}><span className="material-symbols-rounded">format_align_center</span></button></DockItem></Tooltip>
+            <Tooltip title={t('customBag.editor.toolbar.bold')}><DockItem enableScale={false} active={textProps?.fontWeight === 'bold'}><button className={`dock-item-btn${textProps?.fontWeight === 'bold' ? ' active' : ''}`} onClick={() => updateTextProp('fontWeight', textProps?.fontWeight === 'bold' ? 'normal' : 'bold')}>B</button></DockItem></Tooltip>
+            <Tooltip title={t('customBag.editor.toolbar.italic')}><DockItem enableScale={false} active={textProps?.fontStyle === 'italic'}><button className={`dock-item-btn${textProps?.fontStyle === 'italic' ? ' active' : ''}`} onClick={() => updateTextProp('fontStyle', textProps?.fontStyle === 'italic' ? 'normal' : 'italic')}>I</button></DockItem></Tooltip>
+            <Tooltip title={t('customBag.editor.toolbar.underline')}><DockItem enableScale={false} active={textProps?.underline}><button className={`dock-item-btn${textProps?.underline ? ' active' : ''}`} onClick={() => updateTextProp('underline', !textProps?.underline)}>U</button></DockItem></Tooltip>
+            <Tooltip title={t('customBag.editor.toolbar.case')}><DockItem enableScale={false}><button className="dock-item-btn" onClick={cycleTextCase}>aA</button></DockItem></Tooltip>
+            <Tooltip title={t('customBag.editor.toolbar.align')}><DockItem enableScale={false}><button className="dock-item-btn" onClick={cycleTextAlign}><span className="material-symbols-rounded">format_align_center</span></button></DockItem></Tooltip>
           </div>
         )}
 
         {(isImageObject || isShapeObject) && (
           <div className="toolbar-group">
-            <Tooltip title="Màu đối tượng">
+            <Tooltip title={t('customBag.editor.toolbar.objectColor')}>
               <DockItem enableScale={false}>
                 <button className="dock-item-btn dock-color-trigger" onClick={() => onOpenDesignTab?.('color-fill')}>
                   <span className="material-symbols-rounded">palette</span>
@@ -111,7 +113,7 @@ export default function FloatingToolbar({
               </DockItem>
             </Tooltip>
 
-            <Tooltip title="Độ mờ">
+            <Tooltip title={t('customBag.editor.toolbar.opacity')}>
               <DockItem enableScale={false}>
                 <button
                   className={`dock-item-btn${activeControl === 'opacity' ? ' active' : ''}`}
@@ -122,7 +124,7 @@ export default function FloatingToolbar({
               </DockItem>
             </Tooltip>
 
-            <Tooltip title="Viền">
+            <Tooltip title={t('customBag.editor.toolbar.border')}>
               <DockItem enableScale={false}>
                 <button
                   className={`dock-item-btn${activeControl === 'border' ? ' active' : ''}`}
@@ -137,7 +139,7 @@ export default function FloatingToolbar({
               </DockItem>
             </Tooltip>
 
-            <Tooltip title="Bo góc">
+            <Tooltip title={t('customBag.editor.toolbar.radius')}>
               <DockItem enableScale={false}>
                 <button
                   className={`dock-item-btn${activeControl === 'radius' ? ' active' : ''}`}
@@ -151,9 +153,9 @@ export default function FloatingToolbar({
         )}
 
         <div className="toolbar-group">
-          <Tooltip title="Nhân đôi"><DockItem enableScale={false}><button className="dock-item-btn" onClick={duplicateActiveObject}><span className="material-symbols-rounded">content_copy</span></button></DockItem></Tooltip>
-          <Tooltip title="Xóa"><DockItem enableScale={false}><button className="dock-item-btn" onClick={deleteActiveObject}><span className="material-symbols-rounded">delete</span></button></DockItem></Tooltip>
-          <Tooltip title="Lớp"><DockItem enableScale={false}><button className="dock-item-btn" onClick={() => setShowLayerOverlay((v) => !v)}><span className="material-symbols-rounded">layers</span></button></DockItem></Tooltip>
+          <Tooltip title={t('customBag.editor.toolbar.duplicate')}><DockItem enableScale={false}><button className="dock-item-btn" onClick={duplicateActiveObject}><span className="material-symbols-rounded">content_copy</span></button></DockItem></Tooltip>
+          <Tooltip title={t('customBag.editor.toolbar.delete')}><DockItem enableScale={false}><button className="dock-item-btn" onClick={deleteActiveObject}><span className="material-symbols-rounded">delete</span></button></DockItem></Tooltip>
+          <Tooltip title={t('customBag.editor.toolbar.layers')}><DockItem enableScale={false}><button className="dock-item-btn" onClick={() => setShowLayerOverlay((v) => !v)}><span className="material-symbols-rounded">layers</span></button></DockItem></Tooltip>
         </div>
       </Dock>
 

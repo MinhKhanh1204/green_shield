@@ -25,6 +25,315 @@
     "contact": "Contact",
     "learnMore": "Learn more"
   },
+  "plantDisease": {
+    "heroKicker": "Plant health intelligence",
+    "heroTitle": "See what the leaf is",
+    "heroTitleAccent": "telling you.",
+    "heroDescription": "Upload a focused leaf photo or video for an AI-assisted disease assessment, treatment guidance and relevant care products.",
+    "visualDiagnosis": "Visual diagnosis",
+    "input": "Input",
+    "diagnosis": "Diagnosis",
+    "leafMedia": "Leaf media",
+    "analysisResult": "Analysis result",
+    "mediaSource": "Leaf media source",
+    "image": "Image",
+    "video": "Video",
+    "camera": "Camera",
+    "dropImage": "Drop a clear leaf image here",
+    "dropVideo": "Drop a clear leaf video here",
+    "browseImage": "or click to browse JPG, PNG or WebP up to 10 MB",
+    "browseVideo": "or click to browse MP4, WebM or MOV up to 50 MB",
+    "openingCamera": "Opening camera...",
+    "retryCamera": "Retry camera",
+    "captureLeaf": "Capture leaf",
+    "selectedVideoPreview": "Selected leaf video preview",
+    "selectedImagePreview": "Selected leaf preview",
+    "removeSelectedMedia": "Remove selected media",
+    "analyzingLeaf": "Analyzing leaf...",
+    "analyzeLeaf": "Analyze leaf",
+    "successfulAnalyses": "successful analyses this session",
+    "awaitingImage": "Awaiting a leaf image",
+    "readingPatterns": "Reading leaf patterns...",
+    "servicePreparing": "The AI service is preparing the diagnosis.",
+    "uploadToBegin": "Upload or capture a clear image to begin.",
+    "analysisUnavailable": "Analysis unavailable",
+    "detectedPlant": "Detected plant",
+    "unknownPlant": "Unknown plant",
+    "confidence": "Confidence",
+    "analyzed": "Analyzed",
+    "scientificName": "Scientific name",
+    "diseaseType": "Disease type",
+    "severity": "Severity",
+    "notAvailable": "Not available",
+    "observedSymptoms": "Observed symptoms",
+    "recommendedTreatment": "Recommended treatment",
+    "recoveryOutlook": "Recovery outlook",
+    "nextStep": "Next step",
+    "suggestedProducts": "Suggested care products",
+    "productDetailsUpdating": "Product details are being updated.",
+    "contactForPrice": "Contact for price",
+    "recommended": "Recommended",
+    "suggestedProduct": "Suggested product",
+    "available": "available",
+    "status": {
+      "diseased": "Disease detected",
+      "healthy": "Healthy",
+      "unknown": "Unknown"
+    },
+    "errors": {
+      "invalidFile": "Please select a leaf image or video before analysis.",
+      "unsupportedType": "Only JPG, PNG, WebP, MP4, WebM and MOV files are supported.",
+      "imageOnly": "Please select a JPG, PNG or WebP image.",
+      "videoOnly": "Please select an MP4, WebM or MOV video.",
+      "imageTooLarge": "The image must be smaller than {{size}} MB.",
+      "videoTooLarge": "The video must be smaller than {{size}} MB.",
+      "cameraUnsupported": "Camera access is not supported in this browser.",
+      "cameraDenied": "Camera permission was denied or no camera is available.",
+      "captureFailed": "The camera image could not be captured.",
+      "serviceUnavailable": "Cannot connect to the plant disease analysis service.",
+      "analysisFailed": "Analysis failed. Please try again."
+    }
+  },
+  "customBag": {
+    "template": {
+      "badge": "Design it your way",
+      "title": "Choose a bag template to begin",
+      "subtitle": "Personalize every bag with images, text and colors in your own style.",
+      "searchPlaceholder": "Search bag templates...",
+      "emptySearch": "No templates found for \"{{search}}\"",
+      "empty": "No bag templates available",
+      "ready": "Ready to customize",
+      "designNow": "Design now →",
+      "model": "Template #{{id}}",
+      "oneSide": "1 side",
+      "twoSides": "2 sides",
+      "customizable": "Customizable",
+      "backAlt": "{{name}} back"
+    },
+    "editor": {
+      "designEditor": "Design editor",
+      "liveWorkspace": "Live workspace",
+      "premiumCanvas": "Premium canvas",
+      "goBack": "Go back",
+      "undo": "Undo",
+      "redo": "Redo",
+      "preview": "Preview",
+      "order": "Order",
+      "toggleTheme": "Toggle theme",
+      "tabs": {
+        "text": "Add text",
+        "image": "Add image",
+        "texture": "Texture",
+        "elements": "Elements",
+        "greenAi": "Green AI",
+        "greenQr": "Green QR"
+      },
+      "panels": {
+        "text": "Add text to design",
+        "image": "Add image",
+        "texture": "Texture",
+        "elements": "Elements",
+        "greenAi": "Green AI",
+        "greenQr": "Green QR",
+        "textColor": "Text color",
+        "objectColor": "Object color",
+        "borderColor": "Border color"
+      },
+      "color": {
+        "selectObject": "Select an object to edit its color.",
+        "quickPalette": "Quick palette",
+        "custom": "Choose a custom color",
+        "borderWidth": "Border width",
+        "transparent": "Transparent",
+        "color": "Color"
+      },
+      "textHint": "Create a headline, slogan or brand name and refine it with the floating canvas toolbar.",
+      "addText": "Add text box",
+      "textPlaceholder": "Enter text",
+      "quickPresets": "Quick presets",
+      "presets": {
+        "headline": {
+          "title": "FEATURED",
+          "caption": "A bold headline for the front",
+          "text": "FEATURED"
+        },
+        "signature": {
+          "title": "Green Notes",
+          "caption": "A soft, personal lettering style",
+          "text": "Green Notes"
+        },
+        "badge": {
+          "title": "Eco Club",
+          "caption": "A short text group to pair with an icon",
+          "text": "Eco Club"
+        }
+      },
+      "textTipsTitle": "Typography tips",
+      "textTips": [
+        "Use a preset to build a layout quickly, then refine it on the canvas.",
+        "Keep the design to two fonts for a clear visual hierarchy.",
+        "Hold Shift + an arrow key to move an object by 10px."
+      ],
+      "addImage": "Add image from device",
+      "imageTipsTitle": "Image recommendations",
+      "imageTips": [
+        "PNG, JPG and WebP are supported.",
+        "Transparent PNG works best for logos and stickers.",
+        "Sharp images produce better print results than screenshots."
+      ],
+      "noTextures": "No textures available yet.",
+      "elementsHint": "Add an icon to create a visual accent or a small badge for your design.",
+      "iconTipsTitle": "Icon tips",
+      "iconTips": [
+        "Icons are added to the print area and can be recolored.",
+        "Use one main icon with a short text group.",
+        "Keep the icon count balanced so the bag stays clean."
+      ],
+      "iconLibrary": "Icon library",
+      "toolbar": {
+        "textColor": "Text color",
+        "bold": "Bold",
+        "italic": "Italic",
+        "underline": "Underline",
+        "case": "Uppercase/lowercase",
+        "align": "Text alignment",
+        "objectColor": "Object color",
+        "opacity": "Opacity",
+        "border": "Border",
+        "radius": "Corner radius",
+        "duplicate": "Duplicate",
+        "delete": "Delete",
+        "layers": "Layers"
+      },
+      "product": {
+        "template": "Template",
+        "front": "Front",
+        "back": "Back",
+        "frontAlt": "{{name}} front",
+        "backAlt": "{{name}} back"
+      },
+      "layers": {
+        "title": "Layers",
+        "empty": "No objects yet.",
+        "bringToFront": "Bring to front",
+        "bringForward": "Bring forward",
+        "sendBackward": "Send backward",
+        "sendToBack": "Send to back",
+        "toggleVisibility": "Show/hide",
+        "lock": "Lock",
+        "unlock": "Unlock",
+        "text": "Text",
+        "image": "Image",
+        "icon": "Icon",
+        "shape": "Shape",
+        "object": "Object"
+      },
+      "context": {
+        "ai": "AI",
+        "lockToggle": "Lock / unlock",
+        "more": "More options",
+        "selectLayer": "Select layer",
+        "alignCenter": "Align center horizontally",
+        "alignMiddle": "Align center vertically",
+        "alignLeftGroup": "Align group left",
+        "alignCenterGroup": "Align group center",
+        "distributeHorizontal": "Distribute horizontally"
+      },
+      "status": {
+        "loadingTemplate": "Loading design studio...",
+        "evenSpacing": "Even spacing • {{pixels}}px",
+        "centerHorizontal": "Center: object is near the horizontal center.",
+        "centerVertical": "Center: object is near the vertical center.",
+        "center": "Center",
+        "alignEdge": "Align to edge"
+      },
+      "ai": {
+        "imageTitle": "AI image generator",
+        "imageSubtitle": "Image generation model",
+        "imageHint": "Describe an image and AI will create it for you (up to 20 images per day across the system).",
+        "imagePlaceholder": "E.g. A pink lotus on a green background",
+        "generatingImage": "Generating image...",
+        "generateImage": "Generate with AI",
+        "generatedAlt": "AI-generated image",
+        "generatedHint": "The AI design was automatically added to the bag's print area and saved to your history.",
+        "savedTitle": "Saved designs (select one to add to the print area)",
+        "delete": "Delete",
+        "qrTitle": "AI audio QR",
+        "qrSubtitle": "Smart audio",
+        "qrDescription": "Create an audio QR code in two ways: (1) text converted to speech (TTS), or (2) upload an audio file (≤ 5MB).",
+        "contentType": "Content type",
+        "tts": "Text (TTS)",
+        "audio": "Upload audio (≤ 5MB)",
+        "audioPlaceholder": "E.g. a birthday wish or favorite quote...",
+        "chooseAudio": "Choose audio file",
+        "selected": "Selected:",
+        "orRecord": "Or record audio",
+        "startRecording": "Start recording",
+        "stopRecording": "Stop recording",
+        "recording": "Recording:",
+        "clear": "Clear",
+        "qrColor": "QR color",
+        "qrWaveHint": "The QR uses a central waveform to evoke an audio experience.",
+        "generatingQr": "Generating QR...",
+        "generateQr": "Generate audio QR",
+        "demoTitle": "AI demo",
+        "demoSubtitle": "Integration example",
+        "runAi": "Run AI"
+      }
+    },
+    "preview": {
+      "missingDesign": "Design data is missing",
+      "loadFailed": "Unable to load the template",
+      "loading": "Loading...",
+      "saved": "Saved",
+      "preview": "Preview",
+      "back": "Back",
+      "placeOrder": "Place order →",
+      "front": "Front",
+      "backSide": "Back",
+      "chooseSide": "Choose a side"
+    },
+    "checkout": {
+      "missingDesign": "Design data is missing",
+      "loadFailed": "Unable to load the template",
+      "orderFailed": "Order failed. Please try again.",
+      "loading": "Loading...",
+      "back": "Back",
+      "saved": "Saved",
+      "design": "Design",
+      "order": "Order",
+      "home": "Home",
+      "reviewTitle": "Review before placing your order",
+      "reviewSubtitle": "Review your design before continuing.",
+      "checklistTitle": "Review checklist:",
+      "checkName": "Check that your name, date and address are correct",
+      "checkVisibility": "Make sure all elements are clearly visible",
+      "checkPersonalized": "Make sure all personalized content is complete",
+      "checkSides": "Review both the front and back",
+      "selectedProduct": "Selected product:",
+      "name": "Name",
+      "price": "Price",
+      "perBag": "/ bag",
+      "front": "Front",
+      "backSide": "Back",
+      "fullName": "Full name",
+      "phone": "Phone number",
+      "address": "Delivery address",
+      "email": "Email (optional)",
+      "namePlaceholder": "Nguyen Van A",
+      "phonePlaceholder": "0901234567",
+      "addressPlaceholder": "House number, street, ward, district, city",
+      "emailPlaceholder": "email@example.com",
+      "requiredName": "Please enter your full name",
+      "requiredPhone": "Please enter your phone number",
+      "requiredAddress": "Please enter your delivery address",
+      "subtotal": "Subtotal:",
+      "quantity": "Qty:",
+      "confirm": "Confirm order",
+      "processing": "Processing...",
+      "guarantee": "100% satisfaction guarantee"
+    }
+  },
   "products": {
     "title": "Products & Technology",
     "stepsTitle": "5-step process",
@@ -241,6 +550,160 @@
       "cta": "Subscribe",
       "note": "By subscribing, you agree to the ",
       "privacy": "Privacy Policy"
+    }
+  },
+  "catalog": {
+    "landingCta": "Explore all products",
+    "landing": {
+      "eyebrow": "Products & technology",
+      "title": "Mekong materials in a new form",
+      "description": "The active collection is updated directly from GreenShield's product system.",
+      "note": "From local biomass to practical applications"
+    },
+    "featured": "Featured",
+    "explore": "Explore",
+    "fromPrice": "From {{price}}",
+    "loading": "Loading products...",
+    "hero": {
+      "title": "Explore an ecosystem of greener products",
+      "titleAccent": "An ecosystem",
+      "titleRest": "of greener products from the Mekong",
+      "description": "From local water hyacinth and lotus leaves to bio-based packaging and objects for produce, food service and everyday life.",
+      "explore": "Explore products",
+      "catalogue": "Request catalogue",
+      "collageLabel": "GreenShield product collection"
+    },
+    "filters": {
+      "label": "Filter products by category",
+      "ALL": "All",
+      "PACKAGING": "Packaging",
+      "TABLEWARE": "Tableware",
+      "LIFESTYLE": "Green living"
+    },
+    "categories": {
+      "PACKAGING": "Packaging",
+      "TABLEWARE": "Tableware",
+      "LIFESTYLE": "Green living"
+    },
+    "saleModes": {
+      "COMBO": "Combo",
+      "RETAIL": "Retail",
+      "B2B": "B2B orders",
+      "COMBO_AND_B2B": "Combo & B2B",
+      "RETAIL_AND_B2B": "Retail & B2B"
+    },
+    "exhibition": {
+      "eyebrow": "Product exhibition",
+      "title": "Local materials, new forms"
+    },
+    "technology": {
+      "eyebrow": "Material laboratory",
+      "title": "Local biology, a new design mindset",
+      "description": "Every product captures part of the journey from research and forming to bringing Mekong biomass back into everyday life."
+    },
+    "campaign": {
+      "eyebrow": "Material campaign",
+      "title": "Turn water hyacinth into value",
+      "description": "A biomass source that once pressured waterways can become packaging, useful objects and new livelihoods.",
+      "cta": "View the featured product"
+    },
+    "impact": {
+      "eyebrow": "ESG impact",
+      "title": "Products with responsibility built in",
+      "description": "Design goes beyond form. GreenShield connects materials, communities and traceability data in one ecosystem.",
+      "cta": "Explore material zones",
+      "cards": {
+        "environment": {
+          "label": "Environment",
+          "title": "Regenerate material sources",
+          "description": "Use local biomass while reducing reliance on single-use plastic objects."
+        },
+        "community": {
+          "label": "Community",
+          "title": "Create local livelihoods",
+          "description": "Collection and processing networks open new ways for Mekong communities to participate."
+        },
+        "transparency": {
+          "label": "Transparency",
+          "title": "Trace every material",
+          "description": "Connect products with real material-zone and collection-network data."
+        }
+      }
+    },
+    "materials": {
+      "eyebrow": "Material stories",
+      "title": "Designed from what the Mekong already provides",
+      "hyacinth": {
+        "title": "Water hyacinth",
+        "description": "Locally collected biomass that creates livelihoods while reducing pressure on waterways."
+      },
+      "lotus": {
+        "title": "Lotus leaves",
+        "description": "Natural surfaces and veins are preserved to give tableware a distinct identity."
+      },
+      "circular": {
+        "title": "Circular economy",
+        "description": "By-products become useful goods that can be traced back to GreenShield material zones."
+      }
+    },
+    "benefits": {
+      "label": "Product benefits",
+      "biodegradable": "Biodegradable",
+      "foodSafe": "Food safe",
+      "local": "Locally sourced",
+      "horeca": "Made for HORECA & produce"
+    },
+    "cta": {
+      "eyebrow": "Create impact together",
+      "title": "Bring greener materials into your next product",
+      "sample": "Request samples",
+      "b2b": "Discuss a B2B partnership"
+    },
+    "error": {
+      "title": "Products are unavailable",
+      "description": "The catalogue connection is currently interrupted. Please try again shortly.",
+      "retry": "Try again"
+    },
+    "empty": {
+      "title": "No products in this category yet",
+      "description": "Choose another category or return when the collection has been updated."
+    },
+    "detail": {
+      "breadcrumb": "Product navigation",
+      "notFound": "Product not found",
+      "notFoundDescription": "This product may no longer be exhibited or the link may have changed.",
+      "backToProducts": "Back to the collection",
+      "openGallery": "Open image gallery",
+      "closeGallery": "Close image gallery",
+      "previousImage": "Previous image",
+      "nextImage": "Next image",
+      "gallery": "Product gallery",
+      "image": "Image",
+      "material": "Material",
+      "unitPrice": "Reference unit price",
+      "comboPrice": "Combo of {{count}}",
+      "exportPrice": "B2B / export reference price",
+      "sample": "Request a sample",
+      "contactB2b": "Contact B2B",
+      "priceNote": "Pricing may vary with quantity, specifications and customization requirements.",
+      "storyEyebrow": "Product story",
+      "benefits": "Benefits",
+      "applications": "Applications",
+      "specifications": "Specifications",
+      "tablewareEyebrow": "Greener objects for the table",
+      "tablewareTitle": "A natural choice for thoughtful dining",
+      "tablewareDescription": "Organic texture and honest color make each piece suitable for restaurants, events and conscious tables.",
+      "combo": "Combo format",
+      "traceEyebrow": "Transparent origins",
+      "traceTitle": "Trace materials back to the Mekong",
+      "traceDescription": "Explore GreenShield's current material zones and collection network.",
+      "traceCta": "Open traceability map",
+      "relatedEyebrow": "Continue exploring",
+      "relatedTitle": "Related products"
+    },
+    "seo": {
+      "listTitle": "Green products | GreenShield Mekong",
+      "listDescription": "Explore packaging, tableware and lifestyle products made from water hyacinth, lotus leaves and local Mekong materials."
     }
   },
   "map": {

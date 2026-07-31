@@ -27,7 +27,10 @@ const DashboardOverview = lazyNamed(() => import('./pages/admin'), 'DashboardOve
 const DashboardSettings = lazyNamed(() => import('./pages/admin'), 'DashboardSettings')
 const MapPage = lazyNamed(() => import('./pages/map'), 'MapPage')
 const AdminMapPage = lazyNamed(() => import('./pages/admin'), 'AdminMapPage')
+const ProductManagementPage = lazyNamed(() => import('./pages/admin'), 'ProductManagementPage')
 const PlantDiseasePage = lazyNamed(() => import('./pages/plant-disease'), 'PlantDiseasePage')
+const ProductsPage = lazyNamed(() => import('./pages/products'), 'ProductsPage')
+const ProductDetailPage = lazyNamed(() => import('./pages/products'), 'ProductDetailPage')
 const MainLayout = lazy(() => import('./layouts/MainLayout'))
 const ProtectedRoute = lazy(() => import('./components/ProtectedRoute'))
 const MaterialDataProvider = lazy(() =>
@@ -48,14 +51,6 @@ const DARK_ROUTE_PATTERNS = ['/design', '/audio', '/audio-file', '/custom', '/or
 function RouteFallback() {
   return (
     <LabLoading />
-  )
-}
-
-function withMaterialDataProvider(element) {
-  return (
-    <Suspense fallback={<RouteFallback />}>
-      <MaterialDataProvider>{element}</MaterialDataProvider>
-    </Suspense>
   )
 }
 
@@ -247,7 +242,9 @@ function App() {
     <MaterialDataProvider>
       <Routes>
         <Route path="/" element={<MainSite />} />
-        <Route path="/custom-bag" element={<CustomBagRoute />} />
+        <Route path="/products" element={<MainLayout><ProductsPage /></MainLayout>} />
+        <Route path="/products/:slug" element={<MainLayout><ProductDetailPage /></MainLayout>} />
+        <Route path="/custom-bag" element={<MainLayout><CustomBagRoute /></MainLayout>} />
         <Route path="/custom-bag/:templateId/design" element={<CustomBagLayout><DesignPage /></CustomBagLayout>} />
         <Route path="/custom-bag/:templateId/preview" element={<CustomBagLayout><PreviewPage /></CustomBagLayout>} />
         <Route path="/custom-bag/:templateId/checkout" element={<CustomBagLayout><CheckoutPage /></CustomBagLayout>} />
@@ -260,7 +257,7 @@ function App() {
           path="/plant-disease"
           element={(
             <Suspense fallback={<RouteFallback />}>
-              <PlantDiseasePage />
+              <MainLayout><PlantDiseasePage /></MainLayout>
             </Suspense>
           )}
         />
@@ -279,6 +276,7 @@ function App() {
           <Route path="bag-templates" element={<BagTemplateManagementPage />} />
           <Route path="textures" element={<TextureManagementPage />} />
           <Route path="orders" element={<OrderManagementPage />} />
+          <Route path="products" element={<ProductManagementPage />} />
                       <Route path="map" element={<AdminMapPage />} />
           <Route path="settings" element={<DashboardSettings />} />
         </Route>

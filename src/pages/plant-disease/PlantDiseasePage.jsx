@@ -1,5 +1,5 @@
-import { ArrowLeft, Leaf, ScanLine, Sparkles } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { ScanLine, Sparkles } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import InputPanel from '../../components/plant-disease/InputPanel'
 import OutputPanel from '../../components/plant-disease/OutputPanel'
 import SuggestedProductsPanel from '../../components/plant-disease/SuggestedProductsPanel'
@@ -7,7 +7,7 @@ import { usePlantDiseaseAnalysis } from '../../hooks/usePlantDiseaseAnalysis'
 import styles from './PlantDiseasePage.module.css'
 
 export function PlantDiseasePage() {
-  const navigate = useNavigate()
+  const { t } = useTranslation()
   const {
     analysisCount,
     result,
@@ -21,24 +21,16 @@ export function PlantDiseasePage() {
     <div className={styles.page}>
       <div className={styles.ambientGlow} aria-hidden="true" />
 
-      <header className={styles.header}>
-        <button type="button" className={styles.backButton} onClick={() => navigate('/')}>
-          <ArrowLeft size={18} /> Home
-        </button>
-        <div className={styles.brandMark}><Leaf size={22} /></div>
-        <span className={styles.headerLabel}>GreenShield AI Lab</span>
-      </header>
-
       <main className={styles.content}>
         <section className={styles.hero}>
           <div className={styles.heroCopy}>
-            <span className={styles.heroKicker}><Sparkles size={15} /> Plant health intelligence</span>
-            <h1>See what the leaf is <em>telling you.</em></h1>
-            <p>Upload a focused leaf photo or video for an AI-assisted disease assessment, treatment guidance and relevant care products.</p>
+            <span className={styles.heroKicker}><Sparkles size={15} /> {t('plantDisease.heroKicker')}</span>
+            <h1>{t('plantDisease.heroTitle')} <em>{t('plantDisease.heroTitleAccent')}</em></h1>
+            <p>{t('plantDisease.heroDescription')}</p>
           </div>
           <div className={styles.heroSignal} aria-hidden="true">
             <ScanLine size={42} />
-            <span>Visual diagnosis</span>
+            <span>{t('plantDisease.visualDiagnosis')}</span>
           </div>
         </section>
 

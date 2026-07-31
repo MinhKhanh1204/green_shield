@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
 import { Button, Input, Select, Upload } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 const AI_PANEL_STYLE_ID = 'ai-panels-premium-style';
 
@@ -440,12 +441,13 @@ export function GreenAiPanelPremium({
   applySavedAiItem,
   removeSavedAiItem,
 }) {
+  const { t } = useTranslation();
   return (
     <div className="design-tab-panel-body">
-      <AiPanelShell title="AI tạo ảnh" subtitle="Mô hình tạo ảnh" icon="auto_awesome">
-        <p className="panel-hint">Nhập mô tả ảnh, AI sẽ tạo ảnh cho bạn (tối đa 20 ảnh/ngày toàn hệ thống).</p>
+      <AiPanelShell title={t('customBag.editor.ai.imageTitle')} subtitle={t('customBag.editor.ai.imageSubtitle')} icon="auto_awesome">
+        <p className="panel-hint">{t('customBag.editor.ai.imageHint')}</p>
         <Input.TextArea
-          placeholder="VD: Một bông hoa sen màu hồng trên nền xanh lá"
+          placeholder={t('customBag.editor.ai.imagePlaceholder')}
           value={greenAiPrompt}
           onChange={(e) => setGreenAiPrompt(e.target.value)}
           rows={3}
@@ -458,23 +460,23 @@ export function GreenAiPanelPremium({
           onClick={handleGreenAiGenerate}
           className="panel-main-btn ai-btn"
         >
-          {greenAiGenerating ? 'Đang tạo ảnh...' : 'Tạo ảnh bằng AI'}
+          {t(greenAiGenerating ? 'customBag.editor.ai.generatingImage' : 'customBag.editor.ai.generateImage')}
         </Button>
 
         {greenAiError && <p className="green-ai-error">{greenAiError}</p>}
 
         {greenAiImageDataUrl && (
           <div className="green-ai-result">
-            <img src={greenAiImageDataUrl} alt="Ảnh AI đã tạo" className="green-ai-preview-img" />
+            <img src={greenAiImageDataUrl} alt={t('customBag.editor.ai.generatedAlt')} className="green-ai-preview-img" />
             <p className="panel-hint">
-              Thiết kế AI đã được tự động gắn vào vùng in trên túi. Đã lưu vào lịch sử để chọn lại.
+              {t('customBag.editor.ai.generatedHint')}
             </p>
           </div>
         )}
 
         {savedAiItems.length > 0 && (
           <div className="green-ai-saved">
-            <p className="panel-section-title">Thiết kế đã lưu (chọn để thêm vào vùng in)</p>
+            <p className="panel-section-title">{t('customBag.editor.ai.savedTitle')}</p>
             <div className="green-ai-saved-grid">
               {savedAiItems.map((item) => {
                 const thumbUrl = item.frontDataUrl || item.backDataUrl;
@@ -499,7 +501,7 @@ export function GreenAiPanelPremium({
                       type="button"
                       className="green-ai-saved-delete"
                       onClick={(e) => removeSavedAiItem(item.id, e)}
-                      aria-label="Xóa"
+                      aria-label={t('customBag.editor.ai.delete')}
                     >
                       <span className="material-symbols-rounded">delete</span>
                     </button>
@@ -534,22 +536,23 @@ export function GreenQrPanelPremium({
   setGreenQrColor,
   generateGreenQr,
 }) {
+  const { t } = useTranslation();
   return (
     <div className="design-tab-panel-body">
-      <AiPanelShell title="AI mã QR" subtitle="Âm thanh thông minh" icon="qr_code_2_add">
+      <AiPanelShell title={t('customBag.editor.ai.qrTitle')} subtitle={t('customBag.editor.ai.qrSubtitle')} icon="qr_code_2_add">
         <p className="panel-hint">
-          Tạo mã QR âm thanh theo 2 cách: (1) Văn bản → hệ thống đọc (TTS), (2) Tải tệp âm thanh lên (≤ 5MB).
+          {t('customBag.editor.ai.qrDescription')}
         </p>
 
         <div className="green-qr-color-row">
-          <span>Loại nội dung</span>
+          <span>{t('customBag.editor.ai.contentType')}</span>
           <Select
             value={greenQrMode}
             onChange={(v) => setGreenQrMode(v)}
             style={{ width: '100%' }}
             options={[
-              { value: 'tts', label: 'Văn bản (TTS)' },
-              { value: 'audio', label: 'Tải âm thanh lên (≤ 5MB)' },
+              { value: 'tts', label: t('customBag.editor.ai.tts') },
+              { value: 'audio', label: t('customBag.editor.ai.audio') },
             ]}
           />
         </div>
@@ -557,7 +560,7 @@ export function GreenQrPanelPremium({
         {greenQrMode === 'tts' ? (
           <Input.TextArea
             rows={3}
-            placeholder="VD: Lời chúc sinh nhật, câu trích dẫn yêu thích..."
+            placeholder={t('customBag.editor.ai.audioPlaceholder')}
             value={greenQrText}
             onChange={(e) => setGreenQrText(e.target.value)}
             className="green-qr-input"
@@ -575,19 +578,19 @@ export function GreenQrPanelPremium({
               }}
             >
               <Button block className="panel-main-btn ai-btn">
-                Chọn tệp âm thanh
+                {t('customBag.editor.ai.chooseAudio')}
               </Button>
             </Upload>
 
             {greenQrAudioFile && (
               <p className="panel-hint green-qr-file-name">
-                Đã chọn: <code>{greenQrAudioFile.name}</code> ({Math.round(greenQrAudioFile.size / 1024)} KB)
+                {t('customBag.editor.ai.selected')} <code>{greenQrAudioFile.name}</code> ({Math.round(greenQrAudioFile.size / 1024)} KB)
               </p>
             )}
 
             <div className="green-qr-record">
               <div className="green-qr-record-head">
-                <span>Hoặc ghi âm</span>
+                <span>{t('customBag.editor.ai.orRecord')}</span>
                 <span className={`green-qr-record-timer${greenQrRecording ? ' active' : ''}`}>
                   {fmtMmSs(greenQrRecordSeconds)}
                 </span>
@@ -601,7 +604,7 @@ export function GreenQrPanelPremium({
                     className="panel-main-btn green-qr-record-btn ai-btn"
                     disabled={greenQrGenerating}
                   >
-                    Bắt đầu ghi âm
+                    {t('customBag.editor.ai.startRecording')}
                   </Button>
                 ) : (
                   <Button
@@ -610,7 +613,7 @@ export function GreenQrPanelPremium({
                     onClick={stopGreenQrRecording}
                     className="panel-main-btn green-qr-record-btn"
                   >
-                    Dừng ghi âm
+                    {t('customBag.editor.ai.stopRecording')}
                   </Button>
                 )}
               </div>
@@ -620,14 +623,14 @@ export function GreenQrPanelPremium({
                   <audio controls src={greenQrRecordedUrl} style={{ width: '100%' }} />
                   <div className="green-qr-record-meta">
                     <span className="panel-hint green-qr-record-file">
-                      Bản ghi: <code>{greenQrRecordedFile?.name || 'ban-ghi'}</code>
+                      {t('customBag.editor.ai.recording')} <code>{greenQrRecordedFile?.name || 'recording'}</code>
                     </span>
                     <button
                       type="button"
                       className="green-qr-record-clear"
                       onClick={clearRecordedAudio}
                     >
-                      Xóa
+                      {t('customBag.editor.ai.clear')}
                     </button>
                   </div>
                 </div>
@@ -637,7 +640,7 @@ export function GreenQrPanelPremium({
         )}
 
         <div className="green-qr-color-row">
-          <span>Màu QR</span>
+          <span>{t('customBag.editor.ai.qrColor')}</span>
           <div className="green-qr-color-controls">
             <input
               type="color"
@@ -653,7 +656,7 @@ export function GreenQrPanelPremium({
         </div>
 
         <p className="panel-hint">
-          QR được thiết kế với nhịp sóng ở giữa để gợi cảm giác âm thanh.
+          {t('customBag.editor.ai.qrWaveHint')}
         </p>
 
         <Button
@@ -663,7 +666,7 @@ export function GreenQrPanelPremium({
           onClick={generateGreenQr}
           className="panel-main-btn ai-btn"
         >
-          {greenQrGenerating ? 'Đang tạo QR...' : 'Tạo QR âm thanh'}
+          {t(greenQrGenerating ? 'customBag.editor.ai.generatingQr' : 'customBag.editor.ai.generateQr')}
         </Button>
       </AiPanelShell>
     </div>
@@ -671,10 +674,11 @@ export function GreenQrPanelPremium({
 }
 
 export function AiPanelUsageExample() {
+  const { t } = useTranslation();
   return (
     <div className="design-tab-panel-body">
-      <AiPanelShell title="AI Demo" subtitle="Ví dụ tích hợp" icon="neurology">
-        <Button className="panel-main-btn ai-btn" block>Chạy AI</Button>
+      <AiPanelShell title={t('customBag.editor.ai.demoTitle')} subtitle={t('customBag.editor.ai.demoSubtitle')} icon="neurology">
+        <Button className="panel-main-btn ai-btn" block>{t('customBag.editor.ai.runAi')}</Button>
       </AiPanelShell>
     </div>
   );

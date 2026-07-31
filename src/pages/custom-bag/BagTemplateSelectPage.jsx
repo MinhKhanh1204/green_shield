@@ -1,5 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { message } from 'antd';
 import { getBagTemplates } from '../../services/bagTemplate';
 import { InteractiveGridPattern } from '@/components/ui/interactive-grid-pattern';
@@ -10,6 +11,7 @@ import logo from '../../assets/logo.png';
 import './BagTemplateSelectPage.css';
 
 export default function BagTemplateSelectPage() {
+  const { t, i18n } = useTranslation();
   const [templates, setTemplates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -18,12 +20,12 @@ export default function BagTemplateSelectPage() {
   useEffect(() => {
     getBagTemplates(true)
       .then(setTemplates)
-      .catch(() => message.error('Không thể tải mẫu túi'))
+      .catch(() => message.error(t('customBag.template.empty')))
       .finally(() => setLoading(false));
-  }, []);
+  }, [t]);
 
-  const filtered = templates.filter((t) =>
-    t.name?.toLowerCase().includes(search.toLowerCase())
+  const filtered = templates.filter((template) =>
+    template.name?.toLowerCase().includes(search.toLowerCase())
   );
 
   if (loading) {
@@ -75,17 +77,17 @@ export default function BagTemplateSelectPage() {
 
           <div className="design-badge">
             <span className="material-symbols-rounded">auto_awesome</span>
-            Thiết kế theo ý bạn
+            {t('customBag.template.badge')}
           </div>
 
           <h1 className="design-title">
             <AuroraText>
-              Chọn mẫu túi để bắt đầu
+              {t('customBag.template.title')}
             </AuroraText>
           </h1>
 
           <p className="design-subtitle">
-            Cá nhân hoá từng chiếc túi — thêm hình ảnh, text và màu sắc theo phong cách riêng của bạn.
+            {t('customBag.template.subtitle')}
           </p>
 
           <div className="design-actions">
@@ -96,7 +98,7 @@ export default function BagTemplateSelectPage() {
                 search
               </span>
               <input
-                placeholder="Tra cứu đơn hàng..."
+                placeholder={t('customBag.template.searchPlaceholder')}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -114,59 +116,59 @@ export default function BagTemplateSelectPage() {
               <span className="material-symbols-rounded">shopping_bag</span>
               <p>
                 {search
-                  ? `Không tìm thấy "${search}"`
-                  : 'Chưa có mẫu túi'}
+                  ? t('customBag.template.emptySearch', { search })
+                  : t('customBag.template.empty')}
               </p>
             </div>
           ) : (
             <div className="design-grid">
 
-              {filtered.map((t) => (
+              {filtered.map((template) => (
                 <div
-                  key={t.id}
+                  key={template.id}
                   className="market-card"
-                  onClick={() => navigate(`/custom-bag/${t.id}/design`)}
+                  onClick={() => navigate(`/custom-bag/${template.id}/design`)}
                 >
                   <div className="market-card-inner">
                     <div className="market-card-media">
                       <div className="market-card-techline">
                         <span className="market-card-techline__dot" />
-                        Sẵn sàng thiết kế
+                        {t('customBag.template.ready')}
                       </div>
 
                       {/* FRONT */}
-                      <img
-                        src={t.frontImageUrl}
+                        <img
+                        src={template.frontImageUrl}
                         className="front"
-                        alt={t.name}
+                        alt={template.name}
                       />
 
                       {/* BACK */}
-                      {t.backImageUrl && (
+                      {template.backImageUrl && (
                         <img
-                          src={t.backImageUrl}
+                          src={template.backImageUrl}
                           className="back"
-                          alt={`${t.name} mặt sau`}
+                          alt={t('customBag.template.backAlt', { name: template.name })}
                         />
                       )}
 
                       <div className="market-card-overlay">
-                        <span>Thiết kế ngay →</span>
+                        <span>{t('customBag.template.designNow')}</span>
                       </div>
                     </div>
 
                     <div className="market-card-body">
                       <div className="market-card-meta">
-                        <span>Mẫu #{t.id}</span>
-                        <span>{t.backImageUrl ? '2 mặt' : '1 mặt'}</span>
+                        <span>{t('customBag.template.model', { id: template.id })}</span>
+                        <span>{template.backImageUrl ? t('customBag.template.twoSides') : t('customBag.template.oneSide')}</span>
                       </div>
-                      <h3>{t.name}</h3>
+                      <h3>{template.name}</h3>
 
                       <div className="market-card-footer">
                         <span className="price">
-                          {Number(t.basePrice).toLocaleString('vi-VN')} ₫
+                          {Number(template.basePrice).toLocaleString(i18n.language.startsWith('en') ? 'en-US' : 'vi-VN')} ₫
                         </span>
-                        <span className="tag">Tuỳ chỉnh</span>
+                        <span className="tag">{t('customBag.template.customizable')}</span>
                       </div>
                     </div>
                   </div>

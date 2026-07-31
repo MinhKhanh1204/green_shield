@@ -322,8 +322,9 @@
 }
 
 .floating-detail {
+  top: 128px;
   right: var(--edge-gap);
-  bottom: 8rem;
+  bottom: auto;
   width: min(var(--right-panel-width), calc(100% - 2rem));
   padding: 0.86rem;
   max-height: min(56vh, 500px);
@@ -755,7 +756,7 @@
   }
 
   .floating-detail {
-    top: 78px;
+    top: 128px;
     bottom: auto;
     max-height: min(52vh, 460px);
     overflow: auto;
