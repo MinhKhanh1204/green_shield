@@ -60,8 +60,7 @@ function AdvantagesSection() {
           muted
           playsInline
           loop
-          autoPlay
-          preload="auto"
+          preload="metadata"
           disablePictureInPicture
         />
       </div>

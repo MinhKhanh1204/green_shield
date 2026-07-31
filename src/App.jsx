@@ -5,6 +5,7 @@ import LanguageToggle from './components/LanguageToggle'
 import logo from './assets/logo.png';
 import logolg from './assets/logo-lg.png';
 import LabLoading from './pages/shared/LabLoading'
+import { MaterialDataProvider } from './context/MaterialDataContext'
 
 const lazyNamed = (importer, exportName) =>
   lazy(() => importer().then((module) => ({ default: module[exportName] })))
@@ -33,9 +34,6 @@ const ProductsPage = lazyNamed(() => import('./pages/products'), 'ProductsPage')
 const ProductDetailPage = lazyNamed(() => import('./pages/products'), 'ProductDetailPage')
 const MainLayout = lazy(() => import('./layouts/MainLayout'))
 const ProtectedRoute = lazy(() => import('./components/ProtectedRoute'))
-const MaterialDataProvider = lazy(() =>
-  import('./context/MaterialDataContext').then((module) => ({ default: module.MaterialDataProvider })),
-)
 const HomeSection = lazy(() => import('./sections/HomeSection'))
 const AboutSection = lazy(() => import('./sections/AboutSection'))
 const ProductsSection = lazy(() => import('./sections/ProductsSection'))
@@ -239,7 +237,6 @@ function App() {
   return (
     <BrowserRouter>
     <ThemeRouteScope />
-    <MaterialDataProvider>
       <Routes>
         <Route path="/" element={<MainSite />} />
         <Route path="/products" element={<MainLayout><ProductsPage /></MainLayout>} />
@@ -262,7 +259,14 @@ function App() {
           )}
         />
         <Route path="/admin" element={<LoginPage />} />
-                  <Route path="/map" element={<MainLayout><MapPage /></MainLayout>} />
+                  <Route
+                    path="/map"
+                    element={(
+                      <MaterialDataProvider>
+                        <MainLayout><MapPage /></MainLayout>
+                      </MaterialDataProvider>
+                    )}
+                  />
         <Route
           path="/admin/dashboard"
           element={
@@ -277,13 +281,19 @@ function App() {
           <Route path="textures" element={<TextureManagementPage />} />
           <Route path="orders" element={<OrderManagementPage />} />
           <Route path="products" element={<ProductManagementPage />} />
-                      <Route path="map" element={<AdminMapPage />} />
+                      <Route
+                        path="map"
+                        element={(
+                          <MaterialDataProvider>
+                            <AdminMapPage />
+                          </MaterialDataProvider>
+                        )}
+                      />
           <Route path="settings" element={<DashboardSettings />} />
         </Route>
         <Route path="/admin/textures" element={<Navigate to="/admin/dashboard/textures" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-      </MaterialDataProvider>
     </BrowserRouter>
   )
 }

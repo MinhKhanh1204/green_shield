@@ -136,6 +136,7 @@ export default function MapGL({
   const styleKeyRef = useRef(resolveStyle(mapStyle));
   const introPlayedRef = useRef(false);
   const pendingRegionFocusRef = useRef(selectedRegionId ? String(selectedRegionId) : null);
+  const mapDataRef = useRef({});
   const [is3D, setIs3D] = useState(false);
 
   const regionFeatures = useMemo(() => {
@@ -249,6 +250,17 @@ export default function MapGL({
     [points]
   );
 
+  // Keep map callbacks and data current without forcing MapLibre to reinitialize.
+  mapDataRef.current = {
+    regionAreaGeoJSON,
+    farmerGeoJSON,
+    pointGeoJSON,
+    is3D,
+    visibility,
+    onSelect,
+    onMapTap
+  };
+
   const setFeatureState = useCallback((source, featureId, key, value) => {
     const map = mapInstanceRef.current;
     if (!map?.getSource(source) || featureId === null || featureId === undefined) return;
@@ -273,22 +285,30 @@ export default function MapGL({
     const map = mapInstanceRef.current;
     if (!map) return;
 
+    const {
+      regionAreaGeoJSON: nextRegionAreaGeoJSON,
+      farmerGeoJSON: nextFarmerGeoJSON,
+      pointGeoJSON: nextPointGeoJSON,
+      is3D: nextIs3D,
+      visibility: nextVisibility = {}
+    } = mapDataRef.current;
+
     if (!map.getSource("region-areas")) {
-      map.addSource("region-areas", { type: "geojson", data: regionAreaGeoJSON });
+      map.addSource("region-areas", { type: "geojson", data: nextRegionAreaGeoJSON });
     } else {
-      map.getSource("region-areas").setData(regionAreaGeoJSON);
+      map.getSource("region-areas").setData(nextRegionAreaGeoJSON);
     }
 
     if (!map.getSource("farmers")) {
-      map.addSource("farmers", { type: "geojson", data: farmerGeoJSON });
+      map.addSource("farmers", { type: "geojson", data: nextFarmerGeoJSON });
     } else {
-      map.getSource("farmers").setData(farmerGeoJSON);
+      map.getSource("farmers").setData(nextFarmerGeoJSON);
     }
 
     if (!map.getSource("points")) {
-      map.addSource("points", { type: "geojson", data: pointGeoJSON });
+      map.addSource("points", { type: "geojson", data: nextPointGeoJSON });
     } else {
-      map.getSource("points").setData(pointGeoJSON);
+      map.getSource("points").setData(nextPointGeoJSON);
     }
 
     if (!map.getSource("vn-islands")) {
@@ -300,7 +320,7 @@ export default function MapGL({
         id: "region-fill",
         type: "fill",
         source: "region-areas",
-        layout: { visibility: visibility?.region ? "visible" : "none" },
+        layout: { visibility: nextVisibility?.region ? "visible" : "none" },
         paint: {
           "fill-color": BASE_COLOR,
           "fill-opacity": [
@@ -314,7 +334,7 @@ export default function MapGL({
         }
       });
     } else {
-      map.setLayoutProperty("region-fill", "visibility", visibility?.region ? "visible" : "none");
+      map.setLayoutProperty("region-fill", "visibility", nextVisibility?.region ? "visible" : "none");
     }
 
     if (!map.getLayer("region-outline")) {
@@ -322,7 +342,7 @@ export default function MapGL({
         id: "region-outline",
         type: "line",
         source: "region-areas",
-        layout: { visibility: visibility?.region ? "visible" : "none" },
+        layout: { visibility: nextVisibility?.region ? "visible" : "none" },
         paint: {
           "line-color": BASE_COLOR,
           "line-opacity": 0.9,
@@ -337,7 +357,7 @@ export default function MapGL({
         }
       });
     } else {
-      map.setLayoutProperty("region-outline", "visibility", visibility?.region ? "visible" : "none");
+      map.setLayoutProperty("region-outline", "visibility", nextVisibility?.region ? "visible" : "none");
     }
 
     if (!map.getLayer("region-3d")) {
@@ -345,7 +365,7 @@ export default function MapGL({
         id: "region-3d",
         type: "fill-extrusion",
         source: "region-areas",
-        layout: { visibility: is3D && visibility?.region ? "visible" : "none" },
+        layout: { visibility: nextIs3D && nextVisibility?.region ? "visible" : "none" },
         paint: {
           "fill-extrusion-color": BASE_COLOR,
           "fill-extrusion-height": ["*", ["get", "capacity"], 8],
@@ -356,7 +376,7 @@ export default function MapGL({
       map.setLayoutProperty(
         "region-3d",
         "visibility",
-        is3D && visibility?.region ? "visible" : "none"
+        nextIs3D && nextVisibility?.region ? "visible" : "none"
       );
     }
 
@@ -365,7 +385,7 @@ export default function MapGL({
         id: "farmer-glow",
         type: "circle",
         source: "farmers",
-        layout: { visibility: visibility?.farmers ? "visible" : "none" },
+        layout: { visibility: nextVisibility?.farmers ? "visible" : "none" },
         paint: {
           "circle-radius": [
             "case",
@@ -386,7 +406,7 @@ export default function MapGL({
         }
       });
     } else {
-      map.setLayoutProperty("farmer-glow", "visibility", visibility?.farmers ? "visible" : "none");
+      map.setLayoutProperty("farmer-glow", "visibility", nextVisibility?.farmers ? "visible" : "none");
     }
 
     if (!map.getLayer("farmer-circle")) {
@@ -394,7 +414,7 @@ export default function MapGL({
         id: "farmer-circle",
         type: "circle",
         source: "farmers",
-        layout: { visibility: visibility?.farmers ? "visible" : "none" },
+        layout: { visibility: nextVisibility?.farmers ? "visible" : "none" },
         paint: {
           "circle-radius": [
             "case",
@@ -416,7 +436,7 @@ export default function MapGL({
         }
       });
     } else {
-      map.setLayoutProperty("farmer-circle", "visibility", visibility?.farmers ? "visible" : "none");
+      map.setLayoutProperty("farmer-circle", "visibility", nextVisibility?.farmers ? "visible" : "none");
     }
 
     if (!map.getLayer("farmer-label")) {
@@ -425,7 +445,7 @@ export default function MapGL({
         type: "symbol",
         source: "farmers",
         layout: {
-          visibility: visibility?.farmers ? "visible" : "none",
+          visibility: nextVisibility?.farmers ? "visible" : "none",
           "text-field": ["get", "initial"],
           "text-size": 12,
           "text-font": ["Open Sans Bold"]
@@ -433,7 +453,7 @@ export default function MapGL({
         paint: { "text-color": "#08363a" }
       });
     } else {
-      map.setLayoutProperty("farmer-label", "visibility", visibility?.farmers ? "visible" : "none");
+      map.setLayoutProperty("farmer-label", "visibility", nextVisibility?.farmers ? "visible" : "none");
     }
 
     if (!map.getLayer("point-glow")) {
@@ -441,7 +461,7 @@ export default function MapGL({
         id: "point-glow",
         type: "circle",
         source: "points",
-        layout: { visibility: visibility?.points ? "visible" : "none" },
+        layout: { visibility: nextVisibility?.points ? "visible" : "none" },
         paint: {
           "circle-radius": [
             "case",
@@ -462,7 +482,7 @@ export default function MapGL({
         }
       });
     } else {
-      map.setLayoutProperty("point-glow", "visibility", visibility?.points ? "visible" : "none");
+      map.setLayoutProperty("point-glow", "visibility", nextVisibility?.points ? "visible" : "none");
     }
 
     if (!map.getLayer("point-circle")) {
@@ -470,7 +490,7 @@ export default function MapGL({
         id: "point-circle",
         type: "circle",
         source: "points",
-        layout: { visibility: visibility?.points ? "visible" : "none" },
+        layout: { visibility: nextVisibility?.points ? "visible" : "none" },
         paint: {
           "circle-radius": [
             "case",
@@ -492,7 +512,7 @@ export default function MapGL({
         }
       });
     } else {
-      map.setLayoutProperty("point-circle", "visibility", visibility?.points ? "visible" : "none");
+      map.setLayoutProperty("point-circle", "visibility", nextVisibility?.points ? "visible" : "none");
     }
     if (!map.getLayer("vn-islands-fill")) {
       map.addLayer({
@@ -543,11 +563,13 @@ export default function MapGL({
         }
       });
     }
-  }, [farmerGeoJSON, is3D, pointGeoJSON, regionAreaGeoJSON, visibility?.farmers, visibility?.points, visibility?.region]);
+  }, []);
 
   const bindMapInteractions = useCallback(() => {
     const map = mapInstanceRef.current;
     if (!map) return;
+    const selectHandler = mapDataRef.current.onSelect;
+    const mapTapHandler = mapDataRef.current.onMapTap;
 
     const onMoveRegion = (event) => {
       const feature = event?.features?.[0];
@@ -578,7 +600,7 @@ export default function MapGL({
       setFeatureState("region-areas", feature.id, "selected", true);
       pendingRegionFocusRef.current = String(feature.id);
       focusRegionById(feature.id);
-      onSelect?.({ type: "region", id: feature.id });
+      selectHandler?.({ type: "region", id: feature.id });
     };
 
     const onMoveFarmer = (event) => {
@@ -604,7 +626,7 @@ export default function MapGL({
       const feature = event?.features?.[0];
       if (!feature) return;
       focusPoint(map, feature.geometry?.coordinates, 13.8);
-      onSelect?.({ type: "farmer", id: feature.properties.id });
+      selectHandler?.({ type: "farmer", id: feature.properties.id });
     };
 
     const onMovePoint = (event) => {
@@ -630,14 +652,14 @@ export default function MapGL({
       const feature = event?.features?.[0];
       if (!feature) return;
       focusPoint(map, feature.geometry?.coordinates, 14.2);
-      onSelect?.({ type: "point", id: feature.properties.id });
+      selectHandler?.({ type: "point", id: feature.properties.id });
     };
 
     const onMapClick = (event) => {
       const features = map.queryRenderedFeatures(event.point, {
         layers: ["region-fill", "farmer-circle", "point-circle"]
       });
-      if (!features?.length) onMapTap?.();
+      if (!features?.length) mapTapHandler?.();
     };
 
     map.off("mousemove", "region-fill", onMoveRegion);
@@ -661,7 +683,7 @@ export default function MapGL({
     map.on("mouseleave", "point-circle", onLeavePoint);
     map.on("click", "point-circle", onClickPoint);
     map.on("click", onMapClick);
-  }, [focusRegionById, onMapTap, onSelect, setFeatureState]);
+  }, [focusRegionById, setFeatureState]);
 
   useEffect(() => {
     let disposed = false;
@@ -671,8 +693,7 @@ export default function MapGL({
       if (!mapRef.current) return;
       if (disposed) return;
 
-      const styleUrl = resolveStyle(mapStyle);
-      styleKeyRef.current = styleUrl;
+      const styleUrl = styleKeyRef.current;
 
       map = new maplibregl.Map({
         container: mapRef.current,
@@ -730,7 +751,7 @@ export default function MapGL({
       map?.remove();
       mapInstanceRef.current = null;
     };
-  }, [addOrUpdateSourcesAndLayers, bindMapInteractions, focusRegionById, mapStyle]);
+  }, [addOrUpdateSourcesAndLayers, bindMapInteractions, focusRegionById]);
 
   useEffect(() => {
     const map = mapInstanceRef.current;
@@ -746,7 +767,16 @@ export default function MapGL({
     const map = mapInstanceRef.current;
     if (!map?.isStyleLoaded()) return;
     addOrUpdateSourcesAndLayers();
-  }, [addOrUpdateSourcesAndLayers]);
+  }, [
+    addOrUpdateSourcesAndLayers,
+    farmerGeoJSON,
+    is3D,
+    pointGeoJSON,
+    regionAreaGeoJSON,
+    visibility?.farmers,
+    visibility?.points,
+    visibility?.region
+  ]);
 
   useEffect(() => {
     const nextRegionId = selectedRegionId ? String(selectedRegionId) : null;

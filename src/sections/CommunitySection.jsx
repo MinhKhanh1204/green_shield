@@ -10,7 +10,7 @@ import './CommunitySection.css'
 function CommunitySection() {
   const { t } = useTranslation()
 
-  const cards = [
+  const cards = useMemo(() => [
     {
       key: 'environment',
       image: communityEnvironmentImage,
@@ -35,7 +35,7 @@ function CommunitySection() {
       excerpt: t('community.cards.governance.excerpt'),
       full: t('community.cards.governance.full')
     }
-  ]
+  ], [t])
 
   const marqueeItems = useMemo(
     () => cards.map((card) => card.title),

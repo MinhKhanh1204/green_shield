@@ -748,7 +748,14 @@ a.btn .material-symbols-rounded {
   width: 100%;
   height: 100%;
   display: flex;
-  background: url('./assets/background-hero.png') no-repeat center/contain;
+  background-image: image-set(
+    url('./assets/background-hero.avif') type('image/avif'),
+    url('./assets/background-hero.webp') type('image/webp'),
+    url('./assets/background-hero.png') type('image/png')
+  );
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
   justify-content: center;
   align-items: center;
   z-index: 1;
