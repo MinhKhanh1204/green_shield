@@ -1,7 +1,6 @@
 import { normalizeAnalysisResult } from '../utils/plantDiseaseResult'
 
 const DEFAULT_ENDPOINT = '/predict'
-const DEFAULT_DEV_API_BASE = 'http://localhost:7860'
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024
 const MAX_VIDEO_SIZE = 50 * 1024 * 1024
 const ALLOWED_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp'])
@@ -20,8 +19,7 @@ function resolveApiBase() {
     || ''
   ).replace(/\/$/, '')
 
-  if (configuredBase) return configuredBase
-  return import.meta.env.DEV ? DEFAULT_DEV_API_BASE : ''
+  return configuredBase
 }
 
 async function readResponseBody(response) {
