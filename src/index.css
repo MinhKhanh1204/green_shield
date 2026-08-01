@@ -772,6 +772,10 @@ a.btn .material-symbols-rounded {
 }
 
 /* Ensure hero text is visible on light top background */
+.banner-title-group {
+  margin: 0;
+}
+
 .banner-title {
   font-size: clamp(1.8rem, 4vw, 3.5rem);
   font-weight: 700;

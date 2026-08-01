@@ -99,19 +99,6 @@ export default function ProductsPage() {
     return () => controller.abort()
   }, [reloadKey])
 
-  useEffect(() => {
-    const previousTitle = document.title
-    document.title = t('catalog.seo.listTitle')
-    let meta = document.querySelector('meta[name="description"]')
-    if (!meta) {
-      meta = document.createElement('meta')
-      meta.name = 'description'
-      document.head.appendChild(meta)
-    }
-    meta.content = t('catalog.seo.listDescription')
-    return () => { document.title = previousTitle }
-  }, [t])
-
   // Keep the exhibition focused while preserving backend display order.
   const products = useMemo(() => catalog.slice(0, 5), [catalog])
   const labProducts = products
@@ -125,7 +112,7 @@ export default function ProductsPage() {
       <section id="product-exhibition" className="product-exhibition" aria-labelledby="exhibition-title">
         <header className="product-section-heading">
           <p>{t('catalog.exhibition.eyebrow')}</p>
-          <h2 id="exhibition-title">{t('catalog.exhibition.title')}</h2>
+          <h1 id="exhibition-title">{t('catalog.exhibition.title')}</h1>
           <span>{String(products.length).padStart(2, '0')}</span>
         </header>
 

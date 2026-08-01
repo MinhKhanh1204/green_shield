@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /order-success
+Disallow: /order-lookup
+Disallow: /custom-bag/*/design
+Disallow: /custom-bag/*/preview
+Disallow: /custom-bag/*/checkout
+
+Sitemap: https://greenshieldmekong.com/sitemap.xml

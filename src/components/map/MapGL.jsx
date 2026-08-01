@@ -64,6 +64,7 @@ function fitCircleBounds(map, centerLatLng, radiusMeters, duration = 850) {
   const lngDelta = radiusMeters / (111320 * Math.max(0.2, Math.cos((lat * Math.PI) / 180)));
   const viewportWidth = map.getCanvas()?.clientWidth || 1200;
   const padding = Math.max(48, Math.min(96, Math.round(viewportWidth * 0.07)));
+  map.stop();
   map.fitBounds(
     [
       [lng - lngDelta, lat - latDelta],
@@ -75,6 +76,7 @@ function fitCircleBounds(map, centerLatLng, radiusMeters, duration = 850) {
 
 function focusPoint(map, coordinates, zoom = 13.5) {
   if (!Array.isArray(coordinates) || coordinates.length !== 2) return;
+  map.stop();
   map.easeTo({
     center: coordinates,
     zoom: Math.max(map.getZoom(), zoom),
@@ -568,8 +570,6 @@ export default function MapGL({
   const bindMapInteractions = useCallback(() => {
     const map = mapInstanceRef.current;
     if (!map) return;
-    const selectHandler = mapDataRef.current.onSelect;
-    const mapTapHandler = mapDataRef.current.onMapTap;
 
     const onMoveRegion = (event) => {
       const feature = event?.features?.[0];
@@ -600,7 +600,7 @@ export default function MapGL({
       setFeatureState("region-areas", feature.id, "selected", true);
       pendingRegionFocusRef.current = String(feature.id);
       focusRegionById(feature.id);
-      selectHandler?.({ type: "region", id: feature.id });
+      mapDataRef.current.onSelect?.({ type: "region", id: feature.id });
     };
 
     const onMoveFarmer = (event) => {
@@ -626,7 +626,7 @@ export default function MapGL({
       const feature = event?.features?.[0];
       if (!feature) return;
       focusPoint(map, feature.geometry?.coordinates, 13.8);
-      selectHandler?.({ type: "farmer", id: feature.properties.id });
+      mapDataRef.current.onSelect?.({ type: "farmer", id: feature.properties.id });
     };
 
     const onMovePoint = (event) => {
@@ -652,14 +652,14 @@ export default function MapGL({
       const feature = event?.features?.[0];
       if (!feature) return;
       focusPoint(map, feature.geometry?.coordinates, 14.2);
-      selectHandler?.({ type: "point", id: feature.properties.id });
+      mapDataRef.current.onSelect?.({ type: "point", id: feature.properties.id });
     };
 
     const onMapClick = (event) => {
       const features = map.queryRenderedFeatures(event.point, {
         layers: ["region-fill", "farmer-circle", "point-circle"]
       });
-      if (!features?.length) mapTapHandler?.();
+      if (!features?.length) mapDataRef.current.onMapTap?.();
     };
 
     map.off("mousemove", "region-fill", onMoveRegion);
@@ -791,7 +791,7 @@ export default function MapGL({
     }
 
     const map = mapInstanceRef.current;
-    if (!map?.isStyleLoaded()) return;
+    if (!map) return;
     focusRegionById(nextRegionId);
   }, [focusRegionById, regionAreaGeoJSON, selectedRegionId, setFeatureState]);
 

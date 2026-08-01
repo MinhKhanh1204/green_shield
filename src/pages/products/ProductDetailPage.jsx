@@ -22,6 +22,7 @@ import {
   localizedList,
   saleModeKey,
 } from './productView'
+import { useSeo } from '../../components/Seo'
 import './products.css'
 
 function DetailList({ title, items }) {
@@ -67,20 +68,40 @@ export default function ProductDetailPage() {
   const images = useMemo(() => (product?.images || []).slice(0, 5), [product])
   const activeImage = images[activeIndex] || null
   const name = localized(product, 'name', english)
-
-  useEffect(() => {
-    if (!product) return undefined
-    const previousTitle = document.title
-    document.title = `${name} | GreenShield Mekong`
-    let meta = document.querySelector('meta[name="description"]')
-    if (!meta) {
-      meta = document.createElement('meta')
-      meta.name = 'description'
-      document.head.appendChild(meta)
+  const shortDescription = localized(product, 'shortDescription', english)
+  const productSchema = useMemo(() => {
+    if (!product) return null
+    const price = Number(product.domesticUnitPrice)
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name,
+      description: shortDescription,
+      sku: product.slug,
+      image: images.map((image) => imageUrl(image)),
+      brand: { '@type': 'Brand', name: 'GreenShield Mekong' },
+      offers: price > 0 ? {
+        '@type': 'Offer',
+        priceCurrency: 'VND',
+        price,
+        availability: 'https://schema.org/InStock',
+        url: `https://greenshieldmekong.com/products/${product.slug}`
+      } : undefined
     }
-    meta.content = localized(product, 'shortDescription', english)
-    return () => { document.title = previousTitle }
-  }, [english, name, product])
+  }, [images, name, product, shortDescription])
+
+  useSeo({
+    title: product ? `${name} | GreenShield Mekong` : 'Product | GreenShield Mekong',
+    description: product
+      ? (shortDescription || 'GreenShield Mekong bio-based product.')
+      : 'GreenShield Mekong product details.',
+    path: `/products/${slug}`,
+    image: activeImage ? imageUrl(activeImage) : undefined,
+    type: 'product',
+    robots: status === 'ready' ? 'index, follow' : 'noindex, nofollow',
+    locale: english ? 'en' : 'vi',
+    structuredData: productSchema
+  })
 
   useEffect(() => {
     if (!lightboxOpen) return undefined

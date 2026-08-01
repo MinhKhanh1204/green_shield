@@ -4,6 +4,7 @@ import { Link, useLocation } from 'react-router-dom'
 import LanguageToggle from './LanguageToggle'
 import { useTranslation } from 'react-i18next'
 import useActiveSection from '../hooks/useActiveSection'
+import { scrollToHomeSection } from '../utils/homeNavigation'
 
 const links = [
   { id: 'about', labelKey: 'nav.about' },
@@ -77,11 +78,8 @@ function Nav() {
   }, [open])
 
   const smoothScrollTo = useCallback((targetId) => {
-    const el = document.getElementById(targetId)
-    if (!el) return
-    el.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
+    if (!scrollToHomeSection(targetId)) return
     setActiveId(targetId)
-    if (history?.replaceState) history.replaceState(null, '', `#${targetId}`)
   }, [])
 
   const renderLink = useCallback((l) => {
