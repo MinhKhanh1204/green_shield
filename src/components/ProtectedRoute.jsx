@@ -9,7 +9,19 @@ export default function ProtectedRoute({ children }) {
   const location = useLocation();
 
   useEffect(() => {
-    checkAuth().then(setAuth);
+    let active = true;
+
+    checkAuth()
+      .then((authenticated) => {
+        if (active) setAuth(authenticated);
+      })
+      .catch(() => {
+        if (active) setAuth(false);
+      });
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   if (auth === null) {

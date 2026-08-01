@@ -14,10 +14,21 @@ export default function LoginPage() {
   const from = location.state?.from?.pathname || '/admin/dashboard/textures';
 
   useEffect(() => {
-    checkAuth().then((ok) => {
-      setChecking(false);
-      if (ok) navigate(from, { replace: true });
-    });
+    let active = true;
+
+    checkAuth()
+      .then((ok) => {
+        if (!active) return;
+        setChecking(false);
+        if (ok) navigate(from, { replace: true });
+      })
+      .catch(() => {
+        if (active) setChecking(false);
+      });
+
+    return () => {
+      active = false;
+    };
   }, [navigate, from]);
 
   if (checking) {

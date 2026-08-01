@@ -31,11 +31,12 @@ export function imageAlt(image, english, fallback = '') {
 
 export function formatMoney(value, english = false) {
   if (value === null || value === undefined || value === '') return ''
-  return new Intl.NumberFormat(english ? 'en-US' : 'vi-VN', {
-    style: 'currency',
-    currency: 'VND',
+  const amount = Number(value)
+  if (!Number.isFinite(amount)) return ''
+  const formattedAmount = amount.toLocaleString(english ? 'en-US' : 'vi-VN', {
     maximumFractionDigits: 0,
-  }).format(Number(value))
+  })
+  return `${formattedAmount} ${english ? 'VND' : '₫'}`
 }
 
 export function saleModeKey(value) {

@@ -101,9 +101,29 @@ function ProductImageManager({ product, onChanged }) {
     }
   }
 
+  const removeImage = async (image) => {
+    try {
+      await deleteProductImage(product.id, image.id)
+      message.success('Đã xóa ảnh sản phẩm')
+      await onChanged()
+    } catch (error) {
+      message.error(error.message)
+    }
+  }
+
+  const makeMainImage = async (image) => {
+    try {
+      await setMainProductImage(product.id, image.id)
+      message.success('Đã đặt ảnh chính')
+      await onChanged()
+    } catch (error) {
+      message.error(error.message)
+    }
+  }
+
   return (
     <div className="product-image-manager">
-      <Upload.Dragger accept="image/jpeg,image/png,image/webp" multiple maxCount={8} beforeUpload={() => false} onChange={upload} showUploadList={false} disabled={uploading || images.length >= 8}>
+      <Upload.Dragger accept="image/jpeg,image/png,image/webp" multiple maxCount={Math.max(1, 8 - images.length)} fileList={[]} beforeUpload={() => false} onChange={upload} showUploadList={false} disabled={uploading || images.length >= 8}>
         <p className="ant-upload-drag-icon"><UploadOutlined /></p>
         <p>{uploading ? 'Đang tải ảnh...' : 'Kéo ảnh vào đây hoặc nhấn để chọn (tối đa 8 ảnh)'}</p>
       </Upload.Dragger>
@@ -122,8 +142,8 @@ function ProductImageManager({ product, onChanged }) {
                 <Button htmlType="submit" size="small">Lưu mô tả</Button>
                 <Button size="small" icon={<ArrowUpOutlined />} disabled={index === 0} onClick={() => move(index, -1)} />
                 <Button size="small" icon={<ArrowDownOutlined />} disabled={index === images.length - 1} onClick={() => move(index, 1)} />
-                <Button size="small" icon={image.mainImage ? <StarFilled /> : <StarOutlined />} disabled={image.mainImage} onClick={async () => { await setMainProductImage(product.id, image.id); await onChanged() }}>Ảnh chính</Button>
-                <Popconfirm title="Xóa ảnh này?" onConfirm={async () => { await deleteProductImage(product.id, image.id); await onChanged() }}><Button danger size="small" icon={<DeleteOutlined />}>Xóa</Button></Popconfirm>
+                <Button size="small" icon={image.mainImage ? <StarFilled /> : <StarOutlined />} disabled={image.mainImage} onClick={() => makeMainImage(image)}>Ảnh chính</Button>
+                <Popconfirm title="Xóa ảnh này?" okText="Xóa" cancelText="Hủy" onConfirm={() => removeImage(image)}><Button danger size="small" icon={<DeleteOutlined />}>Xóa</Button></Popconfirm>
               </Space>
             </Form>
           </div>
@@ -140,6 +160,7 @@ export default function ProductManagementPage() {
   const [saving, setSaving] = useState(false)
   const [editing, setEditing] = useState(null)
   const [modalOpen, setModalOpen] = useState(false)
+  const [actionKey, setActionKey] = useState(null)
 
   const loadProducts = useCallback(async () => {
     setLoading(true)
@@ -171,6 +192,31 @@ export default function ProductManagementPage() {
     if (refreshed) setEditing(refreshed)
   }
 
+  const runProductAction = async (key, action, successMessage) => {
+    setActionKey(key)
+    try {
+      await action()
+      if (successMessage) message.success(successMessage)
+      await loadProducts()
+    } catch (error) {
+      message.error(error.message)
+    } finally {
+      setActionKey(null)
+    }
+  }
+
+  const handleDelete = (product) => runProductAction(
+    `delete-${product.id}`,
+    async () => {
+      await deleteProduct(product.id)
+      if (editing?.id === product.id) {
+        setEditing(null)
+        setModalOpen(false)
+      }
+    },
+    'Đã xóa sản phẩm',
+  )
+
   const save = async () => {
     try {
       const values = await form.validateFields()
@@ -192,10 +238,10 @@ export default function ProductManagementPage() {
     { title: 'Danh mục', dataIndex: 'category', width: 130, render: (value) => <Tag>{value}</Tag> },
     { title: 'Giá nội địa', dataIndex: 'domesticUnitPrice', width: 140, render: (value) => `${Number(value).toLocaleString('vi-VN')} đ` },
     { title: 'Hình thức bán', dataIndex: 'saleMode', width: 160 },
-    { title: 'Hiển thị', dataIndex: 'active', width: 100, render: (active, product) => <Switch checked={active} onChange={async (checked) => { await updateProductStatus(product.id, checked); await loadProducts() }} /> },
-    { title: 'Nổi bật', dataIndex: 'featured', width: 100, render: (featured, product) => <Switch checked={featured} onChange={async (checked) => { await updateProductFeatured(product.id, checked); await loadProducts() }} /> },
+    { title: 'Hiển thị', dataIndex: 'active', width: 100, render: (active, product) => <Switch checked={active} loading={actionKey === `status-${product.id}`} onChange={(checked) => runProductAction(`status-${product.id}`, () => updateProductStatus(product.id, checked), checked ? 'Đã bật sản phẩm' : 'Đã tắt sản phẩm')} /> },
+    { title: 'Nổi bật', dataIndex: 'featured', width: 100, render: (featured, product) => <Switch checked={featured} loading={actionKey === `featured-${product.id}`} onChange={(checked) => runProductAction(`featured-${product.id}`, () => updateProductFeatured(product.id, checked), checked ? 'Đã đánh dấu nổi bật' : 'Đã bỏ nổi bật')} /> },
     { title: 'Thứ tự', dataIndex: 'displayOrder', width: 80 },
-    { title: 'Thao tác', key: 'actions', fixed: 'right', width: 190, render: (_, product) => <Space><Button icon={<EyeOutlined />} href={`/products/${product.slug}`} target="_blank" /><Button icon={<EditOutlined />} onClick={() => openEditor(product)} /><Popconfirm title="Xóa sản phẩm và toàn bộ ảnh?" onConfirm={async () => { await deleteProduct(product.id); await loadProducts() }}><Button danger icon={<DeleteOutlined />} /></Popconfirm></Space> },
+    { title: 'Thao tác', key: 'actions', fixed: 'right', width: 190, render: (_, product) => <Space><Button icon={<EyeOutlined />} href={`/products/${product.slug}`} target="_blank" /><Button icon={<EditOutlined />} onClick={() => openEditor(product)} /><Popconfirm title="Xóa sản phẩm và toàn bộ ảnh?" okText="Xóa" cancelText="Hủy" onConfirm={() => handleDelete(product)}><Button danger loading={actionKey === `delete-${product.id}`} icon={<DeleteOutlined />} /></Popconfirm></Space> },
   ]
 
   return (

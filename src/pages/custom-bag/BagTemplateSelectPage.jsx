@@ -166,7 +166,7 @@ export default function BagTemplateSelectPage() {
 
                       <div className="market-card-footer">
                         <span className="price">
-                          {Number(template.basePrice).toLocaleString(i18n.language.startsWith('en') ? 'en-US' : 'vi-VN')} ₫
+                          {Number(template.basePrice).toLocaleString(i18n.language.startsWith('en') ? 'en-US' : 'vi-VN')} {i18n.language.startsWith('en') ? 'VND' : '₫'}
                         </span>
                         <span className="tag">{t('customBag.template.customizable')}</span>
                       </div>
