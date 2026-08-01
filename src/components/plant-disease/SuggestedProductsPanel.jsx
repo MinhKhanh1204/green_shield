@@ -5,7 +5,8 @@ import styles from '../../pages/plant-disease/PlantDiseasePage.module.css'
 const formatPrice = (value, language, fallback) => {
   const price = Number(value)
   if (!Number.isFinite(price) || price <= 0) return fallback
-  return `${price.toLocaleString(language.startsWith('en') ? 'en-US' : 'vi-VN')} VND`
+  const english = language.startsWith('en')
+  return `${price.toLocaleString(english ? 'en-US' : 'vi-VN')} ${english ? 'VND' : '₫'}`
 }
 
 export default function SuggestedProductsPanel({ products }) {

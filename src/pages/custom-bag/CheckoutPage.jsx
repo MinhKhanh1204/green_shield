@@ -156,7 +156,7 @@ export default function CheckoutPage() {
               </p>
               <ul>
                 <li>{t('customBag.checkout.name')}: <strong>{template.name}</strong></li>
-                <li>{t('customBag.checkout.price')}: <strong>{unitPrice.toLocaleString(i18n.language.startsWith('en') ? 'en-US' : 'vi-VN')} ₫ {t('customBag.checkout.perBag')}</strong></li>
+                <li>{t('customBag.checkout.price')}: <strong>{unitPrice.toLocaleString(i18n.language.startsWith('en') ? 'en-US' : 'vi-VN')} {i18n.language.startsWith('en') ? 'VND' : '₫'} {t('customBag.checkout.perBag')}</strong></li>
               </ul>
             </div>
 
@@ -186,7 +186,7 @@ export default function CheckoutPage() {
               {/* Subtotal row */}
               <div className="co-subtotal-row">
                 <span className="co-subtotal-label">{t('customBag.checkout.subtotal')}</span>
-                <span className="co-subtotal-price">{subtotal.toLocaleString(i18n.language.startsWith('en') ? 'en-US' : 'vi-VN')} ₫</span>
+                <span className="co-subtotal-price">{subtotal.toLocaleString(i18n.language.startsWith('en') ? 'en-US' : 'vi-VN')} {i18n.language.startsWith('en') ? 'VND' : '₫'}</span>
               </div>
 
               <div className="co-qty-row">
