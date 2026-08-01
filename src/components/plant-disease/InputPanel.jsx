@@ -1,12 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Camera, ImagePlus, LoaderCircle, RefreshCw, ScanSearch, Trash2, UploadCloud, Video } from 'lucide-react'
 import { validatePlantMedia } from '../../services/plantDiseaseApi'
 import styles from '../../pages/plant-disease/PlantDiseasePage.module.css'
+import { translatePlantDiseaseError } from '../../pages/plant-disease/plantDiseaseI18n'
 
 const ACCEPTED_IMAGE_TYPES = 'image/jpeg,image/png,image/webp'
 const ACCEPTED_VIDEO_TYPES = 'video/mp4,video/webm,video/quicktime'
 
 export default function InputPanel({ isAnalyzing, onAnalyze, onClearAnalysis }) {
+  const { t } = useTranslation()
   const [mode, setMode] = useState('image')
   const [selectedFile, setSelectedFile] = useState(null)
   const [previewUrl, setPreviewUrl] = useState('')
@@ -51,10 +54,10 @@ export default function InputPanel({ isAnalyzing, onAnalyze, onClearAnalysis }) 
         if (currentUrl.startsWith('blob:')) URL.revokeObjectURL(currentUrl)
         return ''
       })
-      setInputError(error.message)
+      setInputError(translatePlantDiseaseError(error, t))
       onClearAnalysis()
     }
-  }, [mode, onClearAnalysis])
+  }, [mode, onClearAnalysis, t])
 
   const startCamera = useCallback(async () => {
     stopCamera()
@@ -62,7 +65,7 @@ export default function InputPanel({ isAnalyzing, onAnalyze, onClearAnalysis }) 
 
     if (!navigator.mediaDevices?.getUserMedia) {
       setCameraState('error')
-      setInputError('Camera access is not supported in this browser.')
+      setInputError(t('plantDisease.errors.cameraUnsupported'))
       return
     }
 
@@ -82,9 +85,9 @@ export default function InputPanel({ isAnalyzing, onAnalyze, onClearAnalysis }) 
     } catch {
       stopCamera()
       setCameraState('error')
-      setInputError('Camera permission was denied or no camera is available.')
+      setInputError(t('plantDisease.errors.cameraDenied'))
     }
-  }, [stopCamera])
+  }, [stopCamera, t])
 
   useEffect(() => {
     if (mode === 'camera' && !previewUrl) startCamera()
@@ -113,7 +116,7 @@ export default function InputPanel({ isAnalyzing, onAnalyze, onClearAnalysis }) 
 
     canvas.toBlob((blob) => {
       if (!blob) {
-        setInputError('The camera image could not be captured.')
+        setInputError(t('plantDisease.errors.captureFailed'))
         return
       }
 
@@ -132,13 +135,13 @@ export default function InputPanel({ isAnalyzing, onAnalyze, onClearAnalysis }) 
     <section className={styles.panel} aria-labelledby="plant-disease-input-title">
       <div className={styles.panelHeading}>
         <div>
-          <span className={styles.eyebrow}>Input</span>
-          <h2 id="plant-disease-input-title">Leaf media</h2>
+          <span className={styles.eyebrow}>{t('plantDisease.input')}</span>
+          <h2 id="plant-disease-input-title">{t('plantDisease.leafMedia')}</h2>
         </div>
         <span className={styles.stepBadge}>01</span>
       </div>
 
-      <div className={styles.modeTabs} role="tablist" aria-label="Leaf media source">
+      <div className={styles.modeTabs} role="tablist" aria-label={t('plantDisease.mediaSource')}>
         <button
           type="button"
           className={mode === 'image' ? styles.activeTab : styles.modeTab}
@@ -146,7 +149,7 @@ export default function InputPanel({ isAnalyzing, onAnalyze, onClearAnalysis }) 
           role="tab"
           aria-selected={mode === 'image'}
         >
-          <ImagePlus size={17} /> Image
+          <ImagePlus size={17} /> {t('plantDisease.image')}
         </button>
         <button
           type="button"
@@ -155,7 +158,7 @@ export default function InputPanel({ isAnalyzing, onAnalyze, onClearAnalysis }) 
           role="tab"
           aria-selected={mode === 'video'}
         >
-          <Video size={17} /> Video
+          <Video size={17} /> {t('plantDisease.video')}
         </button>
         <button
           type="button"
@@ -164,7 +167,7 @@ export default function InputPanel({ isAnalyzing, onAnalyze, onClearAnalysis }) 
           role="tab"
           aria-selected={mode === 'camera'}
         >
-          <Camera size={17} /> Camera
+          <Camera size={17} /> {t('plantDisease.camera')}
         </button>
       </div>
 
@@ -182,11 +185,9 @@ export default function InputPanel({ isAnalyzing, onAnalyze, onClearAnalysis }) 
           onDrop={handleDrop}
         >
           <span className={styles.uploadIcon}><UploadCloud size={30} /></span>
-          <strong>Drop a clear leaf {mode} here</strong>
+          <strong>{t(mode === 'video' ? 'plantDisease.dropVideo' : 'plantDisease.dropImage')}</strong>
           <span>
-            {mode === 'video'
-              ? 'or click to browse MP4, WebM or MOV up to 50 MB'
-              : 'or click to browse JPG, PNG or WebP up to 10 MB'}
+            {t(mode === 'video' ? 'plantDisease.browseVideo' : 'plantDisease.browseImage')}
           </span>
         </button>
       ) : null}
@@ -203,16 +204,16 @@ export default function InputPanel({ isAnalyzing, onAnalyze, onClearAnalysis }) 
         <div className={styles.cameraStage}>
           <video ref={videoRef} className={styles.cameraVideo} muted playsInline />
           {cameraState === 'loading' ? (
-            <div className={styles.cameraOverlay}><LoaderCircle className={styles.spin} /> Opening camera...</div>
+            <div className={styles.cameraOverlay}><LoaderCircle className={styles.spin} /> {t('plantDisease.openingCamera')}</div>
           ) : null}
           {cameraState === 'error' ? (
             <button type="button" className={styles.secondaryButton} onClick={startCamera}>
-              <RefreshCw size={16} /> Retry camera
+              <RefreshCw size={16} /> {t('plantDisease.retryCamera')}
             </button>
           ) : null}
           {cameraState === 'ready' ? (
             <button type="button" className={styles.captureButton} onClick={captureImage}>
-              <Camera size={19} /> Capture leaf
+              <Camera size={19} /> {t('plantDisease.captureLeaf')}
             </button>
           ) : null}
         </div>
@@ -221,16 +222,16 @@ export default function InputPanel({ isAnalyzing, onAnalyze, onClearAnalysis }) 
       {previewUrl ? (
         <div className={styles.previewCard}>
           {selectedFile?.type.startsWith('video/') ? (
-            <video src={previewUrl} controls playsInline aria-label="Selected leaf video preview" />
+            <video src={previewUrl} controls playsInline aria-label={t('plantDisease.selectedVideoPreview')} />
           ) : (
-            <img src={previewUrl} alt="Selected leaf preview" />
+            <img src={previewUrl} alt={t('plantDisease.selectedImagePreview')} />
           )}
           <div className={styles.previewMeta}>
             <div>
               <strong>{selectedFile?.name}</strong>
               <span>{selectedFile ? `${(selectedFile.size / 1024 / 1024).toFixed(2)} MB` : ''}</span>
             </div>
-            <button type="button" className={styles.iconButton} onClick={clearSelection} aria-label="Remove selected media">
+            <button type="button" className={styles.iconButton} onClick={clearSelection} aria-label={t('plantDisease.removeSelectedMedia')}>
               <Trash2 size={18} />
             </button>
           </div>
@@ -246,7 +247,7 @@ export default function InputPanel({ isAnalyzing, onAnalyze, onClearAnalysis }) 
         onClick={() => onAnalyze(selectedFile)}
       >
         {isAnalyzing ? <LoaderCircle className={styles.spin} size={19} /> : <ScanSearch size={19} />}
-        {isAnalyzing ? 'Analyzing leaf...' : 'Analyze leaf'}
+        {isAnalyzing ? t('plantDisease.analyzingLeaf') : t('plantDisease.analyzeLeaf')}
       </button>
     </section>
   )

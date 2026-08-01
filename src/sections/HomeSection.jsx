@@ -4,17 +4,14 @@ import { useTranslation } from 'react-i18next'
 import { motion as Motion } from 'framer-motion'
 import SplitText from '../components/SplitText'
 import { AuroraText } from '../components/ui/aurora-text'
+import { scrollToHomeSection } from '../utils/homeNavigation'
 
 function HomeSection() {
   const { t } = useTranslation()
 
   const handleSmoothAnchor = useCallback((event, targetId) => {
     event.preventDefault()
-    const target = document.getElementById(targetId)
-    if (!target) return
-
-    target.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
-    if (history?.replaceState) history.replaceState(null, '', `#${targetId}`)
+    scrollToHomeSection(targetId)
   }, [])
 
   return (
@@ -24,7 +21,7 @@ function HomeSection() {
       </div>
 
       <div className="banner-content">
-        <div className="banner-title-group">
+        <h1 className="banner-title-group">
           <AuroraText className="banner-title highlight">{t('home.key-title')}</AuroraText>
           <SplitText
             key={t('home.title')}
@@ -33,7 +30,7 @@ function HomeSection() {
             text={t('home.title')}
             type="words"
           />
-        </div>
+        </h1>
 
         <SplitText
           key={t('home.subtitle')}

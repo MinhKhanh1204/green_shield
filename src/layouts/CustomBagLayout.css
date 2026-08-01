@@ -3,6 +3,8 @@
   background: var(--color-bg);
 }
 
+.custom-bag-layout--with-nav { padding-top: 88px; }
+
 .custom-bag-header {
   display: flex;
   align-items: center;

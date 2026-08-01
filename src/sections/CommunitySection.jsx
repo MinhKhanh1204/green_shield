@@ -1,9 +1,4 @@
 import React, { memo, useMemo } from 'react'
-import '@fontsource/inter/400.css'
-import '@fontsource/inter/500.css'
-import '@fontsource/inter/600.css'
-import '@fontsource/inter/700.css'
-import '@fontsource/inter/800.css'
 import { useTranslation } from 'react-i18next'
 import { ArrowUpRight } from 'lucide-react'
 import communityEnvironmentImage from '../assets/card1-community.png'
@@ -15,7 +10,7 @@ import './CommunitySection.css'
 function CommunitySection() {
   const { t } = useTranslation()
 
-  const cards = [
+  const cards = useMemo(() => [
     {
       key: 'environment',
       image: communityEnvironmentImage,
@@ -40,7 +35,7 @@ function CommunitySection() {
       excerpt: t('community.cards.governance.excerpt'),
       full: t('community.cards.governance.full')
     }
-  ]
+  ], [t])
 
   const marqueeItems = useMemo(
     () => cards.map((card) => card.title),

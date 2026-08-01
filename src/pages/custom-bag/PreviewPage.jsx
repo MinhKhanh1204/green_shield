@@ -1,15 +1,18 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { message } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 import { getBagTemplate } from '../../services/bagTemplate';
 import DesignPreviewCanvas from '../../components/DesignPreviewCanvas';
 import { InteractiveGridPattern } from '@/components/ui/interactive-grid-pattern';
+import LanguageToggle from '../../components/LanguageToggle';
 
 // ❌ KHÔNG import PreviewPage.css nữa
 // import './PreviewPage.css';
 
 export default function PreviewPage() {
+  const { t } = useTranslation();
   const { templateId } = useParams();
   const { state } = useLocation();
   const navigate = useNavigate();
@@ -22,18 +25,18 @@ export default function PreviewPage() {
 
   useEffect(() => {
     if (!designSnapshot) {
-      message.error('Thiếu thông tin thiết kế');
+      message.error(t('customBag.preview.missingDesign'));
       navigate(`/custom-bag/${templateId}/design`);
       return;
     }
 
     getBagTemplate(templateId)
       .then(setTemplate)
-      .catch(() => message.error('Không thể tải mẫu'));
-  }, [templateId, designSnapshot, navigate]);
+      .catch(() => message.error(t('customBag.preview.loadFailed')));
+  }, [templateId, designSnapshot, navigate, t]);
 
   if (!template) {
-    return <div className="design-loading">Đang tải...</div>;
+    return <div className="design-loading">{t('customBag.preview.loading')}</div>;
   }
 
   return (
@@ -71,7 +74,7 @@ export default function PreviewPage() {
               <div className="design-name">{template.name}</div>
               <div className="design-status">
                 <span className="dot" />
-                Đã lưu
+                {t('customBag.preview.saved')}
               </div>
             </div>
           </div>
@@ -79,11 +82,12 @@ export default function PreviewPage() {
           <div className="topbar-center">
             <div className="design-badge">
               <span className="material-symbols-rounded">visibility</span>
-              <span>Preview</span>
+              <span>{t('customBag.preview.preview')}</span>
             </div>
           </div>
 
           <div className="topbar-right">
+            <LanguageToggle />
             <button
               className="btn-ghost"
               onClick={() =>
@@ -92,7 +96,7 @@ export default function PreviewPage() {
                 })
               }
             >
-              Quay lại
+              {t('customBag.preview.back')}
             </button>
 
             <button
@@ -103,7 +107,7 @@ export default function PreviewPage() {
                 })
               }
             >
-              Đặt hàng →
+              {t('customBag.preview.placeOrder')}
             </button>
           </div>
         </header>
@@ -199,7 +203,7 @@ export default function PreviewPage() {
                 fontSize: 13,
               }}
             >
-              {activeSide === 'front' ? 'Mặt trước' : 'Mặt sau'}
+              {activeSide === 'front' ? t('customBag.preview.front') : t('customBag.preview.backSide')}
             </div>
           </div>
 
@@ -231,7 +235,7 @@ export default function PreviewPage() {
                   marginBottom: 8,
                 }}
               >
-                Chọn mặt
+                {t('customBag.preview.chooseSide')}
               </div>
 
               {/* FRONT */}
@@ -254,7 +258,7 @@ export default function PreviewPage() {
                   src={template.frontImageUrl}
                   style={{ width: '100%', borderRadius: 6 }}
                 />
-                <div style={{ fontSize: 11 }}>Mặt trước</div>
+                <div style={{ fontSize: 11 }}>{t('customBag.preview.front')}</div>
               </button>
 
               {/* BACK */}
@@ -276,7 +280,7 @@ export default function PreviewPage() {
                   src={template.backImageUrl}
                   style={{ width: '100%', borderRadius: 6 }}
                 />
-                <div style={{ fontSize: 11 }}>Mặt sau</div>
+                <div style={{ fontSize: 11 }}>{t('customBag.preview.backSide')}</div>
               </button>
             </div>
           </div>

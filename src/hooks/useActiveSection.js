@@ -20,7 +20,9 @@ export default function useActiveSection(selector = '.section', options = {}) {
 
     const root = options.root ?? document.querySelector('.app-scroll') ?? null
     const threshold = options.threshold ?? DEFAULT_THRESHOLDS
-    const ratios = new Map(elems.map((el) => [el.id, 0]))
+    // Key by element rather than id so a stale duplicate id cannot overwrite
+    // another section's visibility state while the home page is settling.
+    const ratios = new Map(elems.map((el) => [el, 0]))
     let rafId = 0
 
     const queuePick = () => {
@@ -36,7 +38,7 @@ export default function useActiveSection(selector = '.section', options = {}) {
       const anchorTop = rootRect ? rootRect.top + headerOffset : headerOffset
 
       elems.forEach((el) => {
-        const ratio = ratios.get(el.id) ?? 0
+        const ratio = ratios.get(el) ?? 0
         if (ratio <= 0) {
           el.classList.remove('active')
           return
@@ -68,10 +70,9 @@ export default function useActiveSection(selector = '.section', options = {}) {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         const el = entry.target
-        const id = el.id
-        if (!id) return
+        if (!el.id) return
 
-        ratios.set(id, entry.isIntersecting ? entry.intersectionRatio : 0)
+        ratios.set(el, entry.isIntersecting ? entry.intersectionRatio : 0)
 
         if (entry.isIntersecting) {
           const children = el.querySelectorAll('.fade-up')

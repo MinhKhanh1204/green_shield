@@ -129,9 +129,10 @@ export default function MapPage() {
     const nextZoneId = zoneId || "";
     setSelectedZoneId(nextZoneId);
     setSelectedItem(nextZoneId ? { type: "region", id: nextZoneId } : null);
-    if (isMobile && nextZoneId) {
-      setActivePanel("detail");
-      setSheetState("half");
+    if (isMobile) {
+      setFilterCollapsed(true);
+      setActivePanel(nextZoneId ? "detail" : "none");
+      setSheetState(nextZoneId ? "half" : "collapsed");
     }
   }, [isMobile]);
 
@@ -198,10 +199,10 @@ export default function MapPage() {
     );
   }
 
-  const showFilter = !isMobile || activePanel === "filter" || !filterCollapsed;
+  const showFilter = isMobile ? activePanel === "filter" : !filterCollapsed;
   const showDetail = !!selectedDetailItem;
   const detailVisible = !!selectedDetailItem && (!isMobile || activePanel === "detail");
-  const showOverview = !isMobile || activePanel !== "detail";
+  const showOverview = !isMobile || activePanel === "none";
 
   return (
     <section className={`map-page ${isMobile ? "mobile-mode" : "desktop-mode"}`}>
@@ -241,6 +242,7 @@ export default function MapPage() {
             points={scopedPoints}
             mapStyle={mapStyle}
             selectedRegionId={selectedZoneId}
+            detailPanelVisible={detailVisible}
             visibility={visibility}
             localeText={{
               mode2D: t("map.mode2D", { defaultValue: "2D" }),

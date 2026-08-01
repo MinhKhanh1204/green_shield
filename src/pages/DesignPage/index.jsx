@@ -270,7 +270,7 @@ export default function DesignPage() {
 
     selectedTextRef.current = obj;
     setTextProps({
-      fontFamily: obj.fontFamily || 'Arial',
+      fontFamily: obj.fontFamily || 'Inter',
       fontSize: obj.fontSize || 24,
       fill: obj.fill || '#000000',
       fontWeight: obj.fontWeight || 'normal',
@@ -423,7 +423,7 @@ export default function DesignPage() {
 
   const addText = () => {
     if (!fabricRef.current) return;
-    const text = new fabric.IText('Nhập văn bản', { left: 150, top: 150, fontFamily: 'Arial' });
+    const text = new fabric.IText('Nhập văn bản', { left: 150, top: 150, fontFamily: 'Inter' });
     fabricRef.current.add(text);
     fabricRef.current.setActiveObject(text);
     fabricRef.current.renderAll();

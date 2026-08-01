@@ -44,7 +44,7 @@ export function usePlantDiseaseAnalysis() {
       if (analysisError?.name === 'AbortError') return null
 
       setResult(null)
-      setError(analysisError?.message || 'Analysis failed. Please try again.')
+      setError(analysisError)
       return null
     } finally {
       if (requestRef.current === controller) {

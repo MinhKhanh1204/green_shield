@@ -25,6 +25,315 @@
     "contact": "Liên hệ",
     "learnMore": "Tìm hiểu thêm"
   },
+  "plantDisease": {
+    "heroKicker": "Trí tuệ sức khỏe cây trồng",
+    "heroTitle": "Hãy xem chiếc lá đang",
+    "heroTitleAccent": "nói gì với bạn.",
+    "heroDescription": "Tải lên ảnh hoặc video rõ nét của chiếc lá để nhận đánh giá bệnh bằng AI, hướng dẫn xử lý và các sản phẩm chăm sóc phù hợp.",
+    "visualDiagnosis": "Chẩn đoán hình ảnh",
+    "input": "Dữ liệu vào",
+    "diagnosis": "Chẩn đoán",
+    "leafMedia": "Tư liệu lá cây",
+    "analysisResult": "Kết quả phân tích",
+    "mediaSource": "Nguồn tư liệu lá cây",
+    "image": "Ảnh",
+    "video": "Video",
+    "camera": "Camera",
+    "dropImage": "Thả ảnh lá cây rõ nét vào đây",
+    "dropVideo": "Thả video lá cây rõ nét vào đây",
+    "browseImage": "hoặc bấm để chọn JPG, PNG, WebP tối đa 10 MB",
+    "browseVideo": "hoặc bấm để chọn MP4, WebM, MOV tối đa 50 MB",
+    "openingCamera": "Đang mở camera...",
+    "retryCamera": "Thử lại camera",
+    "captureLeaf": "Chụp lá cây",
+    "selectedVideoPreview": "Video lá cây đã chọn",
+    "selectedImagePreview": "Ảnh lá cây đã chọn",
+    "removeSelectedMedia": "Xóa tư liệu đã chọn",
+    "analyzingLeaf": "Đang phân tích lá cây...",
+    "analyzeLeaf": "Phân tích lá cây",
+    "successfulAnalyses": "lần phân tích thành công trong phiên này",
+    "awaitingImage": "Đang chờ ảnh lá cây",
+    "readingPatterns": "Đang đọc các dấu hiệu trên lá...",
+    "servicePreparing": "Dịch vụ AI đang chuẩn bị chẩn đoán.",
+    "uploadToBegin": "Tải lên hoặc chụp ảnh rõ nét để bắt đầu.",
+    "analysisUnavailable": "Không thể phân tích",
+    "detectedPlant": "Cây được nhận diện",
+    "unknownPlant": "Cây chưa xác định",
+    "confidence": "Độ tin cậy",
+    "analyzed": "Thời điểm phân tích",
+    "scientificName": "Tên khoa học",
+    "diseaseType": "Loại bệnh",
+    "severity": "Mức độ",
+    "notAvailable": "Chưa có dữ liệu",
+    "observedSymptoms": "Triệu chứng quan sát được",
+    "recommendedTreatment": "Hướng xử lý đề xuất",
+    "recoveryOutlook": "Khả năng phục hồi",
+    "nextStep": "Bước tiếp theo",
+    "suggestedProducts": "Sản phẩm chăm sóc đề xuất",
+    "productDetailsUpdating": "Thông tin sản phẩm đang được cập nhật.",
+    "contactForPrice": "Liên hệ để biết giá",
+    "recommended": "Đề xuất",
+    "suggestedProduct": "Sản phẩm đề xuất",
+    "available": "còn hàng",
+    "status": {
+      "diseased": "Phát hiện bệnh",
+      "healthy": "Cây khỏe mạnh",
+      "unknown": "Chưa xác định"
+    },
+    "errors": {
+      "invalidFile": "Vui lòng chọn ảnh hoặc video lá cây trước khi phân tích.",
+      "unsupportedType": "Chỉ hỗ trợ tệp JPG, PNG, WebP, MP4, WebM và MOV.",
+      "imageOnly": "Vui lòng chọn ảnh JPG, PNG hoặc WebP.",
+      "videoOnly": "Vui lòng chọn video MP4, WebM hoặc MOV.",
+      "imageTooLarge": "Ảnh phải nhỏ hơn {{size}} MB.",
+      "videoTooLarge": "Video phải nhỏ hơn {{size}} MB.",
+      "cameraUnsupported": "Trình duyệt này không hỗ trợ truy cập camera.",
+      "cameraDenied": "Quyền camera bị từ chối hoặc không có camera khả dụng.",
+      "captureFailed": "Không thể chụp ảnh từ camera.",
+      "serviceUnavailable": "Không thể kết nối đến dịch vụ phân tích bệnh lá.",
+      "analysisFailed": "Phân tích thất bại. Vui lòng thử lại."
+    }
+  },
+  "customBag": {
+    "template": {
+      "badge": "Thiết kế theo ý bạn",
+      "title": "Chọn mẫu túi để bắt đầu",
+      "subtitle": "Cá nhân hóa từng chiếc túi với hình ảnh, chữ và màu sắc theo phong cách riêng.",
+      "searchPlaceholder": "Tìm mẫu túi...",
+      "emptySearch": "Không tìm thấy \"{{search}}\"",
+      "empty": "Chưa có mẫu túi",
+      "ready": "Sẵn sàng thiết kế",
+      "designNow": "Thiết kế ngay →",
+      "model": "Mẫu #{{id}}",
+      "oneSide": "1 mặt",
+      "twoSides": "2 mặt",
+      "customizable": "Có thể tùy chỉnh",
+      "backAlt": "{{name}} mặt sau"
+    },
+    "editor": {
+      "designEditor": "Trình thiết kế",
+      "liveWorkspace": "Không gian thiết kế trực tiếp",
+      "premiumCanvas": "Canvas cao cấp",
+      "goBack": "Quay lại",
+      "undo": "Hoàn tác",
+      "redo": "Làm lại",
+      "preview": "Xem trước",
+      "order": "Đặt hàng",
+      "toggleTheme": "Đổi giao diện",
+      "tabs": {
+        "text": "Thêm chữ",
+        "image": "Thêm ảnh",
+        "texture": "Texture",
+        "elements": "Elements",
+        "greenAi": "AI Xanh",
+        "greenQr": "QR Xanh"
+      },
+      "panels": {
+        "text": "Thêm chữ vào thiết kế",
+        "image": "Thêm ảnh",
+        "texture": "Texture",
+        "elements": "Elements",
+        "greenAi": "AI Xanh",
+        "greenQr": "QR Xanh",
+        "textColor": "Màu chữ",
+        "objectColor": "Màu đối tượng",
+        "borderColor": "Màu viền"
+      },
+      "color": {
+        "selectObject": "Hãy chọn một đối tượng để chỉnh màu.",
+        "quickPalette": "Bảng màu nhanh",
+        "custom": "Chọn màu chi tiết",
+        "borderWidth": "Độ dày viền",
+        "transparent": "Trong suốt",
+        "color": "Màu"
+      },
+      "textHint": "Tạo headline, slogan hoặc tên thương hiệu và chỉnh bằng thanh công cụ nổi trên canvas.",
+      "addText": "Thêm ô văn bản",
+      "textPlaceholder": "Nhập văn bản",
+      "quickPresets": "Preset nhanh",
+      "presets": {
+        "headline": {
+          "title": "TIÊU ĐIỂM",
+          "caption": "Headline lớn cho mặt trước",
+          "text": "TIÊU ĐIỂM"
+        },
+        "signature": {
+          "title": "Green Notes",
+          "caption": "Kiểu chữ mềm và cá nhân",
+          "text": "Green Notes"
+        },
+        "badge": {
+          "title": "Eco Club",
+          "caption": "Cụm chữ ngắn để ghép icon",
+          "text": "Eco Club"
+        }
+      },
+      "textTipsTitle": "Mẹo bố cục chữ",
+      "textTips": [
+        "Preset giúp lên bố cục nhanh như Canva rồi chỉnh tiếp trên canvas.",
+        "Dùng tối đa 2 font để tổng thể gọn và rõ hierarchy.",
+        "Shift + phím mũi tên để dịch nhanh đối tượng 10px."
+      ],
+      "addImage": "Thêm ảnh từ thiết bị",
+      "imageTipsTitle": "Khuyến nghị file ảnh",
+      "imageTips": [
+        "Hỗ trợ PNG, JPG và WebP.",
+        "PNG nền trong phù hợp nhất cho logo hoặc sticker.",
+        "Ảnh sắc nét sẽ cho bản in tốt hơn ảnh chụp màn hình."
+      ],
+      "noTextures": "Chưa có texture nào.",
+      "elementsHint": "Thêm icon nhanh để tạo nhấn nhá hoặc build một badge nhỏ cho thiết kế.",
+      "iconTipsTitle": "Mẹo dùng icon",
+      "iconTips": [
+        "Biểu tượng thêm vào ngay vùng in và có thể đổi màu.",
+        "Nên dùng 1 icon chính kèm một cụm chữ ngắn.",
+        "Giữ số lượng icon vừa phải để mặt túi không bị rối."
+      ],
+      "iconLibrary": "Thư viện biểu tượng",
+      "toolbar": {
+        "textColor": "Màu chữ",
+        "bold": "In đậm",
+        "italic": "In nghiêng",
+        "underline": "Gạch chân",
+        "case": "Kiểu chữ hoa/thường",
+        "align": "Căn lề",
+        "objectColor": "Màu đối tượng",
+        "opacity": "Độ mờ",
+        "border": "Viền",
+        "radius": "Bo góc",
+        "duplicate": "Nhân đôi",
+        "delete": "Xóa",
+        "layers": "Lớp"
+      },
+      "product": {
+        "template": "Mẫu túi",
+        "front": "Mặt trước",
+        "back": "Mặt sau",
+        "frontAlt": "{{name}} mặt trước",
+        "backAlt": "{{name}} mặt sau"
+      },
+      "layers": {
+        "title": "Lớp",
+        "empty": "Chưa có đối tượng.",
+        "bringToFront": "Đưa lên trên cùng",
+        "bringForward": "Đưa lên",
+        "sendBackward": "Đưa xuống",
+        "sendToBack": "Đưa xuống dưới cùng",
+        "toggleVisibility": "Hiện/ẩn",
+        "lock": "Khóa",
+        "unlock": "Mở khóa",
+        "text": "Văn bản",
+        "image": "Hình ảnh",
+        "icon": "Biểu tượng",
+        "shape": "Hình dạng",
+        "object": "Đối tượng"
+      },
+      "context": {
+        "ai": "AI",
+        "lockToggle": "Khóa / Mở khóa",
+        "more": "Thêm tùy chọn",
+        "selectLayer": "Chọn lớp",
+        "alignCenter": "Căn giữa ngang",
+        "alignMiddle": "Căn giữa dọc",
+        "alignLeftGroup": "Canh trái nhóm",
+        "alignCenterGroup": "Canh giữa nhóm",
+        "distributeHorizontal": "Giãn đều ngang"
+      },
+      "status": {
+        "loadingTemplate": "Đang tải studio thiết kế...",
+        "evenSpacing": "Khoảng cách đều • {{pixels}}px",
+        "centerHorizontal": "Căn giữa: đối tượng đang gần tâm ngang.",
+        "centerVertical": "Căn giữa: đối tượng đang gần tâm dọc.",
+        "center": "Căn giữa",
+        "alignEdge": "Căn theo cạnh"
+      },
+      "ai": {
+        "imageTitle": "AI tạo ảnh",
+        "imageSubtitle": "Mô hình tạo ảnh",
+        "imageHint": "Nhập mô tả ảnh, AI sẽ tạo ảnh cho bạn (tối đa 20 ảnh/ngày toàn hệ thống).",
+        "imagePlaceholder": "VD: Một bông hoa sen màu hồng trên nền xanh lá",
+        "generatingImage": "Đang tạo ảnh...",
+        "generateImage": "Tạo ảnh bằng AI",
+        "generatedAlt": "Ảnh AI đã tạo",
+        "generatedHint": "Thiết kế AI đã được tự động gắn vào vùng in trên túi và lưu vào lịch sử.",
+        "savedTitle": "Thiết kế đã lưu (chọn để thêm vào vùng in)",
+        "delete": "Xóa",
+        "qrTitle": "AI mã QR",
+        "qrSubtitle": "Âm thanh thông minh",
+        "qrDescription": "Tạo mã QR âm thanh theo 2 cách: (1) Văn bản → hệ thống đọc (TTS), (2) Tải tệp âm thanh lên (≤ 5MB).",
+        "contentType": "Loại nội dung",
+        "tts": "Văn bản (TTS)",
+        "audio": "Tải âm thanh lên (≤ 5MB)",
+        "audioPlaceholder": "VD: Lời chúc sinh nhật, câu trích dẫn yêu thích...",
+        "chooseAudio": "Chọn tệp âm thanh",
+        "selected": "Đã chọn:",
+        "orRecord": "Hoặc ghi âm",
+        "startRecording": "Bắt đầu ghi âm",
+        "stopRecording": "Dừng ghi âm",
+        "recording": "Bản ghi:",
+        "clear": "Xóa",
+        "qrColor": "Màu QR",
+        "qrWaveHint": "QR được thiết kế với nhịp sóng ở giữa để gợi cảm giác âm thanh.",
+        "generatingQr": "Đang tạo QR...",
+        "generateQr": "Tạo QR âm thanh",
+        "demoTitle": "AI Demo",
+        "demoSubtitle": "Ví dụ tích hợp",
+        "runAi": "Chạy AI"
+      }
+    },
+    "preview": {
+      "missingDesign": "Thiếu thông tin thiết kế",
+      "loadFailed": "Không thể tải mẫu túi",
+      "loading": "Đang tải...",
+      "saved": "Đã lưu",
+      "preview": "Xem trước",
+      "back": "Quay lại",
+      "placeOrder": "Đặt hàng →",
+      "front": "Mặt trước",
+      "backSide": "Mặt sau",
+      "chooseSide": "Chọn mặt"
+    },
+    "checkout": {
+      "missingDesign": "Thiếu thông tin thiết kế",
+      "loadFailed": "Không thể tải mẫu túi",
+      "orderFailed": "Đặt hàng thất bại. Vui lòng thử lại.",
+      "loading": "Đang tải...",
+      "back": "Quay lại",
+      "saved": "Đã lưu",
+      "design": "Thiết kế",
+      "order": "Đặt hàng",
+      "home": "Về trang chủ",
+      "reviewTitle": "Kiểm tra trước khi đặt hàng",
+      "reviewSubtitle": "Xem lại thiết kế của bạn trước khi tiếp tục.",
+      "checklistTitle": "Lưu ý kiểm tra:",
+      "checkName": "Kiểm tra tên, ngày, địa chỉ chính xác",
+      "checkVisibility": "Đảm bảo các thành phần hiển thị rõ ràng",
+      "checkPersonalized": "Tất cả nội dung cá nhân hóa đã được điền",
+      "checkSides": "Kiểm tra cả mặt trước và mặt sau",
+      "selectedProduct": "Sản phẩm đã chọn:",
+      "name": "Họ tên",
+      "price": "Giá",
+      "perBag": "/ túi",
+      "front": "Mặt trước",
+      "backSide": "Mặt sau",
+      "fullName": "Họ tên",
+      "phone": "Số điện thoại",
+      "address": "Địa chỉ giao hàng",
+      "email": "Email (tùy chọn)",
+      "namePlaceholder": "Nguyễn Văn A",
+      "phonePlaceholder": "0901234567",
+      "addressPlaceholder": "Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành",
+      "emailPlaceholder": "email@example.com",
+      "requiredName": "Vui lòng nhập họ tên",
+      "requiredPhone": "Vui lòng nhập số điện thoại",
+      "requiredAddress": "Vui lòng nhập địa chỉ",
+      "subtotal": "Tạm tính:",
+      "quantity": "SL:",
+      "confirm": "Xác nhận đặt hàng",
+      "processing": "Đang xử lý...",
+      "guarantee": "100% Đảm bảo hài lòng"
+    }
+  },
   "products": {
     "title": "Sản phẩm & Công nghệ",
     "stepsTitle": "Quy trình gồm 5 bước",
@@ -241,6 +550,160 @@
       "cta": "Đăng ký",
       "note": "Bằng việc đăng ký, bạn đồng ý với ",
       "privacy": "Chính sách bảo mật"
+    }
+  },
+  "catalog": {
+    "landingCta": "Khám phá tất cả sản phẩm",
+    "landing": {
+      "eyebrow": "Sản phẩm & công nghệ",
+      "title": "Vật liệu Mekong trong một hình hài mới",
+      "description": "Bộ sưu tập đang hoạt động được cập nhật trực tiếp từ hệ thống sản phẩm GreenShield.",
+      "note": "Từ sinh khối bản địa đến ứng dụng thực tế"
+    },
+    "featured": "Nổi bật",
+    "explore": "Khám phá",
+    "fromPrice": "Từ {{price}}",
+    "loading": "Đang tải sản phẩm...",
+    "hero": {
+      "title": "Khám phá hệ sinh thái sản phẩm xanh",
+      "titleAccent": "Hệ sinh thái",
+      "titleRest": "sản phẩm xanh từ miền sông nước",
+      "description": "Từ lục bình và lá sen bản địa đến những giải pháp bao bì và vật dụng sinh học cho nông sản, F&B và đời sống.",
+      "explore": "Khám phá sản phẩm",
+      "catalogue": "Nhận catalogue",
+      "collageLabel": "Bộ sưu tập sản phẩm GreenShield"
+    },
+    "filters": {
+      "label": "Lọc sản phẩm theo danh mục",
+      "ALL": "Tất cả",
+      "PACKAGING": "Bao bì",
+      "TABLEWARE": "Chén & dĩa",
+      "LIFESTYLE": "Đời sống xanh"
+    },
+    "categories": {
+      "PACKAGING": "Bao bì",
+      "TABLEWARE": "Chén & dĩa",
+      "LIFESTYLE": "Đời sống xanh"
+    },
+    "saleModes": {
+      "COMBO": "Bán theo combo",
+      "RETAIL": "Bán lẻ",
+      "B2B": "Đơn hàng B2B",
+      "COMBO_AND_B2B": "Combo & B2B",
+      "RETAIL_AND_B2B": "Bán lẻ & B2B"
+    },
+    "exhibition": {
+      "eyebrow": "Triển lãm sản phẩm",
+      "title": "Vật liệu bản địa, hình hài mới"
+    },
+    "technology": {
+      "eyebrow": "Phòng thí nghiệm vật liệu",
+      "title": "Sinh học bản địa, tư duy thiết kế mới",
+      "description": "Mỗi sản phẩm là một lát cắt của hành trình nghiên cứu, tạo hình và đưa sinh khối Mekong trở lại đời sống."
+    },
+    "campaign": {
+      "eyebrow": "Chiến dịch vật liệu",
+      "title": "Biến lục bình thành giá trị",
+      "description": "Một nguồn sinh khối từng gây áp lực lên dòng chảy có thể trở thành bao bì, vật dụng và sinh kế mới.",
+      "cta": "Xem sản phẩm tiêu biểu"
+    },
+    "impact": {
+      "eyebrow": "Tác động ESG",
+      "title": "Sản phẩm đi cùng trách nhiệm",
+      "description": "Thiết kế không dừng ở hình dáng. GreenShield kết nối vật liệu, cộng đồng và dữ liệu truy xuất trong cùng một hệ sinh thái.",
+      "cta": "Khám phá vùng nguyên liệu",
+      "cards": {
+        "environment": {
+          "label": "Môi trường",
+          "title": "Tái sinh nguồn vật liệu",
+          "description": "Tận dụng sinh khối bản địa và giảm sự phụ thuộc vào vật dụng nhựa dùng một lần."
+        },
+        "community": {
+          "label": "Cộng đồng",
+          "title": "Sinh kế tại địa phương",
+          "description": "Chuỗi thu gom và sơ chế tạo thêm cơ hội tham gia cho cộng đồng miền Mekong."
+        },
+        "transparency": {
+          "label": "Minh bạch",
+          "title": "Theo dấu từng vật liệu",
+          "description": "Kết nối sản phẩm với dữ liệu vùng nguyên liệu và mạng lưới thu gom thực tế."
+        }
+      }
+    },
+    "materials": {
+      "eyebrow": "Câu chuyện vật liệu",
+      "title": "Thiết kế từ những gì Mekong sẵn có",
+      "hyacinth": {
+        "title": "Lục bình",
+        "description": "Nguồn sinh khối được thu gom tại địa phương, tạo sinh kế và giảm áp lực lên dòng chảy."
+      },
+      "lotus": {
+        "title": "Lá sen",
+        "description": "Bề mặt tự nhiên được gìn giữ để tạo nên vật dụng bàn ăn có dấu ấn riêng."
+      },
+      "circular": {
+        "title": "Kinh tế tuần hoàn",
+        "description": "Từ phụ phẩm thành sản phẩm hữu ích, có thể truy xuất về vùng nguyên liệu trên bản đồ GreenShield."
+      }
+    },
+    "benefits": {
+      "label": "Lợi ích nổi bật",
+      "biodegradable": "Phân hủy sinh học",
+      "foodSafe": "An toàn thực phẩm",
+      "local": "Nguyên liệu bản địa",
+      "horeca": "Phù hợp HORECA & nông sản"
+    },
+    "cta": {
+      "eyebrow": "Cùng tạo tác động",
+      "title": "Đưa vật liệu xanh vào sản phẩm tiếp theo của bạn",
+      "sample": "Nhận mẫu thử",
+      "b2b": "Liên hệ hợp tác B2B"
+    },
+    "error": {
+      "title": "Chưa thể tải sản phẩm",
+      "description": "Kết nối đến danh mục đang gián đoạn. Vui lòng thử lại sau ít phút.",
+      "retry": "Thử lại"
+    },
+    "empty": {
+      "title": "Chưa có sản phẩm trong danh mục này",
+      "description": "Hãy chọn một nhóm khác hoặc quay lại sau khi bộ sưu tập được cập nhật."
+    },
+    "detail": {
+      "breadcrumb": "Điều hướng sản phẩm",
+      "notFound": "Không tìm thấy sản phẩm",
+      "notFoundDescription": "Sản phẩm có thể đã ngừng trưng bày hoặc đường dẫn không còn tồn tại.",
+      "backToProducts": "Quay lại bộ sưu tập",
+      "openGallery": "Mở thư viện ảnh",
+      "closeGallery": "Đóng thư viện ảnh",
+      "previousImage": "Ảnh trước",
+      "nextImage": "Ảnh tiếp theo",
+      "gallery": "Thư viện sản phẩm",
+      "image": "Ảnh",
+      "material": "Chất liệu",
+      "unitPrice": "Giá tham khảo / đơn vị",
+      "comboPrice": "Combo {{count}} sản phẩm",
+      "exportPrice": "Giá tham khảo B2B / xuất khẩu",
+      "sample": "Nhận mẫu thử",
+      "contactB2b": "Liên hệ B2B",
+      "priceNote": "Giá có thể thay đổi theo số lượng, quy cách và yêu cầu tùy chỉnh.",
+      "storyEyebrow": "Câu chuyện sản phẩm",
+      "benefits": "Lợi ích",
+      "applications": "Ứng dụng",
+      "specifications": "Thông số",
+      "tablewareEyebrow": "Bộ sản phẩm xanh cho bàn ăn",
+      "tablewareTitle": "Một lựa chọn tự nhiên cho trải nghiệm ẩm thực",
+      "tablewareDescription": "Kết cấu hữu cơ và sắc độ nguyên bản giúp mỗi sản phẩm phù hợp với nhà hàng, sự kiện và bàn ăn có ý thức.",
+      "combo": "Quy cách combo",
+      "traceEyebrow": "Minh bạch nguồn gốc",
+      "traceTitle": "Theo dấu vật liệu về vùng Mekong",
+      "traceDescription": "Khám phá bản đồ vùng nguyên liệu và mạng lưới thu gom hiện có của GreenShield.",
+      "traceCta": "Mở bản đồ truy xuất",
+      "relatedEyebrow": "Khám phá tiếp",
+      "relatedTitle": "Sản phẩm liên quan"
+    },
+    "seo": {
+      "listTitle": "Sản phẩm xanh | GreenShield Mekong",
+      "listDescription": "Khám phá bao bì, vật dụng bàn ăn và sản phẩm đời sống từ lục bình, lá sen và nguồn vật liệu bản địa Mekong."
     }
   },
   "map": {

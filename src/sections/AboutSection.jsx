@@ -21,7 +21,7 @@ function AboutSection(){
     <section id="about" className="section" style={{ position: 'relative', paddingBottom: 64 }}>
       <div className="container">
         <div>
-        <Typography.Title level={1} style={{textAlign:'center', fontWeight: 'bold'}}>
+        <Typography.Title level={2} style={{textAlign:'center', fontWeight: 'bold'}}>
           {t('about.title') || 'About Us'}
         </Typography.Title>
         </div>

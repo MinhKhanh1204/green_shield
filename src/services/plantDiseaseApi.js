@@ -7,6 +7,12 @@ const MAX_VIDEO_SIZE = 50 * 1024 * 1024
 const ALLOWED_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp'])
 const ALLOWED_VIDEO_TYPES = new Set(['video/mp4', 'video/webm', 'video/quicktime'])
 
+function createPlantDiseaseError(code, message) {
+  const error = new Error(message)
+  error.code = code
+  return error
+}
+
 function resolveApiBase() {
   const configuredBase = (
     import.meta.env.VITE_PLANT_DISEASE_API_BASE
@@ -28,30 +34,30 @@ async function readResponseBody(response) {
 
 export function validatePlantMedia(file, expectedType) {
   if (!(file instanceof File)) {
-    throw new Error('Please select a leaf image or video before analysis.')
+    throw createPlantDiseaseError('INVALID_FILE', 'Please select a leaf image or video before analysis.')
   }
 
   const isImage = ALLOWED_IMAGE_TYPES.has(file.type)
   const isVideo = ALLOWED_VIDEO_TYPES.has(file.type)
 
   if (!isImage && !isVideo) {
-    throw new Error('Only JPG, PNG, WebP, MP4, WebM and MOV files are supported.')
+    throw createPlantDiseaseError('UNSUPPORTED_TYPE', 'Only JPG, PNG, WebP, MP4, WebM and MOV files are supported.')
   }
 
   if (expectedType === 'image' && !isImage) {
-    throw new Error('Please select a JPG, PNG or WebP image.')
+    throw createPlantDiseaseError('IMAGE_ONLY', 'Please select a JPG, PNG or WebP image.')
   }
 
   if (expectedType === 'video' && !isVideo) {
-    throw new Error('Please select an MP4, WebM or MOV video.')
+    throw createPlantDiseaseError('VIDEO_ONLY', 'Please select an MP4, WebM or MOV video.')
   }
 
   if (isImage && file.size > MAX_IMAGE_SIZE) {
-    throw new Error('The image must be smaller than 10 MB.')
+    throw createPlantDiseaseError('IMAGE_TOO_LARGE', 'The image must be smaller than 10 MB.')
   }
 
   if (isVideo && file.size > MAX_VIDEO_SIZE) {
-    throw new Error('The video must be smaller than 50 MB.')
+    throw createPlantDiseaseError('VIDEO_TOO_LARGE', 'The video must be smaller than 50 MB.')
   }
 
   return isVideo ? 'video' : 'image'
@@ -81,16 +87,17 @@ export class PlantDiseaseApi {
       })
     } catch (error) {
       if (error?.name === 'AbortError') throw error
-      throw new Error('Cannot connect to the plant disease analysis service.')
+      throw createPlantDiseaseError('SERVICE_UNAVAILABLE', 'Cannot connect to the plant disease analysis service.')
     }
 
     const data = await readResponseBody(response)
     if (!response.ok) {
-      throw new Error(
-        data.detail
-        || data.error
-        || `The image could not be analyzed (HTTP ${response.status}).`,
+      const error = createPlantDiseaseError(
+        'ANALYSIS_FAILED',
+        data.detail || data.error || `The image could not be analyzed (HTTP ${response.status}).`,
       )
+      error.status = response.status
+      throw error
     }
 
     return normalizeAnalysisResult(data)

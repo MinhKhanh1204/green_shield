@@ -1,15 +1,7 @@
 import React from 'react';
 import { Button, Tooltip, Upload } from 'antd';
+import { useTranslation } from 'react-i18next';
 import logo from '../../assets/logo.png';
-
-const TABS = [
-  { key: 'text', icon: 'text_fields', label: 'Thêm chữ' },
-  { key: 'image', icon: 'image', label: 'Thêm ảnh' },
-  { key: 'texture', icon: 'texture', label: 'Texture' },
-  { key: 'elements', icon: 'apps', label: 'Elements' },
-  { key: 'greenai', icon: 'auto_awesome', label: 'AI Xanh' },
-  { key: 'greenqr', icon: 'qr_code_2', label: 'QR Xanh' },
-];
 
 export default function LeftPanel({
   activeTab,
@@ -31,25 +23,22 @@ export default function LeftPanel({
   activeBorderColor,
   updateActiveObjectStyle,
 }) {
+  const { t } = useTranslation();
+  const tabs = [
+    { key: 'text', icon: 'text_fields', label: t('customBag.editor.tabs.text') },
+    { key: 'image', icon: 'image', label: t('customBag.editor.tabs.image') },
+    { key: 'texture', icon: 'texture', label: t('customBag.editor.tabs.texture') },
+    { key: 'elements', icon: 'apps', label: t('customBag.editor.tabs.elements') },
+    { key: 'greenai', icon: 'auto_awesome', label: t('customBag.editor.tabs.greenAi') },
+    { key: 'greenqr', icon: 'qr_code_2', label: t('customBag.editor.tabs.greenQr') },
+  ];
   const sidebarWidth = activeTab ? leftSidebarWidth : 72;
   const showTooltips = !activeTab;
   const hasEditableObject = Boolean(activeObjectInfo);
   const colorSwatches = ['#111827', '#475569', '#16a34a', '#22c55e', '#0ea5e9', '#7c3aed', '#ef4444', '#f59e0b', '#ffffff', 'transparent'];
-  const textTips = [
-    'Preset giúp lên bố cục nhanh như Canva rồi chỉnh tiếp trên canvas.',
-    'Dùng tối đa 2 font để tổng thể gọn và rõ hierarchy.',
-    'Shift + phím mũi tên để dịch nhanh đối tượng 10px.',
-  ];
-  const imageTips = [
-    'Hỗ trợ PNG, JPG và WebP.',
-    'PNG nền trong phù hợp nhất cho logo hoặc sticker.',
-    'Ảnh sắc nét sẽ cho bản in tốt hơn ảnh chụp màn hình.',
-  ];
-  const iconTips = [
-    'Biểu tượng thêm vào ngay vùng in và có thể đổi màu.',
-    'Nên dùng 1 icon chính kèm một cụm chữ ngắn.',
-    'Giữ số lượng icon vừa phải để mặt túi không bị rối.',
-  ];
+  const textTips = t('customBag.editor.textTips', { returnObjects: true });
+  const imageTips = t('customBag.editor.imageTips', { returnObjects: true });
+  const iconTips = t('customBag.editor.iconTips', { returnObjects: true });
 
   const renderTabButton = ({ key, icon, label }) => {
     const isElementTab = key === 'elements';
@@ -84,21 +73,21 @@ export default function LeftPanel({
           <div className="sidebar-logo" onClick={() => { window.location.href = '/'; }}>
             <img src={logo} alt="GreenShield" />
           </div>
-          {TABS.map(renderTabButton)}
+          {tabs.map(renderTabButton)}
         </div>
 
         {activeTab && (
           <div className={`design-tab-panel${activeTab === 'greenai' ? ' design-tab-panel--wide' : ''}`}>
             <div className="design-tab-panel-header">
               <span>
-                {activeTab === 'text' && 'Thêm chữ vào thiết kế'}
-                {activeTab === 'image' && 'Thêm ảnh'}
-                {activeTab === 'texture' && 'Texture'}
-                {(activeTab === 'elements' || activeTab === 'element' || activeTab === 'icon') && 'Elements'}
-                {activeTab === 'greenai' && 'AI Xanh'}
-                {activeTab === 'greenqr' && 'QR Xanh'}
-                {activeTab === 'color-fill' && (activeObjectInfo?.type === 'i-text' ? 'Màu chữ' : 'Màu đối tượng')}
-                {activeTab === 'color-border' && 'Màu viền'}
+                {activeTab === 'text' && t('customBag.editor.panels.text')}
+                {activeTab === 'image' && t('customBag.editor.panels.image')}
+                {activeTab === 'texture' && t('customBag.editor.panels.texture')}
+                {(activeTab === 'elements' || activeTab === 'element' || activeTab === 'icon') && t('customBag.editor.panels.elements')}
+                {activeTab === 'greenai' && t('customBag.editor.panels.greenAi')}
+                {activeTab === 'greenqr' && t('customBag.editor.panels.greenQr')}
+                {activeTab === 'color-fill' && t(activeObjectInfo?.type === 'i-text' ? 'customBag.editor.panels.textColor' : 'customBag.editor.panels.objectColor')}
+                {activeTab === 'color-border' && t('customBag.editor.panels.borderColor')}
               </span>
               <button className="design-tab-panel-close" onClick={() => setActiveTab(null)}>
                 <span className="material-symbols-rounded">close</span>
@@ -108,10 +97,10 @@ export default function LeftPanel({
             {isColorTab && (
               <div className="design-tab-panel-body">
                 {!hasEditableObject ? (
-                  <p className="panel-hint">Hãy chọn một đối tượng để chỉnh màu.</p>
+                  <p className="panel-hint">{t('customBag.editor.color.selectObject')}</p>
                 ) : (
                   <>
-                    <p className="panel-section-title">Bảng màu nhanh</p>
+                    <p className="panel-section-title">{t('customBag.editor.color.quickPalette')}</p>
                     <div className="swatch-grid">
                       {colorSwatches.map((c) => {
                         const isFillTab = activeTab === 'color-fill';
@@ -125,13 +114,13 @@ export default function LeftPanel({
                             className={`swatch-dot${c === 'transparent' ? ' swatch-dot--none' : ''}${currentColor === nextColor ? ' selected' : ''}`}
                             style={c === 'transparent' ? undefined : { '--swatch-color': c }}
                             onClick={() => updateActiveObjectStyle?.(patch)}
-                            aria-label={c === 'transparent' ? 'Trong suốt' : `Màu ${c}`}
+                            aria-label={c === 'transparent' ? t('customBag.editor.color.transparent') : `${t('customBag.editor.color.color')} ${c}`}
                           />
                         );
                       })}
                     </div>
 
-                    <p className="panel-section-title">Chọn màu chi tiết</p>
+                    <p className="panel-section-title">{t('customBag.editor.color.custom')}</p>
                     <input
                       type="color"
                       value={
@@ -148,7 +137,7 @@ export default function LeftPanel({
 
                     {activeTab === 'color-border' && (
                       <>
-                        <p className="panel-section-title">Độ dày viền</p>
+                        <p className="panel-section-title">{t('customBag.editor.color.borderWidth')}</p>
                         <input
                           type="range"
                           min={0}
@@ -166,12 +155,12 @@ export default function LeftPanel({
 
             {activeTab === 'text' && (
               <div className="design-tab-panel-body">
-                <p className="panel-hint">Tạo headline, slogan hoặc tên thương hiệu và chỉnh bằng thanh công cụ nổi trên canvas.</p>
+                <p className="panel-hint">{t('customBag.editor.textHint')}</p>
                 <Button block onClick={addText} className="panel-main-btn">
-                  Thêm ô văn bản
+                  {t('customBag.editor.addText')}
                 </Button>
 
-                <p className="panel-section-title">Preset nhanh</p>
+                <p className="panel-section-title">{t('customBag.editor.quickPresets')}</p>
                 <div className="text-preset-grid">
                   {textPresets.map((preset) => (
                     <button
@@ -187,7 +176,7 @@ export default function LeftPanel({
                   ))}
                 </div>
 
-                <p className="panel-section-title">Mẹo bố cục chữ</p>
+                <p className="panel-section-title">{t('customBag.editor.textTipsTitle')}</p>
                 <div className="panel-info-list">
                   {textTips.map((item) => (
                     <div key={item} className="panel-info-item">
@@ -202,10 +191,10 @@ export default function LeftPanel({
             {activeTab === 'image' && (
               <div className="design-tab-panel-body">
                 <Upload showUploadList={false} beforeUpload={(file) => { addImage(file); return false; }} accept="image/*">
-                  <Button block className="panel-main-btn">Thêm ảnh từ thiết bị</Button>
+                  <Button block className="panel-main-btn">{t('customBag.editor.addImage')}</Button>
                 </Upload>
 
-                <p className="panel-section-title">Khuyến nghị file ảnh</p>
+                <p className="panel-section-title">{t('customBag.editor.imageTipsTitle')}</p>
                 <div className="panel-info-list">
                   {imageTips.map((item) => (
                     <div key={item} className="panel-info-item">
@@ -220,18 +209,18 @@ export default function LeftPanel({
             {activeTab === 'texture' && (
               <div className="design-tab-panel-body">
                 {textures.length === 0 ? (
-                  <p className="panel-hint">Chưa có texture nào.</p>
+                  <p className="panel-hint">{t('customBag.editor.noTextures')}</p>
                 ) : (
                   <div className="texture-grid">
-                    {textures.map((t) => (
+                    {textures.map((texture) => (
                       <button
-                        key={t.id}
+                        key={texture.id}
                         type="button"
                         className="texture-item"
-                        onClick={() => addTexture?.(t)}
-                        title={t.name || 'Texture'}
+                        onClick={() => addTexture?.(texture)}
+                        title={texture.name || t('customBag.editor.tabs.texture')}
                       >
-                        <img src={t.imageUrl} alt={t.name || 'Texture'} />
+                        <img src={texture.imageUrl} alt={texture.name || t('customBag.editor.tabs.texture')} />
                       </button>
                     ))}
                   </div>
@@ -244,9 +233,9 @@ export default function LeftPanel({
 
             {(activeTab === 'elements' || activeTab === 'element' || activeTab === 'icon') && (
               <div className="design-tab-panel-body">
-                <p className="panel-hint">Thêm icon nhanh để tạo nhấn nhá hoặc build một badge nhỏ cho thiết kế.</p>
+                <p className="panel-hint">{t('customBag.editor.elementsHint')}</p>
 
-                <p className="panel-section-title">Mẹo dùng icon</p>
+                <p className="panel-section-title">{t('customBag.editor.iconTipsTitle')}</p>
                 <div className="panel-info-list">
                   {iconTips.map((item) => (
                     <div key={item} className="panel-info-item">
@@ -256,7 +245,7 @@ export default function LeftPanel({
                   ))}
                 </div>
 
-                <p className="panel-section-title">Thư viện biểu tượng</p>
+                <p className="panel-section-title">{t('customBag.editor.iconLibrary')}</p>
                 <div className="icon-grid">
                   {iconList.map(({ Icon, label }, index) => (
                     <button key={`${label}-${index}`} type="button" className="icon-grid-item" onClick={() => addIconToCanvas(Icon)} title={label}>

@@ -1,10 +1,13 @@
 import React, { Suspense, lazy, useEffect, useState } from 'react'
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom'
 import Nav from './components/Nav'
 import LanguageToggle from './components/LanguageToggle'
 import logo from './assets/logo.png';
 import logolg from './assets/logo-lg.png';
 import LabLoading from './pages/shared/LabLoading'
+import { MaterialDataProvider } from './context/MaterialDataContext'
+import { RouteSeo } from './components/Seo'
+import { hasHomeSection, scrollToHomeSection } from './utils/homeNavigation'
 
 const lazyNamed = (importer, exportName) =>
   lazy(() => importer().then((module) => ({ default: module[exportName] })))
@@ -27,12 +30,12 @@ const DashboardOverview = lazyNamed(() => import('./pages/admin'), 'DashboardOve
 const DashboardSettings = lazyNamed(() => import('./pages/admin'), 'DashboardSettings')
 const MapPage = lazyNamed(() => import('./pages/map'), 'MapPage')
 const AdminMapPage = lazyNamed(() => import('./pages/admin'), 'AdminMapPage')
+const ProductManagementPage = lazyNamed(() => import('./pages/admin'), 'ProductManagementPage')
 const PlantDiseasePage = lazyNamed(() => import('./pages/plant-disease'), 'PlantDiseasePage')
+const ProductsPage = lazyNamed(() => import('./pages/products'), 'ProductsPage')
+const ProductDetailPage = lazyNamed(() => import('./pages/products'), 'ProductDetailPage')
 const MainLayout = lazy(() => import('./layouts/MainLayout'))
 const ProtectedRoute = lazy(() => import('./components/ProtectedRoute'))
-const MaterialDataProvider = lazy(() =>
-  import('./context/MaterialDataContext').then((module) => ({ default: module.MaterialDataProvider })),
-)
 const HomeSection = lazy(() => import('./sections/HomeSection'))
 const AboutSection = lazy(() => import('./sections/AboutSection'))
 const ProductsSection = lazy(() => import('./sections/ProductsSection'))
@@ -48,14 +51,6 @@ const DARK_ROUTE_PATTERNS = ['/design', '/audio', '/audio-file', '/custom', '/or
 function RouteFallback() {
   return (
     <LabLoading />
-  )
-}
-
-function withMaterialDataProvider(element) {
-  return (
-    <Suspense fallback={<RouteFallback />}>
-      <MaterialDataProvider>{element}</MaterialDataProvider>
-    </Suspense>
   )
 }
 
@@ -157,23 +152,44 @@ function MainSite() {
     const sectionId = location.hash.replace('#', '')
     if (!sectionId) return
 
+    let frameId = 0
+    let attempts = 0
+    let stableContactFrames = 0
+
     const scrollToSection = () => {
-      const target = document.getElementById(sectionId)
-      if (!target) return
-      target.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
+      attempts += 1
+
+      if (hasHomeSection(sectionId)) {
+        scrollToHomeSection(sectionId, {
+          behavior: stableContactFrames === 0 ? 'smooth' : 'auto',
+        })
+        // Lazy sections can increase the scroll height after contact mounts.
+        // Re-apply the bottom position briefly until the layout settles.
+        stableContactFrames = sectionId === 'contact' ? stableContactFrames + 1 : 8
+        if (stableContactFrames >= 8) return
+      }
+
+      // Keep waiting for lazy sections for a short window on slow networks.
+      if (attempts >= 600) return
+      frameId = requestAnimationFrame(scrollToSection)
     }
 
-    const raf = requestAnimationFrame(scrollToSection)
-    return () => cancelAnimationFrame(raf)
+    frameId = requestAnimationFrame(scrollToSection)
+    return () => cancelAnimationFrame(frameId)
   }, [location.hash])
 
   return (
     <>
       <header className="header">
-        <div className='header-logo'>
+        <Link
+          to="/#home"
+          className='header-logo'
+          aria-label="GreenShield - về đầu trang chủ"
+          onClick={() => scrollToHomeSection('home', { updateHash: false })}
+        >
           <img src={logo} alt="greenshield logo" width="24" />
           <img className="logo-lg" src={logolg} alt="greenshield name" width="100" />
-        </div>
+        </Link>
 
         <div className='header-nav'>
           <Nav />
@@ -240,14 +256,29 @@ function CustomBagRoute() {
   )
 }
 
+function NotFoundPage() {
+  return (
+    <main style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', padding: '7rem 1.5rem', textAlign: 'center' }}>
+      <div>
+        <p style={{ margin: 0, color: 'var(--color-primary)', fontWeight: 700 }}>404</p>
+        <h1>Page not found</h1>
+        <p>The page you are looking for does not exist or has moved.</p>
+        <a className="btn btn-primary" href="/">Back to home</a>
+      </div>
+    </main>
+  )
+}
+
 function App() {
   return (
     <BrowserRouter>
     <ThemeRouteScope />
-    <MaterialDataProvider>
+    <RouteSeo />
       <Routes>
         <Route path="/" element={<MainSite />} />
-        <Route path="/custom-bag" element={<CustomBagRoute />} />
+        <Route path="/products" element={<MainLayout><ProductsPage /></MainLayout>} />
+        <Route path="/products/:slug" element={<MainLayout><ProductDetailPage /></MainLayout>} />
+        <Route path="/custom-bag" element={<MainLayout><CustomBagRoute /></MainLayout>} />
         <Route path="/custom-bag/:templateId/design" element={<CustomBagLayout><DesignPage /></CustomBagLayout>} />
         <Route path="/custom-bag/:templateId/preview" element={<CustomBagLayout><PreviewPage /></CustomBagLayout>} />
         <Route path="/custom-bag/:templateId/checkout" element={<CustomBagLayout><CheckoutPage /></CustomBagLayout>} />
@@ -260,12 +291,19 @@ function App() {
           path="/plant-disease"
           element={(
             <Suspense fallback={<RouteFallback />}>
-              <PlantDiseasePage />
+              <MainLayout><PlantDiseasePage /></MainLayout>
             </Suspense>
           )}
         />
         <Route path="/admin" element={<LoginPage />} />
-                  <Route path="/map" element={<MainLayout><MapPage /></MainLayout>} />
+                  <Route
+                    path="/map"
+                    element={(
+                      <MaterialDataProvider>
+                        <MainLayout><MapPage /></MainLayout>
+                      </MaterialDataProvider>
+                    )}
+                  />
         <Route
           path="/admin/dashboard"
           element={
@@ -279,13 +317,20 @@ function App() {
           <Route path="bag-templates" element={<BagTemplateManagementPage />} />
           <Route path="textures" element={<TextureManagementPage />} />
           <Route path="orders" element={<OrderManagementPage />} />
-                      <Route path="map" element={<AdminMapPage />} />
+          <Route path="products" element={<ProductManagementPage />} />
+                      <Route
+                        path="map"
+                        element={(
+                          <MaterialDataProvider>
+                            <AdminMapPage />
+                          </MaterialDataProvider>
+                        )}
+                      />
           <Route path="settings" element={<DashboardSettings />} />
         </Route>
         <Route path="/admin/textures" element={<Navigate to="/admin/dashboard/textures" replace />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
-      </MaterialDataProvider>
     </BrowserRouter>
   )
 }

@@ -236,7 +236,7 @@ export default function ProductsSection() {
 		>
 			<div className="process-shell">
 				<header className="products-header process-header is-visible">
-					<h1 className="section-title">{t('products.title', { defaultValue: 'SẢN PHẨM & CÔNG NGHỆ' })}</h1>
+					<h2 className="section-title">{t('products.title', { defaultValue: 'SẢN PHẨM & CÔNG NGHỆ' })}</h2>
 					<h3 className="section-subtitle">{t('products.stepsTitle', { defaultValue: 'quy trình gồm 5 bước' })}</h3>
 				</header>
 
