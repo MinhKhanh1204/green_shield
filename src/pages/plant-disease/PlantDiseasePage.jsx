@@ -1,5 +1,6 @@
 import { ScanLine, Sparkles } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import superLubiImage from '../../assets/super-lubi.png'
 import InputPanel from '../../components/plant-disease/InputPanel'
 import OutputPanel from '../../components/plant-disease/OutputPanel'
 import SuggestedProductsPanel from '../../components/plant-disease/SuggestedProductsPanel'
@@ -29,8 +30,8 @@ export function PlantDiseasePage() {
             <p>{t('plantDisease.heroDescription')}</p>
           </div>
           <div className={styles.heroSignal} aria-hidden="true">
-            <ScanLine size={42} />
-            <span>{t('plantDisease.visualDiagnosis')}</span>
+            <ScanLine className={styles.heroSignalIcon} size={22} strokeWidth={1.8} />
+            <img className={styles.heroSignalImage} src={superLubiImage} alt="" />
           </div>
         </section>
 

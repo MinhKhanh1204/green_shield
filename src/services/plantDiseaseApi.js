@@ -1,5 +1,6 @@
 import { normalizeAnalysisResult } from '../utils/plantDiseaseResult'
 
+const API_BASE_URL = 'https://lubi-classifier-api-610418490593.asia-southeast1.run.app'
 const DEFAULT_ENDPOINT = '/predict'
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024
 const MAX_VIDEO_SIZE = 50 * 1024 * 1024
@@ -13,13 +14,7 @@ function createPlantDiseaseError(code, message) {
 }
 
 function resolveApiBase() {
-  const configuredBase = (
-    import.meta.env.VITE_PLANT_DISEASE_API_BASE
-    || import.meta.env.VITE_PY_API_BASE
-    || ''
-  ).replace(/\/$/, '')
-
-  return configuredBase
+  return API_BASE_URL.replace(/\/$/, '')
 }
 
 async function readResponseBody(response) {
