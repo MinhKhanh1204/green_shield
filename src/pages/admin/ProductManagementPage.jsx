@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Button, Form, Image, Input, InputNumber, Modal, Popconfirm, Select, Space, Switch, Table, Tabs, Tag, Upload, message } from 'antd'
 import { ArrowDownOutlined, ArrowUpOutlined, DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined, StarFilled, StarOutlined, UploadOutlined } from '@ant-design/icons'
 import {
@@ -61,20 +61,28 @@ function ProductLanguageFields({ language }) {
 
 function ProductImageManager({ product, onChanged }) {
   const [uploading, setUploading] = useState(false)
+  const processedUploadIdsRef = useRef(new Set())
+  const pendingUploadCountRef = useRef(0)
   const images = useMemo(() => [...(product?.images || [])].sort((a, b) => a.sortOrder - b.sortOrder), [product])
 
-  const upload = async ({ fileList }) => {
-    const files = fileList.map((item) => item.originFileObj).filter(Boolean)
-    if (!files.length) return
+  const upload = async ({ file }) => {
+    const sourceFile = file.originFileObj || file
+    const uploadId = file.uid || `${sourceFile.name}-${sourceFile.size}-${sourceFile.lastModified}`
+    if (!sourceFile || processedUploadIdsRef.current.has(uploadId)) return
+
+    // Ant Upload emits one event per file while fileList contains prior files too.
+    processedUploadIdsRef.current.add(uploadId)
+    pendingUploadCountRef.current += 1
     setUploading(true)
     try {
-      await uploadProductImages(product.id, files, { imageType: 'GALLERY' })
+      await uploadProductImages(product.id, [sourceFile], { imageType: 'GALLERY' })
       message.success('Đã tải ảnh sản phẩm')
       await onChanged()
     } catch (error) {
       message.error(error.message)
     } finally {
-      setUploading(false)
+      pendingUploadCountRef.current = Math.max(0, pendingUploadCountRef.current - 1)
+      setUploading(pendingUploadCountRef.current > 0)
     }
   }
 
