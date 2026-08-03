@@ -1,5 +1,7 @@
 import { Activity, AlertTriangle, CheckCircle2, Clock3, Dna, FlaskConical, ScanSearch, ShieldAlert } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import healthyMascot from '../../assets/plant-status-ok.png'
+import diseasedMascot from '../../assets/plant-status-deny.png'
 import styles from '../../pages/plant-disease/PlantDiseasePage.module.css'
 import { translatePlantDiseaseError } from '../../pages/plant-disease/plantDiseaseI18n'
 
@@ -23,6 +25,8 @@ function EmptyState({ isAnalyzing, t }) {
 export default function OutputPanel({ analysisCount, error, isAnalyzing, result }) {
   const { t, i18n } = useTranslation()
   const isDiseased = result?.status === 'DISEASED'
+  const isHealthy = result?.status === 'HEALTHY'
+  const resultState = isDiseased ? 'diseased' : isHealthy ? 'healthy' : null
   const statusLabel = result?.status === 'DISEASED'
     ? t('plantDisease.status.diseased')
     : result?.status === 'HEALTHY'
@@ -30,7 +34,10 @@ export default function OutputPanel({ analysisCount, error, isAnalyzing, result 
       : t('plantDisease.status.unknown')
 
   return (
-    <section className={styles.panel} aria-labelledby="plant-disease-output-title">
+    <section
+      className={`${styles.panel} ${isDiseased ? styles.panelDiseased : ''} ${isHealthy ? styles.panelHealthy : ''}`}
+      aria-labelledby="plant-disease-output-title"
+    >
       <div className={styles.panelHeading}>
         <div>
           <span className={styles.eyebrow}>{t('plantDisease.diagnosis')}</span>
@@ -55,6 +62,23 @@ export default function OutputPanel({ analysisCount, error, isAnalyzing, result 
 
       {result ? (
         <div className={styles.resultCard}>
+          {resultState ? (
+            <div className={styles.verdictBanner} role="status" aria-live="polite">
+              <img
+                src={isDiseased ? diseasedMascot : healthyMascot}
+                alt={t(`plantDisease.resultState.${resultState}.mascotAlt`)}
+              />
+              <div>
+                <span className={styles.verdictKicker}>
+                  {isDiseased ? <AlertTriangle size={15} /> : <CheckCircle2 size={15} />}
+                  {t(`plantDisease.resultState.${resultState}.previewBadge`)}
+                </span>
+                <h3>{t(`plantDisease.resultState.${resultState}.title`)}</h3>
+                <p>{t(`plantDisease.resultState.${resultState}.description`)}</p>
+              </div>
+            </div>
+          ) : null}
+
           <div className={styles.resultTitleRow}>
             <div>
               <span className={styles.resultLabel}>{t('plantDisease.detectedPlant')}</span>
@@ -76,25 +100,36 @@ export default function OutputPanel({ analysisCount, error, isAnalyzing, result 
           <dl className={styles.factGrid}>
             <div><dt><Clock3 size={15} /> {t('plantDisease.analyzed')}</dt><dd>{formatDate(result.analyzedAt, i18n.language) || t('plantDisease.notAvailable')}</dd></div>
             <div><dt><Dna size={15} /> {t('plantDisease.scientificName')}</dt><dd><i>{result.scientificName || t('plantDisease.notAvailable')}</i></dd></div>
-            <div><dt><FlaskConical size={15} /> {t('plantDisease.diseaseType')}</dt><dd>{result.type || t('plantDisease.notAvailable')}</dd></div>
-            <div><dt><AlertTriangle size={15} /> {t('plantDisease.severity')}</dt><dd>{result.severity || t('plantDisease.notAvailable')}</dd></div>
+            {!isHealthy ? <div><dt><FlaskConical size={15} /> {t('plantDisease.diseaseType')}</dt><dd>{result.type || t('plantDisease.notAvailable')}</dd></div> : null}
+            {!isHealthy ? <div><dt><AlertTriangle size={15} /> {t('plantDisease.severity')}</dt><dd>{result.severity || t('plantDisease.notAvailable')}</dd></div> : null}
           </dl>
 
-          {result.symptoms.length ? (
+          {isHealthy ? (
+            <div className={styles.healthyCare}>
+              <h4><CheckCircle2 size={18} /> {t('plantDisease.healthyCareTitle')}</h4>
+              <ul>
+                <li>{t('plantDisease.healthyCareMonitor')}</li>
+                <li>{t('plantDisease.healthyCareBalance')}</li>
+                <li>{t('plantDisease.healthyCareRecheck')}</li>
+              </ul>
+            </div>
+          ) : null}
+
+          {!isHealthy && result.symptoms.length ? (
             <div className={styles.detailSection}>
               <h4>{t('plantDisease.observedSymptoms')}</h4>
               <ul>{result.symptoms.map((symptom) => <li key={symptom}>{symptom}</li>)}</ul>
             </div>
           ) : null}
 
-          {result.treatment.length ? (
+          {!isHealthy && result.treatment.length ? (
             <div className={styles.detailSection}>
               <h4>{t('plantDisease.recommendedTreatment')}</h4>
               <ol>{result.treatment.map((step) => <li key={step}>{step}</li>)}</ol>
             </div>
           ) : null}
 
-          {result.recovery ? (
+          {!isHealthy && result.recovery ? (
             <div className={styles.recoveryNote}><strong>{t('plantDisease.recoveryOutlook')}</strong><p>{result.recovery}</p></div>
           ) : null}
         </div>
