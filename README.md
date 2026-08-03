@@ -1,4 +1,4 @@
-﻿# Pages Structure Convention.
+﻿# Pages Structure Convention..
 
 ## Domain Folders
 - `admin/`: admin, dashboard, and management pages.
