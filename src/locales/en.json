@@ -53,6 +53,28 @@
     "analyzeLeaf": "Analyze leaf",
     "teachingTitle": "Every leaf has a voice.",
     "teachingDescription": "Spot the signs today.\n\t\tProtect tomorrow's harvest.",
+    "resultState": {
+      "diseased": {
+        "previewBadge": "Needs attention",
+        "title": "Disease signs detected",
+        "description": "Unusual signs were detected on the leaf. Early action can help limit spread and improve the plant's recovery outlook.",
+        "mascotTitle": "Unusual signs detected!",
+        "mascotDescription": "Early detection gives you a better chance to protect the whole crop.",
+        "mascotAlt": "Lubi warning that the leaf shows signs of disease"
+      },
+      "healthy": {
+        "previewBadge": "Looking healthy",
+        "title": "No disease signs detected",
+        "description": "The leaf currently shows no clear signs of disease. Keep care balanced and continue regular observation.",
+        "mascotTitle": "A green signal from the leaf!",
+        "mascotDescription": "This leaf looks well — keep checking it regularly!",
+        "mascotAlt": "Lubi confirming that the leaf looks healthy"
+      }
+    },
+    "healthyCareTitle": "Keep the plant healthy",
+    "healthyCareMonitor": "Inspect both sides of the leaves on a regular schedule.",
+    "healthyCareBalance": "Maintain balanced watering and nutrition, and avoid overwatering.",
+    "healthyCareRecheck": "Analyze again if the leaf color, spots or surface texture changes.",
     "successfulAnalyses": "successful analyses this session",
     "awaitingImage": "Awaiting a leaf image",
     "readingPatterns": "Reading leaf patterns...",

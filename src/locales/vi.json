@@ -53,6 +53,28 @@
     "analyzeLeaf": "Phân tích lá cây",
     "teachingTitle": "Mỗi chiếc lá đều có tiếng nói.",
     "teachingDescription": "Quan sát sớm hôm nay,\n\t\tbảo vệ mùa xanh ngày mai.",
+    "resultState": {
+      "diseased": {
+        "previewBadge": "Cần xử lý",
+        "title": "Lá có dấu hiệu bệnh",
+        "description": "Các dấu hiệu bất thường đã được phát hiện. Xử lý sớm giúp hạn chế lây lan và tăng khả năng phục hồi của cây.",
+        "mascotTitle": "Đã phát hiện dấu hiệu bất thường!",
+        "mascotDescription": "Phát hiện sớm là cơ hội bảo vệ cả mùa vụ.",
+        "mascotAlt": "Lubi cảnh báo lá có dấu hiệu bệnh"
+      },
+      "healthy": {
+        "previewBadge": "Đang khỏe mạnh",
+        "title": "Không phát hiện dấu hiệu bệnh",
+        "description": "Chiếc lá hiện chưa có dấu hiệu bệnh rõ ràng. Hãy tiếp tục chăm sóc cân bằng và theo dõi định kỳ.",
+        "mascotTitle": "Tín hiệu xanh từ chiếc lá!",
+        "mascotDescription": "Chiếc lá đang ổn — hãy tiếp tục quan sát định kỳ nhé!",
+        "mascotAlt": "Lubi xác nhận lá đang khỏe mạnh"
+      }
+    },
+    "healthyCareTitle": "Duy trì trạng thái khỏe mạnh",
+    "healthyCareMonitor": "Quan sát mặt trên và mặt dưới của lá theo lịch định kỳ.",
+    "healthyCareBalance": "Duy trì lượng nước và dinh dưỡng cân bằng, tránh tưới quá mức.",
+    "healthyCareRecheck": "Phân tích lại nếu màu sắc, đốm lá hoặc kết cấu bề mặt thay đổi.",
     "successfulAnalyses": "lần phân tích thành công trong phiên này",
     "awaitingImage": "Đang chờ ảnh lá cây",
     "readingPatterns": "Đang đọc các dấu hiệu trên lá...",

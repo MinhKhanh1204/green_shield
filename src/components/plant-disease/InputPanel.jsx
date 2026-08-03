@@ -9,7 +9,7 @@ import { translatePlantDiseaseError } from '../../pages/plant-disease/plantDisea
 const ACCEPTED_IMAGE_TYPES = 'image/jpeg,image/png,image/webp'
 const ACCEPTED_VIDEO_TYPES = 'video/mp4,video/webm,video/quicktime'
 
-export default function InputPanel({ hasAnalysis, isAnalyzing, onAnalyze, onClearAnalysis }) {
+export default function InputPanel({ analysisStatus, isAnalyzing, onAnalyze, onClearAnalysis }) {
   const { t } = useTranslation()
   const [mode, setMode] = useState('image')
   const [selectedFile, setSelectedFile] = useState(null)
@@ -20,6 +20,9 @@ export default function InputPanel({ hasAnalysis, isAnalyzing, onAnalyze, onClea
   const fileInputRef = useRef(null)
   const videoRef = useRef(null)
   const streamRef = useRef(null)
+  const isDiseased = analysisStatus === 'DISEASED'
+  const isHealthy = analysisStatus === 'HEALTHY'
+  const resultState = isDiseased ? 'diseased' : isHealthy ? 'healthy' : null
 
   const stopCamera = useCallback(() => {
     streamRef.current?.getTracks().forEach((track) => track.stop())
@@ -222,6 +225,11 @@ export default function InputPanel({ hasAnalysis, isAnalyzing, onAnalyze, onClea
 
       {previewUrl ? (
         <div className={styles.previewCard}>
+          {resultState ? (
+            <span className={isDiseased ? styles.previewStatusDiseased : styles.previewStatusHealthy}>
+              {t(`plantDisease.resultState.${resultState}.previewBadge`)}
+            </span>
+          ) : null}
           {selectedFile?.type.startsWith('video/') ? (
             <video src={previewUrl} controls playsInline aria-label={t('plantDisease.selectedVideoPreview')} />
           ) : (
@@ -251,8 +259,11 @@ export default function InputPanel({ hasAnalysis, isAnalyzing, onAnalyze, onClea
         {isAnalyzing ? t('plantDisease.analyzingLeaf') : t('plantDisease.analyzeLeaf')}
       </button>
 
-      {hasAnalysis ? (
-        <aside className={styles.teachingMoment} aria-label={t('plantDisease.teachingTitle')}>
+      {resultState ? (
+        <aside
+          className={`${styles.teachingMoment} ${isDiseased ? styles.teachingDiseased : styles.teachingHealthy}`}
+          aria-label={t('plantDisease.teachingTitle')}
+        >
           <div className={styles.teachingQuote}>
             <strong>{t('plantDisease.teachingTitle')}</strong>
             <span>{t('plantDisease.teachingDescription')}</span>

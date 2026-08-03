@@ -37,7 +37,7 @@ export function PlantDiseasePage() {
 
         <div className={styles.workspace}>
           <InputPanel
-            hasAnalysis={Boolean(result)}
+            analysisStatus={result?.status}
             isAnalyzing={isAnalyzing}
             onAnalyze={analyze}
             onClearAnalysis={clearAnalysis}
@@ -50,7 +50,7 @@ export function PlantDiseasePage() {
           />
         </div>
 
-        <SuggestedProductsPanel products={result?.suggestedProducts} />
+        <SuggestedProductsPanel products={result?.status === 'DISEASED' ? result.suggestedProducts : []} />
       </main>
     </div>
   )
