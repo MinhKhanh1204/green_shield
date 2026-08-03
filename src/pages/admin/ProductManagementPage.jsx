@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Button, Form, Image, Input, InputNumber, Modal, Popconfirm, Select, Space, Switch, Table, Tabs, Tag, Upload, message } from 'antd'
-import { ArrowDownOutlined, ArrowUpOutlined, DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined, StarFilled, StarOutlined, UploadOutlined } from '@ant-design/icons'
+import { ArrowDownOutlined, ArrowUpOutlined, DeleteOutlined, DownloadOutlined, EditOutlined, EyeOutlined, PlusOutlined, QrcodeOutlined, StarFilled, StarOutlined, UploadOutlined } from '@ant-design/icons'
 import {
   createProduct,
   deleteProduct,
   deleteProductImage,
   getAdminProducts,
+  replaceProductMaterialZones,
   reorderProductImages,
   resolveProductAssetUrl,
   setMainProductImage,
@@ -15,6 +16,9 @@ import {
   updateProductStatus,
   uploadProductImages,
 } from '../../services/product'
+import { getAllZones } from '../../services/materialZoneApi'
+import ProductTraceQr from '../../components/ProductTraceQr'
+import { downloadProductTraceQr } from '../../utils/productTraceQr'
 import './ProductManagementPage.css'
 
 const { TextArea } = Input
@@ -161,6 +165,130 @@ function ProductImageManager({ product, onChanged }) {
   )
 }
 
+function ProductTraceabilityManager({ product, onChanged }) {
+  const [zones, setZones] = useState([])
+  const [selectedZoneIds, setSelectedZoneIds] = useState([])
+  const [primaryZoneId, setPrimaryZoneId] = useState(null)
+  const [loadingZones, setLoadingZones] = useState(true)
+  const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    const assignments = [...(product?.materialZones || [])].sort((a, b) => a.displayOrder - b.displayOrder)
+    setSelectedZoneIds(assignments.map((assignment) => assignment.zoneId))
+    setPrimaryZoneId(assignments.find((assignment) => assignment.primarySource)?.zoneId || null)
+  }, [product])
+
+  useEffect(() => {
+    let cancelled = false
+    setLoadingZones(true)
+    getAllZones()
+      .then((data) => {
+        if (!cancelled) setZones(Array.isArray(data) ? data.filter((zone) => !zone.deleted && zone.status === 'active') : [])
+      })
+      .catch((error) => {
+        if (!cancelled) message.error(error.message)
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingZones(false)
+      })
+    return () => { cancelled = true }
+  }, [])
+
+  const zoneOptions = zones.map((zone) => ({
+    value: zone.id,
+    label: `${zone.name} - ${zone.province || zone.district || 'Mekong'}`,
+  }))
+  const primaryOptions = zoneOptions.filter((option) => selectedZoneIds.includes(option.value))
+
+  const handleZoneChange = (values) => {
+    setSelectedZoneIds(values)
+    if (!values.includes(primaryZoneId)) setPrimaryZoneId(values[0] || null)
+  }
+
+  const saveAssignments = async () => {
+    if (selectedZoneIds.length && !primaryZoneId) {
+      message.warning('Vui lòng chọn vùng nguyên liệu chính')
+      return
+    }
+    setSaving(true)
+    try {
+      await replaceProductMaterialZones(product.id, {
+        primaryZoneId: selectedZoneIds.length ? primaryZoneId : null,
+        zoneIds: selectedZoneIds,
+      })
+      message.success('Đã cập nhật vùng nguyên liệu cho sản phẩm')
+      await onChanged()
+    } catch (error) {
+      message.error(error.message)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const downloadQr = async (format) => {
+    try {
+      await downloadProductTraceQr(product.traceCode, format)
+    } catch (error) {
+      message.error(error.message)
+    }
+  }
+
+  return (
+    <div className="product-traceability-admin">
+      <div className="product-traceability-admin__form">
+        <div>
+          <label>Vùng nguyên liệu</label>
+          <Select
+            mode="multiple"
+            value={selectedZoneIds}
+            options={zoneOptions}
+            loading={loadingZones}
+            onChange={handleZoneChange}
+            placeholder="Chọn một hoặc nhiều vùng"
+            optionFilterProp="label"
+          />
+        </div>
+        <div>
+          <label>Vùng chính</label>
+          <Select
+            value={primaryZoneId}
+            options={primaryOptions}
+            disabled={!selectedZoneIds.length}
+            onChange={setPrimaryZoneId}
+            placeholder="Chọn vùng được focus khi quét QR"
+          />
+        </div>
+        <Button type="primary" loading={saving} onClick={saveAssignments}>Lưu nguồn gốc</Button>
+      </div>
+
+      <aside className="product-traceability-admin__preview">
+        <div>
+          <span>Mã truy xuất</span>
+          <strong>{product.traceCode || 'Đang tạo mã'}</strong>
+        </div>
+        {product.traceabilityEnabled ? (
+          <>
+            <ProductTraceQr
+              traceCode={product.traceCode}
+              label="QR truy xuất nguồn gốc"
+              className="product-traceability-admin__qr"
+            />
+            <Space wrap>
+              <Button icon={<DownloadOutlined />} onClick={() => downloadQr('png')}>PNG</Button>
+              <Button icon={<DownloadOutlined />} onClick={() => downloadQr('svg')}>SVG</Button>
+            </Space>
+          </>
+        ) : (
+          <div className="product-traceability-admin__empty">
+            <QrcodeOutlined />
+            <span>Hãy lưu ít nhất một vùng active để bật QR.</span>
+          </div>
+        )}
+      </aside>
+    </div>
+  )
+}
+
 export default function ProductManagementPage() {
   const [form] = Form.useForm()
   const [products, setProducts] = useState([])
@@ -260,6 +388,7 @@ export default function ProductManagementPage() {
         <Tabs items={[
           { key: 'general', label: 'Thông tin chung', children: <Form form={form} layout="vertical" initialValues={DEFAULT_VALUES}><div className="product-admin-form-grid product-admin-form-grid--compact"><Form.Item name="slug" label="Slug" rules={[{ required: true }, { pattern: /^[a-z0-9]+(?:-[a-z0-9]+)*$/, message: 'Chỉ dùng chữ thường, số và dấu gạch ngang' }]}><Input /></Form.Item><Form.Item name="category" label="Danh mục" rules={[{ required: true }]}><Select options={CATEGORY_OPTIONS} /></Form.Item><Form.Item name="saleMode" label="Hình thức bán" rules={[{ required: true }]}><Select options={SALE_MODE_OPTIONS} /></Form.Item><Form.Item name="displayOrder" label="Thứ tự hiển thị" rules={[{ required: true }]}><InputNumber min={0} style={{ width: '100%' }} /></Form.Item><Form.Item name="domesticUnitPrice" label="Giá nội địa / đơn vị" rules={[{ required: true }]}><InputNumber min={1} style={{ width: '100%' }} /></Form.Item><Form.Item name="exportUnitPrice" label="Giá xuất khẩu / đơn vị" rules={[{ required: true }]}><InputNumber min={1} style={{ width: '100%' }} /></Form.Item><Form.Item name="comboQuantity" label="Số lượng combo"><InputNumber min={1} style={{ width: '100%' }} /></Form.Item><Form.Item name="domesticComboPrice" label="Giá combo"><InputNumber min={1} style={{ width: '100%' }} /></Form.Item><Form.Item name="minimumOrderQuantity" label="Số lượng đặt tối thiểu"><InputNumber min={1} style={{ width: '100%' }} /></Form.Item><Form.Item name="active" label="Đang hiển thị" valuePropName="checked"><Switch /></Form.Item><Form.Item name="featured" label="Sản phẩm nổi bật" valuePropName="checked"><Switch /></Form.Item></div><Tabs items={[{ key: 'vi', label: 'Tiếng Việt', children: <ProductLanguageFields language="vi" /> }, { key: 'en', label: 'English', children: <ProductLanguageFields language="en" /> }]} /></Form> },
           { key: 'images', label: `Hình ảnh (${editing?.images?.length || 0})`, disabled: !editing, children: editing ? <ProductImageManager product={editing} onChanged={refreshEditing} /> : null },
+          { key: 'traceability', label: 'Nguồn gốc', disabled: !editing, children: editing ? <ProductTraceabilityManager product={editing} onChanged={refreshEditing} /> : null },
         ]} />
       </Modal>
     </div>

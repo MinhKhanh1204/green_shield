@@ -37,6 +37,7 @@ export function PlantDiseasePage() {
 
         <div className={styles.workspace}>
           <InputPanel
+            hasAnalysis={Boolean(result)}
             isAnalyzing={isAnalyzing}
             onAnalyze={analyze}
             onClearAnalysis={clearAnalysis}

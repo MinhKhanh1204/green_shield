@@ -17,4 +17,18 @@
 .product-image-editor__preview .ant-image, .product-image-editor__preview img { width: 180px; height: 150px; object-fit: cover; border-radius: 6px; }
 .product-image-editor__preview .ant-tag { position: absolute; left: 8px; top: 8px; }
 .product-image-editor .ant-form-item { margin-bottom: 10px; }
+.product-traceability-admin { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 24px; align-items: start; }
+.product-traceability-admin__form { display: grid; gap: 18px; }
+.product-traceability-admin__form > div { display: grid; gap: 7px; }
+.product-traceability-admin__form label { color: #344f45; font-size: 13px; font-weight: 700; }
+.product-traceability-admin__form .ant-select { width: 100%; }
+.product-traceability-admin__form > button { width: max-content; }
+.product-traceability-admin__preview { min-height: 300px; padding: 20px; display: grid; justify-items: center; align-content: start; gap: 16px; border: 1px solid #dfe8e2; border-radius: 18px; background: #f5f9f6; text-align: center; }
+.product-traceability-admin__preview > div:first-child { display: grid; gap: 4px; }
+.product-traceability-admin__preview span { color: #718078; font-size: 12px; }
+.product-traceability-admin__preview strong { color: #063b2b; font-size: 16px; letter-spacing: .04em; }
+.product-traceability-admin__qr { width: 168px; }
+.product-traceability-admin__empty { min-height: 170px; display: grid; place-items: center; align-content: center; gap: 10px; color: #789087; }
+.product-traceability-admin__empty svg { font-size: 42px; }
 @media (max-width: 760px) { .product-admin-header { align-items: stretch; flex-direction: column; } .product-admin-form-grid, .product-admin-form-grid--compact { grid-template-columns: 1fr; } .product-admin-form-grid__full { grid-column: auto; } .product-image-editor { grid-template-columns: 1fr; } }
+@media (max-width: 760px) { .product-traceability-admin { grid-template-columns: 1fr; } }

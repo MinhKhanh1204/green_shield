@@ -13,6 +13,7 @@ import {
   X,
 } from 'lucide-react'
 import { getProductBySlug } from '../../services/product'
+import ProductTraceQr from '../../components/ProductTraceQr'
 import {
   formatMoney,
   imageAlt,
@@ -169,6 +170,14 @@ export default function ProductDetailPage() {
             ) : (
               <span><Leaf aria-hidden="true" /></span>
             )}
+            {product.traceabilityEnabled && product.traceCode ? (
+              <div className="product-gallery__trace-qr">
+                <ProductTraceQr
+                  traceCode={product.traceCode}
+                  label={t('traceability.verified')}
+                />
+              </div>
+            ) : null}
             <i>{String(activeIndex + 1).padStart(2, '0')} / {String(images.length).padStart(2, '0')}</i>
           </button>
           {images.length > 1 ? (
@@ -248,7 +257,9 @@ export default function ProductDetailPage() {
           <h2>{t('catalog.detail.traceTitle')}</h2>
           <p>{t('catalog.detail.traceDescription')}</p>
         </div>
-        <Link to="/map">{t('catalog.detail.traceCta')}<ArrowUpRight size={18} /></Link>
+        <Link to={product.traceabilityEnabled && product.traceCode ? `/traceability/${product.traceCode}` : '/map'}>
+          {t('catalog.detail.traceCta')}<ArrowUpRight size={18} />
+        </Link>
       </section>
 
       {images[2] ? (

@@ -1,6 +1,7 @@
 const API_BASE = (import.meta.env.VITE_API_BASE || '').replace(/\/$/, '')
 const PUBLIC_PRODUCTS_URL = `${API_BASE}/api/v1/products`
 const ADMIN_PRODUCTS_URL = `${API_BASE}/api/v1/admin/products`
+const TRACEABILITY_URL = `${API_BASE}/api/v1/traceability`
 
 async function parseResponse(response) {
   if (response.status === 204) return null
@@ -61,6 +62,13 @@ export function getProducts(filters = {}, options = {}) {
 
 export function getProductBySlug(slug, options = {}) {
   return request(`${PUBLIC_PRODUCTS_URL}/${encodeURIComponent(slug)}`, {
+    method: 'GET',
+    signal: options.signal,
+  })
+}
+
+export function getTraceability(traceCode, options = {}) {
+  return request(`${TRACEABILITY_URL}/${encodeURIComponent(traceCode)}`, {
     method: 'GET',
     signal: options.signal,
   })
@@ -145,5 +153,19 @@ export function reorderProductImages(id, imageIds) {
 export function setMainProductImage(id, imageId) {
   return request(`${ADMIN_PRODUCTS_URL}/${encodeURIComponent(id)}/images/${imageId}/main`, {
     method: 'PATCH',
+  })
+}
+
+export function getProductMaterialZones(id, options = {}) {
+  return request(`${ADMIN_PRODUCTS_URL}/${encodeURIComponent(id)}/material-zones`, {
+    method: 'GET',
+    signal: options.signal,
+  })
+}
+
+export function replaceProductMaterialZones(id, payload) {
+  return request(`${ADMIN_PRODUCTS_URL}/${encodeURIComponent(id)}/material-zones`, {
+    method: 'PUT',
+    body: JSON.stringify(payload),
   })
 }
