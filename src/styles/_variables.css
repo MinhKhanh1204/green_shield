@@ -16,6 +16,20 @@
   --color-brown: #654e2f;
   --color-light: #ececec;
 
+  /* shared GreenShield experience palette */
+  --gs-green: var(--color-primary);
+  --gs-green-bright: var(--color-2);
+  --gs-forest: var(--color-dark);
+  --gs-deep-forest: var(--color-dark);
+  --gs-mint: var(--color-bg);
+  --gs-lime: var(--color-2);
+  --gs-cream: var(--bg);
+  --gs-paper: var(--card);
+  --gs-sand: var(--color-brown);
+  --gs-ink: var(--text);
+  --gs-muted: var(--text-muted);
+  --gs-border: var(--border-color);
+
   /* semantic */
   --color-warning: #FFB020;
   --color-danger: #E14D4D;

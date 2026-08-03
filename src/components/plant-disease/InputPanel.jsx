@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Camera, ImagePlus, LoaderCircle, RefreshCw, ScanSearch, Trash2, UploadCloud, Video } from 'lucide-react'
+import teachingImage from '../../assets/teaching.png'
 import { validatePlantMedia } from '../../services/plantDiseaseApi'
 import styles from '../../pages/plant-disease/PlantDiseasePage.module.css'
 import { translatePlantDiseaseError } from '../../pages/plant-disease/plantDiseaseI18n'
@@ -8,7 +9,7 @@ import { translatePlantDiseaseError } from '../../pages/plant-disease/plantDisea
 const ACCEPTED_IMAGE_TYPES = 'image/jpeg,image/png,image/webp'
 const ACCEPTED_VIDEO_TYPES = 'video/mp4,video/webm,video/quicktime'
 
-export default function InputPanel({ isAnalyzing, onAnalyze, onClearAnalysis }) {
+export default function InputPanel({ hasAnalysis, isAnalyzing, onAnalyze, onClearAnalysis }) {
   const { t } = useTranslation()
   const [mode, setMode] = useState('image')
   const [selectedFile, setSelectedFile] = useState(null)
@@ -249,6 +250,16 @@ export default function InputPanel({ isAnalyzing, onAnalyze, onClearAnalysis }) 
         {isAnalyzing ? <LoaderCircle className={styles.spin} size={19} /> : <ScanSearch size={19} />}
         {isAnalyzing ? t('plantDisease.analyzingLeaf') : t('plantDisease.analyzeLeaf')}
       </button>
+
+      {hasAnalysis ? (
+        <aside className={styles.teachingMoment} aria-label={t('plantDisease.teachingTitle')}>
+          <div className={styles.teachingQuote}>
+            <strong>{t('plantDisease.teachingTitle')}</strong>
+            <span>{t('plantDisease.teachingDescription')}</span>
+          </div>
+          <img src={teachingImage} alt="" aria-hidden="true" />
+        </aside>
+      ) : null}
     </section>
   )
 }

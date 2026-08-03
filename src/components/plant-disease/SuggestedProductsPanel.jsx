@@ -1,4 +1,4 @@
-import { BadgeDollarSign, Boxes, PackageSearch } from 'lucide-react'
+import { BadgeDollarSign, PackageSearch } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import styles from '../../pages/plant-disease/PlantDiseasePage.module.css'
 
@@ -34,8 +34,7 @@ export default function SuggestedProductsPanel({ products }) {
               <p>{product.description || t('plantDisease.productDetailsUpdating')}</p>
               {product.instructions ? <small>{product.instructions}</small> : null}
               <div className={styles.productMeta}>
-                <span><BadgeDollarSign size={16} /> {formatPrice(product.price, i18n.language, t('plantDisease.contactForPrice'))}</span>
-                <span><Boxes size={16} /> {product.quantity ?? t('plantDisease.notAvailable')} {t('plantDisease.available')}</span>
+                <span><BadgeDollarSign size={16} /> {t('plantDisease.suggestedPrice')}: {formatPrice(product.price, i18n.language, t('plantDisease.contactForPrice'))}</span>
               </div>
             </div>
           </article>
