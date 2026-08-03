@@ -160,6 +160,7 @@ export function RouteSeo() {
     && !pathname.startsWith('/custom-bag')
     && !pathname.startsWith('/plant-disease')
     && !pathname.startsWith('/map')
+    && !pathname.startsWith('/traceability/')
     && !pathname.startsWith('/order-success')
     && !pathname.startsWith('/order-lookup')
     && !pathname.startsWith('/audio')
@@ -200,7 +201,8 @@ export function RouteSeo() {
     path: pathname,
     locale: english ? 'en' : 'vi',
     robots: isPrivate || isNotFound ? 'noindex, nofollow' : 'index, follow',
-    structuredData
+    structuredData,
+    enabled: !pathname.startsWith('/traceability/')
   })
 
   return null

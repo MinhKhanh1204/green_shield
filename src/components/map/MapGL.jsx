@@ -163,7 +163,9 @@ export default function MapGL({
         ? region.polygon.map((p) => toLatLng(p)).filter(Boolean)
         : [];
 
+      const declaredCenter = toLatLng(region?.center);
       const basePoints = [...zoneFarmers, ...zonePoints, ...polygonCoords];
+      if (!basePoints.length && declaredCenter) basePoints.push(declaredCenter);
       if (!basePoints.length) continue;
 
       const center = centroid(basePoints);

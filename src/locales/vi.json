@@ -706,6 +706,33 @@
       "listDescription": "Khám phá bao bì, vật dụng bàn ăn và sản phẩm đời sống từ lục bình, lá sen và nguồn vật liệu bản địa Mekong."
     }
   },
+  "traceability": {
+    "eyebrow": "GreenShield Trace",
+    "verified": "Nguồn nguyên liệu đã xác minh",
+    "description": "Theo dấu sản phẩm về các vùng nguyên liệu, nông hộ và điểm thu gom trong hệ sinh thái GreenShield Mekong.",
+    "backProducts": "Quay lại sản phẩm",
+    "loading": "Đang tải dữ liệu truy xuất...",
+    "notFoundTitle": "Không tìm thấy mã truy xuất",
+    "notFoundDescription": "Mã QR không tồn tại hoặc sản phẩm hiện không còn được công khai.",
+    "noZonesTitle": "Chưa có dữ liệu vùng nguyên liệu",
+    "noZonesDescription": "Sản phẩm đã có mã truy xuất nhưng chưa được liên kết với vùng nguyên liệu hoạt động.",
+    "mapTitle": "Bản đồ nguồn nguyên liệu",
+    "primary": "Vùng chính",
+    "area": "Diện tích",
+    "annualCapacity": "Công suất vùng",
+    "farmers": "Nông hộ hoạt động",
+    "farmerCapacity": "Công suất nông hộ",
+    "collectionPoints": "Điểm thu gom",
+    "collectionCapacity": "Sức chứa",
+    "currentStock": "Tồn kho hiện tại",
+    "stockRate": "Tỷ lệ tồn kho",
+    "location": "Vị trí",
+    "status": "Trạng thái",
+    "active": "Đang hoạt động",
+    "zoneCount": "Vùng nguyên liệu",
+    "ton": "tấn",
+    "tonPerYear": "tấn/năm"
+  },
   "map": {
     "title": "Bản đồ Vùng Nguyên Liệu Lục Bình",
     "subtitle": "Theo dõi vùng trồng, hộ dân và điểm thu gom theo thời gian thực",

@@ -34,6 +34,7 @@ const ProductManagementPage = lazyNamed(() => import('./pages/admin'), 'ProductM
 const PlantDiseasePage = lazyNamed(() => import('./pages/plant-disease'), 'PlantDiseasePage')
 const ProductsPage = lazyNamed(() => import('./pages/products'), 'ProductsPage')
 const ProductDetailPage = lazyNamed(() => import('./pages/products'), 'ProductDetailPage')
+const TraceabilityPage = lazyNamed(() => import('./pages/traceability'), 'TraceabilityPage')
 const MainLayout = lazy(() => import('./layouts/MainLayout'))
 const ProtectedRoute = lazy(() => import('./components/ProtectedRoute'))
 const HomeSection = lazy(() => import('./sections/HomeSection'))
@@ -278,6 +279,7 @@ function App() {
         <Route path="/" element={<MainSite />} />
         <Route path="/products" element={<MainLayout><ProductsPage /></MainLayout>} />
         <Route path="/products/:slug" element={<MainLayout><ProductDetailPage /></MainLayout>} />
+        <Route path="/traceability/:traceCode" element={<MainLayout><TraceabilityPage /></MainLayout>} />
         <Route path="/custom-bag" element={<MainLayout><CustomBagRoute /></MainLayout>} />
         <Route path="/custom-bag/:templateId/design" element={<CustomBagLayout><DesignPage /></CustomBagLayout>} />
         <Route path="/custom-bag/:templateId/preview" element={<CustomBagLayout><PreviewPage /></CustomBagLayout>} />

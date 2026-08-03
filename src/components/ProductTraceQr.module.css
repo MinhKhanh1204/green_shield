@@ -1,0 +1,17 @@
+.qr {
+  display: block;
+  padding: 0.34rem;
+  pointer-events: none;
+  border: 1px solid rgba(6, 59, 43, 0.14);
+  border-radius: 0.85rem;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 12px 28px rgba(3, 29, 21, 0.2);
+  backdrop-filter: blur(8px);
+}
+
+.qr canvas {
+  width: 100% !important;
+  height: auto !important;
+  display: block;
+  border-radius: 0.3rem;
+}
