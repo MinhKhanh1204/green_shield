@@ -10,11 +10,127 @@ import ScrollToBottom from 'react-scroll-to-bottom';
 import '../styles/chat-widget.css';
 import { Select } from 'antd';
 import 'antd/dist/reset.css';
+import { useTranslation } from 'react-i18next';
 
 const ChatMarkdown = React.lazy(() => import('./ChatMarkdown'));
 
+const TOPIC_LABELS = {
+  vi: {
+    tong_quan_du_an: 'Tổng quan dự án',
+    san_pham: 'Sản phẩm',
+    vat_lieu_cong_nghe: 'Vật liệu & công nghệ',
+    thi_truong_khach_hang: 'Thị trường & khách hàng',
+    esg_ben_vung: 'ESG & bền vững',
+    rui_ro_thoai_von: 'Rủi ro & thoái vốn',
+    doi_ngu: 'Đội ngũ',
+    lien_ket_lien_he: 'Liên kết & liên hệ',
+    ho_tro_khach_hang: 'Hỗ trợ khách hàng',
+    ho_so_thanh_tich: 'Hồ sơ & thành tích',
+    hoi_dap_chung: 'Hỏi đáp chung',
+    company: 'Về chúng tôi',
+    products: 'Về sản phẩm',
+    order: 'Đặt hàng',
+    shipping: 'Vận chuyển',
+    payment: 'Thanh toán',
+    contact: 'Liên hệ',
+    sustainability: 'Bền vững',
+    feedback: 'Góp ý',
+    default: 'Tổng quan',
+  },
+  en: {
+    tong_quan_du_an: 'Project overview',
+    san_pham: 'Products',
+    vat_lieu_cong_nghe: 'Materials & technology',
+    thi_truong_khach_hang: 'Market & customers',
+    esg_ben_vung: 'ESG & sustainability',
+    rui_ro_thoai_von: 'Risks & exit strategy',
+    doi_ngu: 'Team',
+    lien_ket_lien_he: 'Links & contact',
+    ho_tro_khach_hang: 'Customer support',
+    ho_so_thanh_tich: 'Profile & achievements',
+    hoi_dap_chung: 'General questions',
+    company: 'About us',
+    products: 'Products',
+    order: 'Ordering',
+    shipping: 'Shipping',
+    payment: 'Payment',
+    contact: 'Contact',
+    sustainability: 'Sustainability',
+    feedback: 'Feedback',
+    default: 'Overview',
+  },
+};
+
+const TOPIC_ICONS = {
+  tong_quan_du_an: 'domain',
+  san_pham: 'shopping_bag',
+  vat_lieu_cong_nghe: 'biotech',
+  thi_truong_khach_hang: 'groups',
+  esg_ben_vung: 'eco',
+  rui_ro_thoai_von: 'warning',
+  doi_ngu: 'badge',
+  lien_ket_lien_he: 'link',
+  ho_tro_khach_hang: 'support_agent',
+  ho_so_thanh_tich: 'workspace_premium',
+  hoi_dap_chung: 'help',
+  company: 'apartment',
+  products: 'shopping_bag',
+  order: 'shopping_cart',
+  shipping: 'local_shipping',
+  payment: 'credit_card',
+  contact: 'call',
+  sustainability: 'eco',
+  feedback: 'rate_review',
+  default: 'help',
+};
+
+const CHAT_COPY = {
+  vi: {
+    greeting: 'Vui lòng chọn chủ đề!',
+    loadTopicsError: 'Không thể tải danh sách chủ đề.',
+    selectTopicError: 'Không thể chọn chủ đề.',
+    selectTopicFirst: 'Vui lòng chọn chủ đề trước.',
+    sendMessageError: 'Không thể gửi tin nhắn.',
+    unavailable: '- Lubot đang bận, bạn vui lòng liên hệ lại nhé!',
+    notification: 'Bot đã phản hồi tin nhắn của bạn.',
+    teaserPrefix: 'Bạn cần gì đó có',
+    teaserSuffix: 'lo!',
+    openChat: 'Mở chatbot',
+    closeChat: 'Đóng chatbot',
+    chatDialog: 'Chatbot GreenShield',
+    loadingTopics: 'Đang tải chủ đề…',
+    topicPlaceholder: 'Chọn chủ đề…',
+    empty: 'Chọn một chủ đề, sau đó đặt câu hỏi cho Lubot.',
+    messagePlaceholder: 'Nhập tin nhắn…',
+  },
+  en: {
+    greeting: 'Please select a topic!',
+    loadTopicsError: 'Unable to load topics.',
+    selectTopicError: 'Unable to select the topic.',
+    selectTopicFirst: 'Please select a topic first.',
+    sendMessageError: 'Unable to send the message.',
+    unavailable: '- Lubot is busy right now. Please try again later!',
+    notification: 'Lubot has replied to your message.',
+    teaserPrefix: 'Need a hand? Let',
+    teaserSuffix: 'handle it!',
+    openChat: 'Open chatbot',
+    closeChat: 'Close chatbot',
+    chatDialog: 'GreenShield chatbot',
+    loadingTopics: 'Loading topics…',
+    topicPlaceholder: 'Select a topic…',
+    empty: 'Select a topic, then ask Lubot anything.',
+    messagePlaceholder: 'Type your message…',
+  },
+};
+
 // Simple floating chat widget overlay
 export default function ChatWidget() {
+  const { i18n } = useTranslation();
+  const language = (i18n.resolvedLanguage || i18n.language || 'vi').toLowerCase().startsWith('en')
+    ? 'en'
+    : 'vi';
+  const copy = CHAT_COPY[language];
+  const topicLabels = TOPIC_LABELS[language];
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [topics, setTopics] = useState({}); // {key: description}
@@ -37,32 +153,6 @@ export default function ChatWidget() {
     typeof window !== 'undefined' ? window.innerWidth <= 768 : false,
   );
 
-  // Friendly Vietnamese labels for known topic keys
-  const TOPIC_LABELS = {
-    company: 'Về chúng tôi',
-    products: 'Về sản phẩm',
-    order: 'Đặt hàng',
-    shipping: 'Vận chuyển',
-    payment: 'Thanh toán',
-    contact: 'Liên hệ',
-    sustainability: 'Bền vững',
-    feedback: 'Góp ý',
-    default: 'Tổng quan',
-  };
-
-  // Matching Material icon for each topic
-  const TOPIC_ICONS = {
-    company: 'apartment',
-    products: 'shopping_bag',
-    order: 'shopping_cart',
-    shipping: 'local_shipping',
-    payment: 'credit_card',
-    contact: 'call',
-    sustainability: 'eco',
-    feedback: 'rate_review',
-    default: 'help',
-  };
-
   const topicKeys = useMemo(() => Object.keys(topics), [topics]);
 
   useEffect(() => {
@@ -75,23 +165,31 @@ export default function ChatWidget() {
         const t = await getTopics();
         setTopics(t || {});
       } catch (e) {
-        setError(e?.message || 'Failed to load topics');
+        setError(e?.message || copy.loadTopicsError);
       } finally {
         setLoading(false);
       }
     })();
-  }, [open]);
+  }, [copy.loadTopicsError, open]);
 
   useEffect(() => {
     // Send a one-time greeting when the widget first opens
     if (open && !hasGreeted) {
       setMessages((prev) => ([
         ...prev,
-        { role: 'system', text: 'Vui lòng chọn chủ đề!' },
+        { role: 'system', text: copy.greeting },
       ]));
       setHasGreeted(true);
     }
-  }, [open, hasGreeted]);
+  }, [copy.greeting, open, hasGreeted]);
+
+  useEffect(() => {
+    setMessages((prev) => prev.map((message) => {
+      const isGreeting = message.role === 'system'
+        && Object.values(CHAT_COPY).some((translation) => translation.greeting === message.text);
+      return isGreeting ? { ...message, text: copy.greeting } : message;
+    }));
+  }, [copy.greeting]);
 
   useEffect(() => {
     // Ask permission for browser notifications once when opened
@@ -194,12 +292,12 @@ export default function ChatWidget() {
     try {
       setLoading(true);
       setError('');
-      const ack = await selectTopic(key);
+      const ack = await selectTopic(key, language);
       setSelectedTopic(key);
       setMessages((prev) => ([...prev, { role: 'system', text: String(ack) }]));
     } catch (e) {
-      setError(e?.message || 'Failed to select topic');
-      setMessages((prev) => ([...prev, { role: 'ai', text: '- Lubot đang bận, bạn vui lòng liên hệ lại nhé!' }]));
+      setError(e?.message || copy.selectTopicError);
+      setMessages((prev) => ([...prev, { role: 'ai', text: copy.unavailable }]));
     } finally {
       setLoading(false);
     }
@@ -215,7 +313,7 @@ export default function ChatWidget() {
   async function handleSend(ev) {
     ev?.preventDefault?.();
     if (!selectedTopic) {
-      setError('Please select a topic first.');
+      setError(copy.selectTopicFirst);
       return;
     }
     const text = inputRef.current?.value || '';
@@ -229,7 +327,7 @@ export default function ChatWidget() {
       setLoading(true);
       setError('');
       setIsBotTyping(true);
-      const reply = await sendMessage(text);
+      const reply = await sendMessage(text, language);
       setMessages((prev) => ([...prev, { role: 'ai', text: String(reply) }]));
       setIsBotTyping(false);
       // Refocus after bot reply
@@ -238,13 +336,13 @@ export default function ChatWidget() {
       // Optional notify when widget is closed
       try {
         if (typeof Notification !== 'undefined' && Notification.permission === 'granted' && !open) {
-          new Notification('GreenShield Assistant', { body: 'Bot đã phản hồi tin nhắn của bạn.' });
+          new Notification('GreenShield Assistant', { body: copy.notification });
         }
       } catch { /* ignore */ }
     } catch (e) {
-      setError(e?.message || 'Failed to send message');
+      setError(e?.message || copy.sendMessageError);
       // Graceful bot reply on error (e.g., 400/503)
-      setMessages((prev) => ([...prev, { role: 'ai', text: '- Lubot đang bận, bạn vui lòng liên hệ lại nhé!' }]));
+      setMessages((prev) => ([...prev, { role: 'ai', text: copy.unavailable }]));
     } finally {
       setLoading(false);
       setIsBotTyping(false);
@@ -292,7 +390,7 @@ export default function ChatWidget() {
           <div className="chat-widget-button cwb-desktop" aria-hidden={false}>
             {showTeaser && (
               <div className="chat-widget-teaser" aria-hidden>
-                Bạn cần gì đó có <strong>Lubi</strong> lo!
+                {copy.teaserPrefix} <strong>Lubi</strong> {copy.teaserSuffix}
               </div>
             )}
             <img
@@ -305,7 +403,7 @@ export default function ChatWidget() {
             {/* Smaller clickable hotspot so scrolling passes through around it */}
             <button
               type="button"
-              aria-label="Open chat"
+              aria-label={copy.openChat}
               className="chat-widget-hotspot"
               onClick={() => {
                 setOpen(true);
@@ -348,7 +446,7 @@ export default function ChatWidget() {
           {isMobileViewport && (
           <button
             type="button"
-            aria-label="Open chat"
+            aria-label={copy.openChat}
             className="chat-mobile-button cwb-mobile"
             onClick={() => {
               setOpen(true);
@@ -368,7 +466,7 @@ export default function ChatWidget() {
               }
             }}
           >
-            <img src={LogoFade} alt="Open chat" className="chat-mobile-icon" draggable={false} />
+            <img src={LogoFade} alt={copy.openChat} className="chat-mobile-icon" draggable={false} />
           </button>
           )}
         </Motion.div>
@@ -392,7 +490,7 @@ export default function ChatWidget() {
               key="panel"
               className={`chat-widget-panel ${keyboardOpen ? 'is-keyboard' : ''}`}
               role="dialog"
-              aria-label="Chat widget"
+              aria-label={copy.chatDialog}
               aria-modal="false"
               initial={{ opacity: 0, y: 26, scale: 0.88 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -414,14 +512,14 @@ export default function ChatWidget() {
                   <div className="cwp-title">
                     Lubot
                   </div>
-                  <button className="cwp-x" onClick={() => setOpen(false)} aria-label="Close">
+                  <button className="cwp-x" onClick={() => setOpen(false)} aria-label={copy.closeChat}>
                     <span className="material-symbols-rounded" aria-hidden>close</span>
                   </button>
                 </div>
 
                 <div className="cwp-topics">
                   {loading && topicKeys.length === 0 && (
-                    <div className="cwp-hint">Loading topics…</div>
+                    <div className="cwp-hint">{copy.loadingTopics}</div>
                   )}
                   {error && (
                     <div className="cwp-error" role="alert">{error}</div>
@@ -429,7 +527,7 @@ export default function ChatWidget() {
                   {topicKeys.length > 0 && (
                     <Select
                       className="cwp-select"
-                      placeholder="Chọn chủ đề…"
+                      placeholder={copy.topicPlaceholder}
                       value={selectedTopic || undefined}
                       onChange={(val) => handleSelectTopic(val)}
                       disabled={loading}
@@ -439,11 +537,11 @@ export default function ChatWidget() {
                       options={topicKeys.map((key) => ({
                         value: key,
                         label: (
-                          <span className="cwp-opt" title={TOPIC_LABELS[key] || key}>
+                          <span className="cwp-opt" title={topicLabels[key] || key}>
                             <span className="material-symbols-rounded cwp-opt-ic" aria-hidden>
                               {TOPIC_ICONS[key] || TOPIC_ICONS.default}
                             </span>
-                            {TOPIC_LABELS[key] || key}
+                            {topicLabels[key] || key}
                           </span>
                         ),
                       }))}
@@ -453,7 +551,7 @@ export default function ChatWidget() {
 
                 <div className="cwp-body" ref={bodyRef}>
                   {messages.length === 0 ? (
-                    <div className="cwp-empty">Select a topic, then ask me anything.</div>
+                    <div className="cwp-empty">{copy.empty}</div>
                   ) : (
                     <ScrollToBottom className="cwp-scroll">
                       <ul className="cwp-messages">
@@ -525,7 +623,7 @@ export default function ChatWidget() {
                   <input
                     ref={inputRef}
                     type="text"
-                    placeholder={selectedTopic ? 'Type your message…' : 'Select a topic first'}
+                    placeholder={selectedTopic ? copy.messagePlaceholder : copy.selectTopicFirst}
                     disabled={!selectedTopic || loading}
                     aria-disabled={!selectedTopic || loading}
                     onFocus={() => setKeyboardOpen(true)}
