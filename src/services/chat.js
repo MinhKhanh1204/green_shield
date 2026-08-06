@@ -39,21 +39,20 @@ export async function getTopics() {
 	return http(`${base}/api/v1/chat/topics`, { method: 'GET' });
 }
 
-export async function selectTopic(topicKey) {
+export async function selectTopic(topicKey, language = 'vi') {
 	if (!topicKey) throw new Error('topic is required');
 	return http(`${base}/api/v1/chat/select-topic`, {
 		method: 'POST',
-		body: JSON.stringify({ topic: String(topicKey) }),
+		body: JSON.stringify({ topic: String(topicKey), language }),
 	});
 }
 
-export async function sendMessage(message) {
+export async function sendMessage(message, language = 'vi') {
 	if (!message || !message.trim()) throw new Error('message is required');
 	return http(`${base}/api/v1/chat/message`, {
 		method: 'POST',
-		body: JSON.stringify({ message }),
+		body: JSON.stringify({ message, language }),
 	});
 }
 
 export const CHAT_API_BASE = base;
-
